@@ -34,6 +34,12 @@ def sync_data(src_name, out_name):
     if m is None:
         raise SystemExit(f"{src_name}: データブロックが見つからない")
     data = m.group(0)
+    # Tenhou account names.  Nothing on the page reads them, and naming the
+    # players whose habits were counted is not something the site should do.
+    data, n = re.subn(r',"reps":\[.*?\}\]', "", data)
+    if n:
+        print(f"  {'':24s} 天鳳アカウント名 (D.reps) を除去")
+
     if not MLEAGUE_REPLAY_LINKS:
         data = re.sub(r',"url":"https://tenhou\.net/5/#json=[^"]*"', "", data)
     page = DST / out_name
