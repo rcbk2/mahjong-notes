@@ -17,7 +17,7 @@ const GISCUS = {
   repo: "rcbk2/mahjong-notes",
   repoId: "R_kgDOUQnZkg",
   category: "Comments",
-  categoryId: "DIC_kwDOUQnZks4DFClN",
+  categoryId: "DIC_kwDOUQnZks4DFCq2",
 };
 
 (function () {
@@ -34,7 +34,7 @@ const GISCUS = {
   const d = { repo: GISCUS.repo, "repo-id": GISCUS.repoId,
               category: GISCUS.category, "category-id": GISCUS.categoryId,
               mapping: "pathname", strict: "0", "reactions-enabled": "1",
-              "emit-metadata": "0", "input-position": "top",
+              "emit-metadata": "0", "input-position": "bottom",
               theme: "preferred_color_scheme", lang: "en", loading: "lazy" };
   for (const [k, v] of Object.entries(d)) s.setAttribute("data-" + k, v);
   host.appendChild(s);
