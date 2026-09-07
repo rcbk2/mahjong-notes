@@ -1,0 +1,258 @@
+<title>空切りをする人、しない人</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C; --soft:#B9BFB2;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C; --soft:#4E564A;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C; --soft:#4E564A;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.2rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(1.9rem,4.8vw,2.9rem);letter-spacing:.02em}
+h2{font-size:clamp(1.22rem,2.5vw,1.55rem)}
+h3{font-size:.96rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.85rem;border-bottom:2px solid var(--ink);padding-bottom:1.9rem}
+header .sub{font-size:1.03rem;max-width:62ch}
+.lede{max-width:65ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.2rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.35rem;box-shadow:var(--shadow)}
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.5rem .8rem;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500;position:sticky;top:0;background:var(--card)}
+td:first-child,th:first-child,td.l,th.l{text-align:left}
+tbody tr:last-child td{border-bottom:none}
+td.mono{font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums}
+tr.hi td{background:color-mix(in srgb,var(--shu) 8%,transparent)}
+.barcell{min-width:9rem}
+.mini{display:inline-block;height:.65rem;border-radius:2px;background:var(--shu);vertical-align:middle}
+.mini.z{background:var(--soft);width:2px}
+.mark{font-size:.95rem}
+.mark.star{color:var(--shu)}
+.mark.dot{color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:1.1rem;font-size:.83rem;color:var(--muted);align-items:center}
+.legend b{color:var(--ink)}
+.sw{width:1.1rem;height:.8rem;border-radius:2px;display:inline-block}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.2rem}
+svg{display:block;width:100%;height:auto;min-width:18rem}
+.grid{stroke:var(--rule);stroke-width:1}
+.axlab{font-family:"Roboto Mono",monospace;font-size:11px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:11px;font-weight:700;fill:var(--ink)}
+.err{stroke:var(--ink);stroke-width:1.3;opacity:.4}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+a{color:var(--ai)}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.79rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">牌譜解析 / Mリーグ &amp; 天鳳 鳳凰卓</p>
+  <h1>空切りをする人、しない人</h1>
+  <p class="sub">スライドを装う空切りには二つの形がある。<b>12356</b> から 1 を切って 4-7 を隠す形と、<b>23467</b> から 2 を切って 5-8 を隠す形。<br>テンパイ前も含めて両方を数えると、片方だけが効いていた。</p>
+  <p class="postmeta"><time datetime="2026-09-07">7 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=Japanese">Japanese</a><a class="tag" href="index.html#tag=Log+analysis">Log analysis</a><a class="tag" href="index.html#tag=Discard+reading">Discard reading</a><a class="tag" href="index.html#tag=Tenhou">Tenhou</a><a class="tag" href="index.html#tag=M.League">M.League</a></span></p>
+</header>
+
+<section>
+  <h2>二つの形、同じ嘘</h2>
+  <p class="lede">どちらも「完成した順子＋二つ外の両面」で、切るのは順子の外端である。<b>12356</b> = 123+56 で 4-7 待ち、1 を切る。<b>23467</b> = 234+67 で 5-8 待ち、2 を切る。2 の手出しは「234 に 5 を引いて 345 にスライドした」と読め、そう読んだ相手は 34567 の 2-5-8 待ちを想定してフリテンに気づき、5-8 を消す。それがこの手の待ちである。<br><br>テンパイ条件を外すと対象は8倍に増える。切った時点で聴牌していたかどうかで分けると、はっきりした差が出た。</p>
+  <div class="tablebox"><table id="counts"></table></div>
+  <p class="lede" style="color:var(--ink)">天鳳では<b>テンパイ時の空切り率がノーテン時のおよそ2倍</b>。守るべき待ちがある時にだけ嘘をつく、という筋の通った差である。二つの形はほぼ同率で（テンパイ 27.4% と 27.5%）、打ち手はこれらを区別していない。<br>Mリーグは差が小さく、<b>ノーテンでも3割近くが空切り</b>（天鳳の2倍以上）。ただしテンパイ側は28件しかない。</p>
+</section>
+
+<section>
+  <h2>ノーテンの手は、その後どうなったか</h2>
+  <p class="lede">ノーテンから空切りしても、その 56 が待ちになるとは限らない。4 を先に引けば 456 が閉じて、待ちは別の場所に移る。この嘘が守ろうとした待ちが実際に成立したケースだけが、効果を測る土俵になる。</p>
+  <div class="tablebox"><table id="fate"></table></div>
+  <p class="lede">天鳳では<b>4件に1件が「テンパイしたが別待ち」</b>。半分以上はテンパイにすら至らない。以下の集計はこの2つを分母から除いている。</p>
+</section>
+
+<section>
+  <h2>で、効いているのか</h2>
+  <p class="lede">分母は狙いの待ち（12356 なら 4-7、45789 なら 3-6）に到達したケースのみ。狙いの牌そのもので<b>出和了</b>できた割合を、嘘をついた場合とつかなかった場合で比べる。ツモ和了は数えない — 相手が何を信じていようとツモには関係がないし、Mリーグの牌譜はツモの和了牌を記録していないので、数えれば両者を別の物差しで比べることになる。</p>
+  <div class="tablebox"><table id="effect"></table></div>
+  <p class="lede">天鳳3年をまとめると 28.2% 対 25.6%、非リーチの相手に絞って 21.1% 対 19.4%。<b>形を分けると、話が変わる。</b></p>
+  <div class="tablebox"><table id="diffs"></table></div>
+  <p class="lede" style="color:var(--ink)"><b>12356 では差がない（−0.16pt、区間は0を跨ぐ）。ところが 23467 では +3.36pt で、区間が0を含まない。</b>同じ論理の同じ嘘なのに、片方だけ効いている。<br><br>思い当たる違いは切る牌である。<b>1 の手出しはそれ自体ありふれていて、スライド以外の説明がいくらでもつく。2 の手出しは説明が限られ、スライドという読みが立ちやすい。</b>嘘は、もっともらしくなければ効かない、ということかもしれない。<br><br>この二つはどちらも戦術書に載っている形であって、データを見てから作った区分ではない。ただし観察の比較であって実験ではないので、空切りを選ぶ局面そのものが二つの形で違う可能性は残る。</p>
+</section>
+
+<section>
+  <h2>Mリーグ 全52選手</h2>
+  <p class="lede">ノーテンを含む全354ケース。該当機会が1回だけの選手も多いので、件数の少なさに注意して読むこと。</p>
+  <div class="legend">
+    <span><b class="mark star">★</b> テンパイ時に空切りした</span>
+    <span><b class="mark dot">・</b> テンパイ時の機会はあったが、しなかった</span>
+    <span>無印 = テンパイ時の機会なし</span>
+  </div>
+  <div class="tablebox"><table id="players"></table></div>
+  <p class="lede">形が二つに増えて、テンパイでの機会は28件になった。★が付いた選手は、最も情報を隠す価値が高い局面で嘘をついたことになる。それでも一人あたり1〜2件なので、率よりマークの有無を見るべきである。</p>
+</section>
+
+<section>
+  <h2>強い打ち手だけが、この形で嘘をつく</h2>
+  <p class="lede">天鳳3年分。ノーテンの手での空切り率は段位に沿って単調に上がる。ただしそれだけでは「上位者はどんな場面でも空切りする」で説明がついてしまう。そこで<b>同じ人が、ノーテンの手で同じランクの牌を空切りできた全場面での率</b>を基準として重ねた（青い線）。12356 の行には端牌(1/9)、23467 の行には 2/8 の基準を当て、形の構成比で加重してある。ヒゲは95%信頼区間。</p>
+  <div class="charts">
+    <div class="card"><h3>段位別</h3>
+      <figure style="margin:.5rem 0 0"><svg id="c-dan" viewBox="0 0 430 250"></svg></figure></div>
+    <div class="card"><h3>レート別</h3>
+      <figure style="margin:.5rem 0 0"><svg id="c-rate" viewBox="0 0 430 250"></svg></figure></div>
+  </div>
+  <div class="legend" style="margin-top:.4rem">
+    <span><i class="sw" style="background:var(--shu)"></i>この二形での空切り率</span>
+    <span><i class="sw" style="background:var(--ai);height:3px;align-self:center"></i>基準：同じ人がノーテン時に同じランクの牌を空切りする率</span>
+  </div>
+  <p class="lede" style="color:var(--ink)"><b>7段では、この形での空切り率（11.8%）は基準（11.2%）とほぼ同じ。</b>普段通りにしかやっていない。9段では 16.5% に上がる一方、基準は 10.6% とむしろ下がる。<b style="color:var(--shu)">開いていくのはこの形でだけで、上位者が一般に空切り好きなわけではない。</b></p>
+</section>
+
+<section>
+  <h2>注意</h2>
+  <div class="notes">
+    <div class="note"><h3>四つの形すべて</h3><p>「狙いの待ち」「狙いの牌」は形ごとに違う。12356 なら 4 と 7、45789 なら 3 と 6、23467 なら 5 と 8、34678 なら 2 と 5。検算すると 12356 の和了牌は 4/7 のみ、45789 は 3/6 のみで混入はない。件数もほぼ同数（6,171 対 6,088）。</p></div>
+    <div class="note"><h3>リーチ済みは除外</h3><p>宣言後の打牌は選べないので、そもそも嘘をつけない。リーチ宣言牌そのものも別枠にしてある — 宣言牌は麻雀全体で76%が手出しとして記録され、この形とは無関係の性質だから。</p></div>
+    <div class="note"><h3>年による差はない</h3><p>天鳳3年をまとめてある。ノーテン時の空切り率は年別に 12.7% / 13.9% / 12.7%。2022年がやや高いが解釈に足る差ではない。</p></div>
+    <div class="note"><h3>意図は測れない</h3><p>数えているのは行為であって動機ではない。誤クリックや手癖も混じる。ただし段位に沿って単調に上がること、待ちがある時に倍になることは、単なる癖では説明しにくい。</p></div>
+    <div class="note"><h3>ツモ和了は数えない</h3><p>Mリーグの牌譜には和了牌が記録されておらず、出和了の場合だけ局の最終打牌から復元できる。天鳳は<code>&lt;AGARI machi&gt;</code>で両方持っている。ツモまで数えると、天鳳側だけ分子が倍近くに膨らんで別々の物差しになってしまう。そもそもツモ和了は相手の判断と無関係なので、出和了に絞るのが筋でもある。</p></div>
+    <div class="note"><h3>効果は記述であって因果ではない</h3><p>空切りを選ぶ局面そのものが違う可能性はある。また「相手が押した牌がたまたま当たり牌でなかった」場合や、相手が降りなかったこと自体の利得は測れていない。</p></div>
+  </div>
+</section>
+
+<p class="lede" style="margin-top:-1.4rem">テンパイの手に限った版は<a href="faking-a-slide.ja.html">偽装スライド</a>。形を 12356 だけに絞った補助版はこちら。</p>
+
+<section class="commentbox">
+  <h2>コメント</h2>
+  <div id="comments"></div>
+</section>
+
+<footer><p>データ: Mリーグ全シーズン / 天鳳 鳳凰卓 東南戦 2022年・2023年・2026年1-8月。</p><p>テンパイ時に絞った版は<a href="faking-a-slide.ja.html">偽装スライド</a>。<a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。Mリーグ牌譜は <a href="https://m-league.konoui.dev/">konoui 氏の公開データ</a>による。</p></footer>
+</div>
+
+<script src="comments.js"></script>
+
+<script>
+const D = {"counts":[{"src":"Mリーグ","tn":28,"tk":12,"nn":326,"nk":95},{"src":"天鳳 3年計","tn":6750,"tk":1852,"nn":55042,"nk":7065}],"fate":[{"src":"Mリーグ","n":326,"reach":53,"other":75,"none":198},{"src":"天鳳 3年計","n":55042,"reach":10794,"other":14850,"none":29398}],"effect":[{"src":"Mリーグ","kara":{"n":33,"ron":6,"nr":2},"tsumo":{"n":48,"ron":14,"nr":10}},{"src":"天鳳 3年計","kara":{"n":3301,"ron":931,"nr":698},"tsumo":{"n":14241,"ron":3650,"nr":2759}}],"diffs":{"A":{"n":8161,"ka":1509,"a":18.29,"b":18.45,"d":-0.16,"lo":-2.35,"hi":2.01},"B":{"n":9381,"ka":1792,"a":23.55,"b":20.19,"d":3.36,"lo":1.39,"hi":5.69},"ALL":{"n":17542,"ka":3301,"a":21.15,"b":19.37,"d":1.77,"lo":0.17,"hi":3.15}},"dan":[{"g":7,"n":31591,"k":3724,"r":11.79,"lo":11.44,"hi":12.15,"br":11.19},{"g":8,"n":17584,"k":2382,"r":13.55,"lo":13.05,"hi":14.06,"br":10.64},{"g":9,"n":5207,"k":858,"r":16.48,"lo":15.49,"hi":17.51,"br":10.61},{"g":10,"n":608,"k":95,"r":15.62,"lo":12.96,"hi":18.73,"br":9.92}],"rate":[{"g":2000,"n":1649,"k":189,"r":11.46,"lo":10.01,"hi":13.09,"br":12.66},{"g":2050,"n":8453,"k":973,"r":11.51,"lo":10.85,"hi":12.21,"br":11.51},{"g":2100,"n":16209,"k":1930,"r":11.91,"lo":11.42,"hi":12.41,"br":11.05},{"g":2150,"n":16029,"k":2153,"r":13.43,"lo":12.91,"hi":13.97,"br":10.64},{"g":2200,"n":9079,"k":1253,"r":13.8,"lo":13.11,"hi":14.53,"br":10.49},{"g":2250,"n":3140,"k":501,"r":15.96,"lo":14.72,"hi":17.28,"br":10.81},{"g":2300,"n":457,"k":60,"r":13.13,"lo":10.34,"hi":16.54,"br":10.34}],"players":[{"name":"園田賢","n":19,"k":15,"tn":1,"tk":1,"team":"赤坂ドリブンズ","r":78.94736842105263},{"name":"瑞原明奈","n":9,"k":7,"tn":0,"tk":0,"team":"U-NEXT Pirates","r":77.77777777777777},{"name":"鈴木たろう","n":12,"k":9,"tn":1,"tk":1,"team":"赤坂ドリブンズ","r":75.0},{"name":"内川幸太郎","n":10,"k":7,"tn":0,"tk":0,"team":"EX風林火山","r":70.0},{"name":"渋川難波","n":5,"k":3,"tn":1,"tk":1,"team":"KADOKAWAサクラナイツ","r":60.0},{"name":"魚谷侑未","n":7,"k":4,"tn":0,"tk":0,"team":"セガサミーフェニックス","r":57.142857142857146},{"name":"滝沢和典","n":16,"k":9,"tn":1,"tk":1,"team":"KONAMI 麻雀格闘倶楽部","r":56.25},{"name":"村上淳","n":8,"k":4,"tn":1,"tk":0,"team":"赤坂ドリブンズ","r":50.0},{"name":"鈴木優","n":4,"k":2,"tn":1,"tk":1,"team":"U-NEXT Pirates","r":50.0},{"name":"HIRO柴田","n":2,"k":1,"tn":0,"tk":0,"team":"EARTH JETS","r":50.0},{"name":"三浦智博","n":2,"k":1,"tn":0,"tk":0,"team":"EARTH JETS","r":50.0},{"name":"醍醐大","n":5,"k":2,"tn":2,"tk":2,"team":"セガサミーフェニックス","r":40.0},{"name":"勝又健志","n":19,"k":7,"tn":1,"tk":1,"team":"EX風林火山","r":36.8421052631579},{"name":"多井隆晴","n":17,"k":6,"tn":2,"tk":1,"team":"渋谷ABEMAS","r":35.294117647058826},{"name":"岡田紗佳","n":6,"k":2,"tn":0,"tk":0,"team":"KADOKAWAサクラナイツ","r":33.333333333333336},{"name":"石井一馬","n":6,"k":2,"tn":0,"tk":0,"team":"EARTH JETS","r":33.333333333333336},{"name":"鈴木大介","n":6,"k":2,"tn":1,"tk":1,"team":"BEAST X","r":33.333333333333336},{"name":"朝倉康心","n":3,"k":1,"tn":0,"tk":0,"team":"U-NEXT Pirates","r":33.333333333333336},{"name":"松ヶ瀬隆弥","n":3,"k":1,"tn":0,"tk":0,"team":"EX風林火山","r":33.333333333333336},{"name":"浅井堂岐","n":3,"k":1,"tn":0,"tk":0,"team":"セガサミーフェニックス","r":33.333333333333336},{"name":"浅見真紀","n":3,"k":1,"tn":0,"tk":0,"team":"赤坂ドリブンズ","r":33.333333333333336},{"name":"石橋伸洋","n":3,"k":1,"tn":0,"tk":0,"team":"U-NEXT Pirates","r":33.333333333333336},{"name":"白鳥翔","n":11,"k":3,"tn":0,"tk":0,"team":"渋谷ABEMAS","r":27.272727272727273},{"name":"竹内元太","n":4,"k":1,"tn":1,"tk":0,"team":"セガサミーフェニックス","r":25.0},{"name":"二階堂瑠美","n":5,"k":1,"tn":0,"tk":0,"team":"EX風林火山","r":20.0},{"name":"渡辺太","n":5,"k":1,"tn":1,"tk":0,"team":"赤坂ドリブンズ","r":20.0},{"name":"藤崎智","n":5,"k":1,"tn":0,"tk":0,"team":"KONAMI 麻雀格闘倶楽部","r":20.0},{"name":"松本吉弘","n":11,"k":2,"tn":0,"tk":0,"team":"渋谷ABEMAS","r":18.181818181818183},{"name":"萩原聖人","n":11,"k":2,"tn":0,"tk":0,"team":"TEAM RAIDEN / 雷電","r":18.181818181818183},{"name":"仲林圭","n":6,"k":1,"tn":0,"tk":0,"team":"U-NEXT Pirates","r":16.666666666666668},{"name":"東城りお","n":6,"k":1,"tn":1,"tk":0,"team":"BEAST X","r":16.666666666666668},{"name":"本田朋広","n":8,"k":1,"tn":3,"tk":0,"team":"TEAM RAIDEN / 雷電","r":12.5},{"name":"近藤誠一","n":8,"k":1,"tn":0,"tk":0,"team":"セガサミーフェニックス","r":12.5},{"name":"堀慎吾","n":9,"k":1,"tn":1,"tk":0,"team":"KADOKAWAサクラナイツ","r":11.11111111111111},{"name":"小林剛","n":9,"k":1,"tn":1,"tk":1,"team":"U-NEXT Pirates","r":11.11111111111111},{"name":"二階堂亜樹","n":10,"k":1,"tn":1,"tk":1,"team":"EX風林火山","r":10.0},{"name":"瀬戸熊直樹","n":11,"k":1,"tn":0,"tk":0,"team":"TEAM RAIDEN / 雷電","r":9.090909090909092},{"name":"黒沢咲","n":12,"k":0,"tn":1,"tk":0,"team":"TEAM RAIDEN / 雷電","r":0.0},{"name":"佐々木寿人","n":11,"k":0,"tn":3,"tk":0,"team":"KONAMI 麻雀格闘倶楽部","r":0.0},{"name":"高宮まり","n":10,"k":0,"tn":0,"tk":0,"team":"KONAMI 麻雀格闘倶楽部","r":0.0},{"name":"前原雄大","n":5,"k":0,"tn":0,"tk":0,"team":"KONAMI 麻雀格闘倶楽部","r":0.0},{"name":"茅森早香","n":5,"k":0,"tn":1,"tk":0,"team":"セガサミーフェニックス","r":0.0},{"name":"猿川真寿","n":4,"k":0,"tn":1,"tk":0,"team":"BEAST X","r":0.0},{"name":"丸山奏子","n":3,"k":0,"tn":0,"tk":0,"team":"赤坂ドリブンズ","r":0.0},{"name":"和久津晶","n":3,"k":0,"tn":0,"tk":0,"team":"セガサミーフェニックス","r":0.0},{"name":"日向藍子","n":3,"k":0,"tn":1,"tk":0,"team":"渋谷ABEMAS","r":0.0},{"name":"沢崎誠","n":3,"k":0,"tn":0,"tk":0,"team":"KADOKAWAサクラナイツ","r":0.0},{"name":"中田花奈","n":2,"k":0,"tn":0,"tk":0,"team":"BEAST X","r":0.0},{"name":"永井孝典","n":2,"k":0,"tn":0,"tk":0,"team":"EX風林火山","r":0.0},{"name":"菅原千瑛","n":2,"k":0,"tn":0,"tk":0,"team":"BEAST X","r":0.0},{"name":"伊達朱里紗","n":1,"k":0,"tn":0,"tk":0,"team":"KONAMI 麻雀格闘倶楽部","r":0.0},{"name":"阿久津翔太","n":1,"k":0,"tn":0,"tk":0,"team":"KADOKAWAサクラナイツ","r":0.0}],"by_year":{"2023年":[2529,662,20628,2536],"2022年":[2506,729,20455,2776],"2026年1-8月":[1715,461,13959,1753]}};
+;
+const n = x => x.toLocaleString("en-US");
+const p = (k, t) => t ? (100 * k / t).toFixed(1) + "%" : "—";
+
+document.getElementById("counts").innerHTML =
+  `<thead><tr><th class="l">データ</th><th>テンパイ時</th><th>空切り</th><th>率</th>
+   <th>ノーテン時</th><th>空切り</th><th>率</th></tr></thead><tbody>` +
+  D.counts.map(c => `<tr><td class="l">${c.src}</td>
+    <td class="mono">${n(c.tn)}</td><td class="mono">${n(c.tk)}</td>
+    <td class="mono"><b>${p(c.tk,c.tn)}</b></td>
+    <td class="mono">${n(c.nn)}</td><td class="mono">${n(c.nk)}</td>
+    <td class="mono"><b>${p(c.nk,c.nn)}</b></td></tr>`).join("") + `</tbody>`;
+
+document.getElementById("fate").innerHTML =
+  `<thead><tr><th class="l">データ</th><th>ノーテン件数</th><th>狙いの待ちに到達</th>
+   <th>テンパイしたが別待ち</th><th>テンパイに至らず</th></tr></thead><tbody>` +
+  D.fate.map(f => `<tr><td class="l">${f.src}</td><td class="mono">${n(f.n)}</td>
+    <td class="mono">${n(f.reach)} <span style="color:var(--muted)">${p(f.reach,f.n)}</span></td>
+    <td class="mono"><b>${n(f.other)}</b> <span style="color:var(--muted)">${p(f.other,f.n)}</span></td>
+    <td class="mono">${n(f.none)} <span style="color:var(--muted)">${p(f.none,f.n)}</span></td></tr>`).join("")
+  + `</tbody>`;
+
+document.getElementById("effect").innerHTML =
+  `<thead><tr><th class="l">データ</th><th class="l"></th><th>到達</th>
+   <th>狙いの牌で出和了</th><th>うち非リーチ者から</th></tr></thead><tbody>` +
+  D.effect.flatMap(e => [["空切り","kara",1],["ツモ切り","tsumo",0]].map(([lab,key,hi]) => {
+    const a = e[key];
+    return `<tr class="${hi?'hi':''}"><td class="l">${key==='kara'?e.src:''}</td>
+      <td class="l">${lab}</td><td class="mono">${n(a.n)}</td>
+      <td class="mono">${p(a.ron,a.n)} <span style="color:var(--muted)">(${a.ron})</span></td>
+      <td class="mono"><b>${p(a.nr,a.n)}</b> <span style="color:var(--muted)">(${a.nr})</span></td></tr>`;
+  })).join("") + `</tbody>`;
+
+const maxN = Math.max(...D.players.map(x => x.n));
+document.getElementById("diffs").innerHTML =
+  `<thead><tr><th class="l">形</th><th>到達</th><th>空切り</th><th>ツモ切り</th>
+   <th>差</th><th class="l">95%信頼区間</th></tr></thead><tbody>` +
+  [["12356 / 45789","A",0],["23467 / 34678","B",1],["統合","ALL",0]].map(([lab,k,hi])=>{
+    const x=D.diffs[k];
+    return `<tr class="${hi?'hi':''}"><td class="l">${lab}</td>
+      <td class="mono">${n(x.n)}</td><td class="mono">${x.a.toFixed(2)}%</td>
+      <td class="mono">${x.b.toFixed(2)}%</td>
+      <td class="mono"><b>${x.d>0?'+':''}${x.d.toFixed(2)}pt</b></td>
+      <td class="l mono">[${x.lo>0?'+':''}${x.lo.toFixed(2)}, ${x.hi>0?'+':''}${x.hi.toFixed(2)}]
+        ${x.lo*x.hi>0?'<b style="color:var(--shu)"> ← 0を含まない</b>':''}</td></tr>`;
+  }).join("") + `</tbody>`;
+
+document.getElementById("players").innerHTML =
+  `<thead><tr><th class="l">選手</th><th class="l">チーム</th><th>該当</th><th>空切り</th>
+   <th class="l barcell">空切り率</th><th>テンパイ時</th></tr></thead><tbody>` +
+  D.players.map(pl => {
+    const mark = pl.tk ? '<span class="mark star">★</span>'
+               : pl.tn ? '<span class="mark dot">・</span>' : '';
+    const w = pl.r ? Math.max(2, pl.r * 0.9) : 0;
+    return `<tr class="${pl.tk?'hi':''}"><td class="l"><b>${pl.name}</b></td>
+      <td class="l" style="color:var(--muted);font-size:.8rem">${pl.team}</td>
+      <td class="mono">${pl.n}</td><td class="mono">${pl.k}</td>
+      <td class="l barcell"><span class="mini ${w?'':'z'}" style="width:${w}%"></span>
+        <span class="mono" style="margin-left:.4rem">${pl.r.toFixed(0)}%</span></td>
+      <td>${mark}${pl.tn?`<span class="mono" style="color:var(--muted);font-size:.75rem"> ${pl.tn}件</span>`:''}</td></tr>`;
+  }).join("") + `</tbody>`;
+
+
+// Two series on one axis: the shape, and the same act everywhere it was
+// merely available.  The gap between them is the whole claim.
+function paired(id, rows, xlab, unit){
+  const W=430,H=250,L=44,R=14,T=16,B=54,PW=W-L-R,PH=H-T-B;
+  const max=40, y=v=>T+(1-v/max)*PH, bw=PW/rows.length;
+  let o="";
+  for(let v=0; v<=max; v+=10)
+    o+=`<line class="grid" x1="${L}" y1="${y(v)}" x2="${L+PW}" y2="${y(v)}"/>`
+      +`<text class="axlab" x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+  rows.forEach((d,i)=>{
+    const x=L+i*bw+bw*.24, w=bw*.52;
+    o+=`<rect x="${x}" y="${y(d.r)}" width="${w}" height="${y(0)-y(d.r)}" rx="2" fill="var(--shu)"/>`;
+    o+=`<line class="err" x1="${x+w/2}" y1="${y(d.lo)}" x2="${x+w/2}" y2="${y(Math.min(d.hi,max))}"/>`;
+    o+=`<text class="barval" x="${x+w/2}" y="${y(d.r)-6}" text-anchor="middle">${d.r.toFixed(1)}</text>`;
+    if(d.br!=null){
+      o+=`<line x1="${x-bw*.1}" y1="${y(d.br)}" x2="${x+w+bw*.1}" y2="${y(d.br)}"`
+        +` stroke="var(--ai)" stroke-width="2.6" stroke-linecap="round"/>`;
+    }
+    o+=`<text class="axlab" x="${x+w/2}" y="${H-B+17}" text-anchor="middle">${d.g}${unit}</text>`;
+    o+=`<text class="axlab" x="${x+w/2}" y="${H-B+30}" text-anchor="middle" style="font-size:9.5px">n=${d.n.toLocaleString()}</text>`;
+  });
+  o+=`<line class="grid" x1="${L}" y1="${y(0)}" x2="${L+PW}" y2="${y(0)}"/>`;
+  o+=`<text class="axlab" x="${L+PW/2}" y="${H-6}" text-anchor="middle">${xlab}</text>`;
+  document.getElementById(id).innerHTML=o;
+}
+
+paired("c-dan", D.dan, "段位", "段");
+paired("c-rate", D.rate, "レート", "");
+</script>

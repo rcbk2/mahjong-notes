@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Riichi Under Review</title>
+<meta name="description" content="Counting what actually happens in Tenhou Houou and M.League records, to see whether the standard reads hold up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --shu:#C8402C; --ai:#2E4A73;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --shu:#E4715C; --ai:#84AEDC;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --shu:#E4715C; --ai:#84AEDC;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.8;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:52rem;margin:0 auto;padding:clamp(2.5rem,7vw,5.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;
+  display:flex;flex-direction:column;gap:2.6rem}
+h1{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;margin:0;line-height:1.35;
+  font-size:clamp(2rem,5.5vw,3rem);letter-spacing:.02em;text-wrap:balance}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);
+  padding-bottom:2rem}
+header .sub{font-size:1.03rem;color:var(--muted);max-width:60ch}
+
+.filter{display:flex;flex-wrap:wrap;align-items:baseline;gap:.45rem}
+.filter .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-right:.3rem}
+.tag{display:inline-block;font-family:"Roboto Mono",monospace;font-size:.72rem;
+  letter-spacing:.06em;text-decoration:none;color:var(--muted);cursor:pointer;
+  border:1px solid var(--rule);border-radius:99px;padding:.14rem .6rem;
+  background:var(--card);
+  transition:color .12s ease,border-color .12s ease,background .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+.tag.lang[aria-pressed="true"]{background:var(--ai);border-color:var(--ai);color:var(--paper)}
+
+.list{display:flex;flex-direction:column;gap:1.1rem}
+.item{display:block;text-decoration:none;color:inherit;background:var(--card);
+  border:1px solid var(--rule);border-left:4px solid var(--shu);border-radius:5px;
+  padding:1.3rem 1.5rem;box-shadow:var(--shadow);
+  transition:transform .14s ease, box-shadow .14s ease}
+.item:hover,.item:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.08), 0 14px 32px rgba(28,30,26,.10)}
+.item:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.item h2{font-family:"Kaisei Decol",Georgia,serif;font-size:1.3rem;margin:0 0 .4rem;
+  font-weight:700;line-height:1.4}
+.item .blurb{font-size:.9rem;color:var(--muted)}
+.item .row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.06em;
+  color:var(--muted);margin-bottom:.55rem}
+.item .row time{text-transform:uppercase}
+.item .chips{display:flex;flex-wrap:wrap;gap:.3rem}
+.item .chip{border:1px solid var(--rule);border-radius:99px;padding:.1rem .5rem}
+.item .chip.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+.empty{color:var(--muted);font-size:.9rem}
+@media (prefers-reduced-motion:reduce){.item{transition:none}.item:hover{transform:none}}
+footer{border-top:1px solid var(--rule);padding-top:1.6rem;font-size:.79rem;color:var(--muted);
+  display:flex;flex-direction:column;gap:.4rem}
+a{color:var(--ai)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Game records</p>
+  <h1>Riichi Under Review</h1>
+  <p class="sub">Riichi has a set of reads that get repeated until they sound settled. Three years of Tenhou Houou south games and every M.League record, counted, to see whether they actually happen.</p>
+</header>
+
+<nav class="filter" id="filter" aria-label="Filter posts by tag">
+  <span class="lab">Filter</span>
+</nav>
+
+<section class="list" id="list"></section>
+<p class="empty" id="empty" hidden>No post carries all of those tags.</p>
+
+<footer>
+  <p>Tile images: <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. M.League records from <a href="https://m-league.konoui.dev/">konoui's published data</a>.</p>
+</footer>
+</div>
+
+<script>
+// One entry per post.  `lang` is a tag like any other; it leads the list and is
+// styled apart because it is the one a reader filters on before anything else.
+const POSTS = [
+  {
+    href: "faking-a-slide.html",
+    title: "Faking a Slide",
+    date: "2026-09-07",
+    lang: "English",
+    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
+    blurb: "Discard a drawn tile from your hand instead, and it reads as a slide — which makes your wait look safe. A piece of trivia, taken to the records."
+  },
+  {
+    href: "faking-a-slide.ja.html",
+    title: "Faking a Slide",
+    date: "2026-09-07",
+    lang: "Japanese",
+    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
+    blurb: "偽装スライド — 空切りをすることで、相手にスライドと誤認させ、自分の待ち牌が安全だと見せかける戦術を、Mリーグと天鳳の牌譜で調べた。"
+  },
+  {
+    href: "who-fakes.ja.html",
+    title: "Who Fakes and Who Does Not",
+    date: "2026-09-07",
+    lang: "Japanese",
+    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
+    blurb: "空切りをする人、しない人 — テンパイしていない手でも同じ嘘はつける。二つの形をまとめて数えたら、片方だけが効いていた。"
+  }
+];
+
+const fmt = iso => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB",
+  { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+const active = new Set();
+const tagsOf = p => [p.lang, ...p.tags];
+
+function render() {
+  const shown = POSTS
+    .filter(p => [...active].every(t => tagsOf(p).includes(t)))
+    .sort((a, b) => b.date.localeCompare(a.date));
+  document.getElementById("list").innerHTML = shown.map(p => `
+    <a class="item" href="${p.href}">
+      <div class="row">
+        <time datetime="${p.date}">${fmt(p.date)}</time>
+        <span class="chips">${tagsOf(p).map((t, i) =>
+          `<span class="chip${i ? "" : " lang"}">${t}</span>`).join("")}</span>
+      </div>
+      <h2>${p.title}</h2>
+      <p class="blurb">${p.blurb}</p>
+    </a>`).join("");
+  document.getElementById("empty").hidden = shown.length > 0;
+  document.querySelectorAll("#filter .tag").forEach(b =>
+    b.setAttribute("aria-pressed", active.has(b.dataset.tag)));
+  const q = [...active].map(t => t.replace(/ /g, "+")).join(",");
+  history.replaceState(null, "", q ? "#tag=" + q : location.pathname);
+}
+
+function buildFilter() {
+  const langs = [...new Set(POSTS.map(p => p.lang))];
+  const rest = [...new Set(POSTS.flatMap(p => p.tags))];
+  const nav = document.getElementById("filter");
+  for (const [t, isLang] of [...langs.map(t => [t, true]),
+                             ...rest.map(t => [t, false])]) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "tag" + (isLang ? " lang" : "");
+    b.dataset.tag = t;
+    b.textContent = t;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => {
+      active.has(t) ? active.delete(t) : active.add(t);
+      render();
+    });
+    nav.appendChild(b);
+  }
+}
+
+// arriving from a post's tag chip: index.html#tag=Japanese,Tenhou
+const m = location.hash.match(/^#tag=(.+)$/);
+if (m) {
+  decodeURIComponent(m[1]).split(",")
+    .forEach(t => active.add(t.replace(/\+/g, " ")));
+}
+
+buildFilter();
+render();
+</script>
+</body>
+</html>
