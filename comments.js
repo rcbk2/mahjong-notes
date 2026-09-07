@@ -3,8 +3,16 @@
 //
 // The category is Announcement-format on purpose: only the giscus app can
 // open a thread, so one thread means one post rather than whatever anyone
-// felt like starting.  Threads are matched to posts by pathname, so renaming
-// a file orphans its comments.
+// felt like starting.
+//
+// Threads are matched to posts by pathname, and strict is off so the match is
+// on the path itself rather than a hash of it.  That keeps the Discussions
+// list readable and lets a thread be repointed by editing its title, at the
+// cost of one rule: no post's pathname may be a substring of another's.  The
+// .ja infix keeps that true -- faking-a-slide.ja.html does not contain
+// faking-a-slide.html.
+//
+// Renaming a post orphans its comments; repoint the thread's title if so.
 const GISCUS = {
   repo: "rcbk2/mahjong-notes",
   repoId: "R_kgDOUQnZkg",
@@ -25,7 +33,7 @@ const GISCUS = {
                      crossOrigin: "anonymous" });
   const d = { repo: GISCUS.repo, "repo-id": GISCUS.repoId,
               category: GISCUS.category, "category-id": GISCUS.categoryId,
-              mapping: "pathname", strict: "1", "reactions-enabled": "1",
+              mapping: "pathname", strict: "0", "reactions-enabled": "1",
               "emit-metadata": "0", "input-position": "top",
               theme: "preferred_color_scheme", lang: "en", loading: "lazy" };
   for (const [k, v] of Object.entries(d)) s.setAttribute("data-" + k, v);
