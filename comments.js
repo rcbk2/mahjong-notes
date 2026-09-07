@@ -1,15 +1,15 @@
 // Comments are GitHub Discussions, rendered by giscus.  Nothing is stored
 // here and nothing tracks the reader until the thread loads.
 //
-// SETUP -- fill these four in once, after the repository exists:
-//   1. make the repository public and turn on Discussions
-//   2. install the giscus app: https://github.com/apps/giscus
-//   3. go to https://giscus.app, enter the repo, and copy what it gives you
+// The category is Announcement-format on purpose: only the giscus app can
+// open a thread, so one thread means one post rather than whatever anyone
+// felt like starting.  Threads are matched to posts by pathname, so renaming
+// a file orphans its comments.
 const GISCUS = {
-  repo: "",            // "yourname/mahjong-notes"
-  repoId: "",          // from giscus.app
+  repo: "rcbk2/mahjong-notes",
+  repoId: "R_kgDOUQnZkg",
   category: "Comments",
-  categoryId: "",      // from giscus.app
+  categoryId: "DIC_kwDOUQnZks4DFClN",
 };
 
 (function () {
