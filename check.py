@@ -92,8 +92,14 @@ def main():
     actual = {p.name for p in PAGES} - {"index.html"}
     for h in listed - actual:
         print(f"  index が存在しない記事を挙げている: {h}"); fail += 1
-    for h in actual - listed:
-        print(f"  index に載っていない記事: {h}"); fail += 1
+    import subprocess
+    for h in sorted(actual - listed):
+        ignored = subprocess.run(["git", "check-ignore", "-q", h],
+                                 cwd=HERE).returncode == 0
+        if ignored:
+            print(f"  下書き（未公開）: {h}")
+        else:
+            print(f"  index に載っていない記事: {h}"); fail += 1
 
     print("\n  " + ("すべて OK" if not fail else f"{fail} 件の要修正"))
     return 1 if fail else 0

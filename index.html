@@ -98,32 +98,35 @@ a{color:var(--ai)}
 </div>
 
 <script>
-// One entry per post.  `lang` is a tag like any other; it leads the list and is
-// styled apart because it is the one a reader filters on before anything else.
+// One tag, two labels.  A post's card shows the labels in that post's own
+// language; the filter row is chrome, so it stays English.  Filtering is on
+// the key, so clicking "Tenhou" finds a post whose chip reads 天鳳, and a
+// shared #tag= URL survives either label changing.
+const TAGS = {
+  "lang-en": ["English",         "英語"],
+  "lang-ja": ["Japanese",        "日本語"],
+  "logs":    ["Log analysis",    "牌譜分析"],
+  "reading": ["Discard reading", "河読み"],
+  "tenhou":  ["Tenhou",          "天鳳"],
+  "mleague": ["M.League",        "Mリーグ"]
+};
+
 const POSTS = [
   {
     href: "faking-a-slide.html",
     title: "Faking a Slide",
     date: "2026-09-07",
-    lang: "English",
-    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
+    lang: "lang-en",
+    tags: ["logs", "reading", "tenhou", "mleague"],
     blurb: "Discard a drawn tile from your hand instead, and it reads as a slide — which makes your wait look safe. A piece of trivia, taken to the records."
   },
   {
     href: "faking-a-slide.ja.html",
-    title: "Faking a Slide",
+    title: "偽装スライド",
     date: "2026-09-07",
-    lang: "Japanese",
-    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
-    blurb: "偽装スライド — 空切りをすることで、相手にスライドと誤認させ、自分の待ち牌が安全だと見せかける戦術を、Mリーグと天鳳の牌譜で調べた。"
-  },
-  {
-    href: "who-fakes.ja.html",
-    title: "Who Fakes and Who Does Not",
-    date: "2026-09-07",
-    lang: "Japanese",
-    tags: ["Log analysis", "Discard reading", "Tenhou", "M.League"],
-    blurb: "空切りをする人、しない人 — テンパイしていない手でも同じ嘘はつける。二つの形をまとめて数えたら、片方だけが効いていた。"
+    lang: "lang-ja",
+    tags: ["logs", "reading", "tenhou", "mleague"],
+    blurb: "空切りをすることで、相手にスライドと誤認させ、自分の待ち牌が安全だと見せかける戦術を、Mリーグと天鳳の牌譜で調べた。"
   }
 ];
 
@@ -131,55 +134,53 @@ const fmt = iso => new Date(iso + "T00:00:00Z").toLocaleDateString("en-GB",
   { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 const active = new Set();
-const tagsOf = p => [p.lang, ...p.tags];
+const keysOf = p => [p.lang, ...p.tags];
+const label = (k, p) => TAGS[k][p.lang === "lang-ja" ? 1 : 0];
 
 function render() {
   const shown = POSTS
-    .filter(p => [...active].every(t => tagsOf(p).includes(t)))
+    .filter(p => [...active].every(k => keysOf(p).includes(k)))
     .sort((a, b) => b.date.localeCompare(a.date));
   document.getElementById("list").innerHTML = shown.map(p => `
     <a class="item" href="${p.href}">
       <div class="row">
         <time datetime="${p.date}">${fmt(p.date)}</time>
-        <span class="chips">${tagsOf(p).map((t, i) =>
-          `<span class="chip${i ? "" : " lang"}">${t}</span>`).join("")}</span>
+        <span class="chips">${keysOf(p).map((k, i) =>
+          `<span class="chip${i ? "" : " lang"}">${label(k, p)}</span>`).join("")}</span>
       </div>
       <h2>${p.title}</h2>
       <p class="blurb">${p.blurb}</p>
     </a>`).join("");
   document.getElementById("empty").hidden = shown.length > 0;
   document.querySelectorAll("#filter .tag").forEach(b =>
-    b.setAttribute("aria-pressed", active.has(b.dataset.tag)));
-  const q = [...active].map(t => t.replace(/ /g, "+")).join(",");
+    b.setAttribute("aria-pressed", active.has(b.dataset.key)));
+  const q = [...active].join(",");
   history.replaceState(null, "", q ? "#tag=" + q : location.pathname);
 }
 
 function buildFilter() {
-  const langs = [...new Set(POSTS.map(p => p.lang))];
-  const rest = [...new Set(POSTS.flatMap(p => p.tags))];
+  const used = [...new Set(POSTS.flatMap(keysOf))];
+  const order = Object.keys(TAGS).filter(k => used.includes(k));
   const nav = document.getElementById("filter");
-  for (const [t, isLang] of [...langs.map(t => [t, true]),
-                             ...rest.map(t => [t, false])]) {
+  for (const k of order) {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "tag" + (isLang ? " lang" : "");
-    b.dataset.tag = t;
-    b.textContent = t;
+    b.className = "tag" + (k.startsWith("lang-") ? " lang" : "");
+    b.dataset.key = k;
+    b.textContent = TAGS[k][0];          // the filter row is English chrome
     b.setAttribute("aria-pressed", "false");
     b.addEventListener("click", () => {
-      active.has(t) ? active.delete(t) : active.add(t);
+      active.has(k) ? active.delete(k) : active.add(k);
       render();
     });
     nav.appendChild(b);
   }
 }
 
-// arriving from a post's tag chip: index.html#tag=Japanese,Tenhou
+// arriving from a post's tag chip: index.html#tag=lang-ja,tenhou
 const m = location.hash.match(/^#tag=(.+)$/);
-if (m) {
-  decodeURIComponent(m[1]).split(",")
-    .forEach(t => active.add(t.replace(/\+/g, " ")));
-}
+if (m) decodeURIComponent(m[1]).split(",").filter(k => k in TAGS)
+        .forEach(k => active.add(k));
 
 buildFilter();
 render();

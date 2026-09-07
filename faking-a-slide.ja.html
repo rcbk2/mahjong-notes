@@ -174,7 +174,7 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   <p class="eyebrow">牌譜解析 / Mリーグ &amp; 天鳳 鳳凰卓</p>
   <h1>偽装スライド</h1>
   <p class="sub">空切りをすることで、相手にスライドと誤認させ、自分の待ち牌が安全だと見せかける、<br>というトリビア的戦術がある。これについてMリーグと天鳳の牌譜を調べてみた。</p>
-  <p class="postmeta"><time datetime="2026-09-07">7 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=Japanese">Japanese</a><a class="tag" href="index.html#tag=Log+analysis">Log analysis</a><a class="tag" href="index.html#tag=Discard+reading">Discard reading</a><a class="tag" href="index.html#tag=Tenhou">Tenhou</a><a class="tag" href="index.html#tag=M.League">M.League</a></span></p>
+  <p class="postmeta"><time datetime="2026-09-07">7 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-ja">日本語</a><a class="tag" href="index.html#tag=logs">牌譜分析</a><a class="tag" href="index.html#tag=reading">河読み</a><a class="tag" href="index.html#tag=tenhou">天鳳</a><a class="tag" href="index.html#tag=mleague">Mリーグ</a></span></p>
 </header>
 
 <section>
@@ -285,7 +285,7 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   <p class="lede">この空切り戦術の狙いは、12356 なら 4-7、23467 なら 5-8 を安全だと勘違いさせ、当たり牌を引き出すことにある。この戦術のターゲットになっているのは、打牌に選択肢のある非リーチ者だけだ。そこで「<b>非リーチの相手から、そのリャンメンで出和了りできたか</b>」を、空切りとツモ切りの場合で比べた。天鳳の鳳南データ3年分（470万局以上）から 6,748 ケース。</p>
   <div class="tablebox"><table id="eff"></table></div>
   <p class="lede" style="font-size:.84rem">右の二列が 12 件（1,481件中 0.8%）だけずれるのは、打牌のあとに手が変わって待ちが動いたケースである。手の内にすでにあった対子への振り替えが典型で、9 件は和了牌をこの時点で持っていた。逆に言えば <b>99.2% は打牌時点の待ちのまま和了している</b>。打牌時点の形が複合していることはない — 抽出条件がその色ちょうど 112356 等なので、その瞬間の待ちは必ず狙いの二枚になる。</p>
-  <p class="lede" style="color:var(--ink)">狙った二枚ちょうどで出和了した割合は全体で <b>22.8% 対 21.4%</b>。ごくわずかに空切りが上回る程度に見えるが、形ごとに分けると <b>12356 では −0.72pt（区間 [−4.43, +2.43]、0を跨ぐ）</b>であり、有意差なし。一方、<b style="color:var(--shu)">23467 では +2.89pt（区間 [+0.04, +5.82]、0を含まない）</b>であり、空切りした場合わずかに出和了率が高くなっている。<sup class="fn"><a href="#fn2" id="fnref2">[2]</a></sup> 同じ論理の同じ戦術でありながら、切る牌が 1（9）か 2（8）かで結果が分かれる。<a href="who-fakes.ja.html">ノーテンまで広げた版</a>では同じ差がより明確に出る。</p>
+  <p class="lede" style="color:var(--ink)">狙った二枚ちょうどで出和了した割合は全体で <b>22.8% 対 21.4%</b>。ごくわずかに空切りが上回る程度に見えるが、形ごとに分けると <b>12356 では −0.72pt（区間 [−4.43, +2.43]、0を跨ぐ）</b>であり、有意差なし。一方、<b style="color:var(--shu)">23467 では +2.89pt（区間 [+0.04, +5.82]、0を含まない）</b>であり、空切りした場合わずかに出和了率が高くなっている。<sup class="fn"><a href="#fn2" id="fnref2">[2]</a></sup> 同じ論理の同じ戦術でありながら、切る牌が 1（9）か 2（8）かで結果が分かれる。</p>
 </section>
 
 <section>
@@ -323,14 +323,13 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   </ol>
 </section>
 
-<p class="lede">ノーテンの手まで広げた版は<a href="who-fakes.ja.html">空切りをする人、しない人</a>。</p>
 
 <section class="commentbox">
   <h2>コメント</h2>
   <div id="comments"></div>
 </section>
 
-<footer><p>データ: Mリーグ全シーズン / 天鳳 鳳凰卓 東南戦 2022年・2023年・2026年1-8月。</p><p>ノーテンまで広げた版は<a href="who-fakes.ja.html">空切りをする人、しない人</a>。<a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。Mリーグ牌譜は <a href="https://m-league.konoui.dev/">konoui 氏の公開データ</a>による。</p></footer>
+<footer><p>データ: Mリーグ全シーズン / 天鳳 鳳凰卓 東南戦 2022年・2023年・2026年1-8月。</p><p><a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。Mリーグ牌譜は <a href="https://m-league.konoui.dev/">konoui 氏の公開データ</a>による。</p></footer>
 </div>
 
 <script src="comments.js"></script>
