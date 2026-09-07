@@ -114,6 +114,9 @@ svg{display:block;width:100%;height:auto;min-width:20rem}
 .note p{font-size:.86rem;color:var(--muted)}
 .todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
   background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
 code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
 sup.fn{font-size:.68em;vertical-align:super;line-height:0}
 sup.fn a{text-decoration:none;padding:0 .1em}
@@ -175,7 +178,7 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 <header>
   <p class="eyebrow">GAME RECORDS / M.LEAGUE &amp; TENHOU HOUOU</p>
   <h1>Faking a Slide</h1>
-  <p class="sub todo">[EN] Opening line: what the tactic is, and that you went to the M.League and Tenhou records to look at it.</p>
+  <p class="sub">There is a subtle tactic in which you make a fake hand discard to disguise your wait. <br>Does it work, and how often does it occur? I examined game records from Tenhou and M.League to find out.</p>
   <p class="postmeta"><time datetime="2026-09-07">7 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-en">English</a><a class="tag" href="index.html#tag=logs">Log analysis</a><a class="tag" href="index.html#tag=reading">Discard reading</a><a class="tag" href="index.html#tag=tenhou">Tenhou</a><a class="tag" href="index.html#tag=mleague">M.League</a></span></p>
 </header>
 
@@ -183,16 +186,20 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   <div class="tldr">
     <span class="k">In short</span>
     <ul>
-      <li>When you draw a 1, 2, 8 or 9, you can <b>discard it from your hand instead, so that it reads as a slide</b> — and your wait looks safe.</li>
-      <li>The spot is rare: <b>once in 708 hands on Tenhou</b>. When it does come, <b>more than one in four is a fake hand discard</b>. In M.League, 12 of 28.</li>
-      <li>The effect splits by shape. <b>Cutting the 1 from 12356 changes nothing; cutting the 2 from 23467 wins by ron +2.9pt more often</b>. Same logic, same lie, different tile — different result.</li>
+      <li>Draw a 1, 2, 8 or 9 and you can <b>discard its twin from your hand</b> instead — the discard then <b>reads as a slide</b>, and your wait looks safe.</li>
+      <li>The chance comes <b>once in 708 hands</b> on Tenhou; when it does, <b>more than a quarter</b> of players take it. In M.League, 12 of 28.</li>
+      <li>It works in <b>one shape only</b>: the 1 from 12356 changes nothing, the 2 from 23467 <b>wins by ron 2.9pt more often</b>. Same lie, different tile.</li>
     </ul>
   </div>
 </section>
 
 <section>
-  <h2>Karagiri and the slide</h2>
-  <p class="lede todo">[EN] Why karagiri is usually a mistake — it leaks information. Leads into the 猿川 clip.</p>
+  <h2>Fake Hand Discards</h2>
+  <p class="lede">A <b>draw discard</b> (<i>tsumogiri</i>; ツモ切り) means discarding the same tile you have just drawn. A <b>hand discard</b> (<i>tedashi</i>; 手出し), by contrast, means discarding a tile that was already in your hand.</p>
+  <p class="lede">In online mahjong, the other players can generally tell whether a discard is a draw discard or a hand discard. The distinction is also usually visible in in-person mahjong unless a player uses <i>kotegaeshi</i> — a quick hand-shuffling technique that is often explicitly prohibited in professional games.</p>
+  <p class="lede">When you draw a duplicate of a tile already in your hand and want to discard one of the two copies, you have a choice. You can simply discard the newly drawn tile, making a draw discard, or you can discard the copy that was already in your hand. The latter action is called a <b>fake hand discard</b> (<i>karagiri</i>; 空切り). Either way, your resulting hand is identical, but your opponents receive different information depending on how you make the discard.</p>
+  <p class="lede">In many situations, making a fake hand discard is a mistake because it reveals information unnecessarily. Your opponents will not know whether the hand discard was “fake” — made after drawing a duplicate — or genuine — made after drawing a different tile. Nevertheless, the hand discard itself reveals that you had been holding that tile until that turn. Even such a small piece of information can sometimes prove costly. Under the right circumstances, it may allow an experienced player to draw surprisingly accurate conclusions about your hand.</p>
+  <p class="lede">To see this kind of deduction in action, watch the video below, in which Mr. Nakabayashi reviews the online replay of an M.League game he played earlier that day and explains his thought process.<sup class="fn"><a href="#fn1" id="fnref1">[1]</a></sup></p>
   <a class="clip" href="https://youtu.be/mxBz5V7Xfjc?t=80" data-yt="mxBz5V7Xfjc" data-t="80"
      target="_blank" rel="noopener">
     <span class="thumb"><img src="https://i.ytimg.com/vi/mxBz5V7Xfjc/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
@@ -200,8 +207,17 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
       <span class="cd">He reconstructs the hand and names the wait exactly. One fake discard can give away that much.</span>
       <span class="cm">YouTube · from 1:20</span></span>
   </a>
-  <p class="lede todo">[EN] What a slide is, and why players slide toward the edge. Uses 123s + drawn 4s → cut 1s, and the later red 5s.</p>
-  <p class="lede todo">[EN] The cost of sliding: the pushed-out 1/9 or 2/8 is an unnatural discard a strong reader can catch. Leads into the 伊達 clip.</p>
+  <p class="lede">During the stream, Mr. Nakabayashi explains that, while playing, he noticed Mr. Sarukawa — the player to his right — make an “unnatural” hand discard. Combining this observation with information from previous turns, he recognized it as a fake hand discard. From there, he was able to deduce which tiles were safe and which were dangerous. As it turned out, all of his deductions were correct.</p>
+  <p class="lede">I hope the video gives you a sense of Mr. Nakabayashi’s thought process and the logical steps behind his conclusions. Even among expert players, deductions this accurate are probably rare. Still, there is no reason to reveal information through a fake hand discard when doing so serves no purpose.</p>
+</section>
+
+<section>
+  <h2>Slide Discards</h2>
+  <p class="lede">We distinguish one more type of hand discard: the <b>slide discard</b> (<i>slide-giri</i>, or simply <i>slide</i>; スライド切り). A slide discard occurs when you draw a tile and discard its <i>suji</i> tile, shifting an existing sequence toward the centre of the suit.</p>
+  <p class="lede">Recall that tiles closer to the terminals are generally safer to discard and reveal less information to your opponents. For example, discarding a 5 reveals that both the 2–5 and 5–8 <i>suji</i> are safe against your hand. Discarding a 2, by contrast, does not reveal that the 5–8 <i>suji</i> is safe.</p>
+  <p class="lede">Suppose, for example, that your hand contains 123s and you draw 4s. You might keep the 4s and discard 1s from your hand, thereby sliding the sequence from 123s to 234s. If you later draw a red 5s, you can then discard 2s and slide again, keeping the red 5s. Similarly, if you have 789 and draw 6, you might discard 9, sliding from 789 to 678.<sup class="fn"><a href="#fn2" id="fnref2">[2]</a></sup> Unlike a fake hand discard, a slide discard is often both useful and innocuous.</p>
+  <p class="lede">That said, a slide discard can sometimes reveal information about your hand, especially when a 1, 2, 8, or 9 pushed out by the slide appears “unnatural” to an expert hand reader. An opponent may be able to use that information to their advantage.</p>
+  <p class="lede">In the video below, from an M.League game played earlier that day, Nakabayashi pushed aggressively against Date’s riichi with striking confidence. Viewers wondered why he had been willing to take such a risk. He explains that he had — correctly, as we found out later — inferred that Date’s 1s discard was a slide discard.</p>
   <a class="clip" href="https://youtu.be/xm-MZMZ01TA?t=60" data-yt="xm-MZMZ01TA" data-t="60"
      target="_blank" rel="noopener">
     <span class="thumb"><img src="https://i.ytimg.com/vi/xm-MZMZ01TA/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
@@ -210,13 +226,22 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
       <span class="cm">YouTube · from 1:00</span></span>
   </a>
 
-  <p class="lede todo">[EN] Why this kind of read is narrower in practice than it looks — reading serves push/fold judgement, not naming the wait.</p>
+  <p class="lede">From this, he concluded that she was likely holding 234s and that 3s was therefore relatively safe.<sup class="fn"><a href="#fn3" id="fnref3">[3]</a></sup> He continued pushing and eventually won a <i>mangan</i> hand. The individual steps in his reasoning are logical and plausible.</p>
+  <p class="lede">It is important, however, not to overstate the range of situations in which this kind of read is useful. In the video, Nakabayashi himself emphasizes the limitations of hand-reading techniques, noting that his inferences are useless nine times out of ten. This is not necessarily because the inferences are inaccurate. Even an accurate inference may be of no practical use when your hand is either too weak or too strong.</p>
+  <p class="lede">Suppose you infer that 3s is safer than other tiles against an opponent’s riichi. If your hand is three tiles away from tenpai and has very little value, knowing that 3s is <i>relatively</i> safe will not help much. You should be discarding completely safe tiles anyway.</p>
+  <p class="lede">Hand reading also involves considerable guesswork. It relies on assumptions that may or may not be correct — for example, that your opponents are making reasonable decisions intended to maximize their chances of winning the hand. That assumption can easily fail if a player makes a mistake, is defending against someone else, or has some other objective. Even experienced players sometimes make careless mistakes or seemingly “unreasonable” choices.</p>
+  <p class="lede">At the other extreme, if your hand is extremely valuable and already in tenpai, you may decide to discard a tile even if your reading suggests that it is highly dangerous. The primary purpose of hand reading is not to identify an opponent’s exact wait but to improve your push/fold decisions.</p>
+  <p class="lede">Relatedly, although a slide discard may reveal some information, its benefits usually outweigh its costs. First, your opponents may not be paying attention to whether your discard came from your hand or was the tile you just drew. Even if they notice, they may not have the necessary knowledge of tile logic to draw a useful inference. In such cases, the informational cost is negligible.</p>
+  <p class="lede">Second, and more importantly, slide discards often provide meaningful benefits in tile acceptance, hand value, and defense — unlike fake hand discards. If you have 123s and draw 4s, refusing to slide by discarding 1s may force you to discard a red 5s if you draw one later. Even a regular 5s may be more valuable than 2s, particularly if an opponent is waiting on the 5–8 <i>suji</i>.</p>
+  <p class="lede">In the video, Nakabayashi comments that Date was correct to make the slide discard. By contrast, in the first video discussed above, he describes Sarukawa’s fake hand discard as a clear mistake.</p>
 </section>
 
 <section>
-  <h2>Faking a slide</h2>
-  <p class="lede todo">[EN] The subject at last: discarding a drawn 1/2/8/9 from the hand instead, so that it reads as a slide.</p>
-  <p class="lede todo">[EN] The concrete case: holding 12356s and drawing 1s. A draw discard says nothing; a hand discard can look like a slide, given what came before.</p>
+  <h2>Faking a Slide</h2>
+  <p class="lede">We now come to the main topic of this article. In one exceptional situation, drawing a 1, 2, 8, or 9 and discarding the matching copy from your hand may lead an opponent to mistake the discard for a slide. In other words, there are rare situations in which making a fake hand discard with one of these tiles can be beneficial.</p>
+  <p class="lede">This technique is more a piece of trivia than a practical skill. Learning it will probably not make you a significantly stronger player. Nevertheless, many strong players know about it — and know that it is mostly trivia — and some occasionally put it into practice.</p>
+  <p class="lede">Here is a concrete example. Suppose your hand contains <b>12356s</b>, giving you a 4–7s wait, and you draw another 1s. If you discard the newly drawn 1s, your opponents learn nothing new. If you instead discard the 1s that was already in your hand, however, opponents who pay close attention to hand discards may mistakenly interpret it as a slide.</p>
+  <p class="lede">They are especially likely to make this interpretation if you discarded an inner tile, such as 3s, on an earlier turn, and later discarded a safe tile such as a non-value wind. Given this discard order, your opponents may conclude that the newly discarded 1s was unlikely to have been an isolated tile. Instead, they may assume that it had been connected to another block in your hand — one plausible explanation being that you had been holding 123s, drew 4s, and then discarded 1s to slide from 123s to 234s.</p>
   <div class="card">
     <p class="eyebrow" style="margin-bottom:.5rem">The hand — the 1 on the right was just drawn</p>
     <div class="tiles" id="hand"></div>
@@ -244,25 +269,25 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
       <span class="arrow">if 56 were there too</span><span class="tl "><img src="assets/tiles/Sou2.svg" alt="2s"></span><span class="tl "><img src="assets/tiles/Sou3.svg" alt="3s"></span><span class="tl "><img src="assets/tiles/Sou4.svg" alt="4s"></span><span class="tl "><img src="assets/tiles/Sou5.svg" alt="5s"></span><span class="tl "><img src="assets/tiles/Sou6.svg" alt="6s"></span>
       <span class="arrow">→ waits on</span><span class="tl bad"><img src="assets/tiles/Sou1.svg" alt="1s"></span><span class="tl "><img src="assets/tiles/Sou4.svg" alt="4s"></span><span class="tl "><img src="assets/tiles/Sou7.svg" alt="7s"></span></div>
     <div class="readrow"><span class="cap">3. Contradiction</span>
-      <span class="arrow"><span class="tl bad"><img src="assets/tiles/Sou1.svg" alt="1s"></span> was just discarded by this player. Holding that hand, they would <b>have won long ago</b></span></div>
+      <span class="arrow"><span class="tl bad"><img src="assets/tiles/Sou1.svg" alt="1s"></span> was just discarded by this player. Holding that hand, they would <b>have won instead of discarding it</b></span></div>
     <div class="readrow"><span class="cap">4. Therefore</span>
       <span class="arrow"><b>so the  <span class="tl "><img src="assets/tiles/Sou5.svg" alt="5s"></span><span class="tl "><img src="assets/tiles/Sou6.svg" alt="6s"></span> is not there.</b> There is no 4-7 wait</span></div>
-    <p class="lede" style="color:var(--ink)">So it looks like a slide. What follows? If it really were one, the hand holds <b>234</b>. Add <b>56</b> to that and you get <b>23456</b>, which waits on <b>1-4-7</b>. But the 1 has just been discarded by this very player — <b style="color:var(--shu)">a hand like that would have won long ago.</b> It has not won, so <b>the 56 is not there</b>. Which is to say: <b style="color:var(--shu)">the 4-7 side wait is impossible.</b></p>
+    <p class="lede" style="color:var(--ink)">The discard therefore looks like a slide — but what does that imply? If the 1s discard really resulted from a slide, your hand should now contain <b>234s</b>. Combining 234s with <b>56s</b> would produce the shape <b>23456s</b>, which accepts 1s, 4s and 7s. However, you just discarded 1s instead of declaring <i>tsumo</i>. Your opponent may therefore conclude that you cannot have 56s alongside the apparent 234s, and on that inference <b style="color:var(--shu)">incorrectly rule out a 4–7s wait.</b><br><br>In reality, you still have 12356s and are waiting on exactly those tiles. By making the fake hand discard, you have disguised your true wait as a slide.</p>
   </div>
-  <p class="lede">The same logic runs through the mirror image — 45789 drawing a 9 — and through 23467 drawing a 2 (equivalently 34678 drawing an 8). As a rule:</p>
+  <p class="lede">The same mechanism works with the mirrored shape: drawing 9s while holding 45789s. It also applies when you draw 2s while holding 23467s or, in the mirrored case, draw 8s while holding 34678s. To summarize, the opportunity to fake a slide arises in the following situations — in each case you discard the matching copy from your hand rather than the tile you just drew.</p>
   <div class="card" style="border-left:4px solid var(--shu);padding-left:1.3rem">
-    <p class="lede" style="color:var(--ink)">Ready on 12356 waiting 4-7 and you draw the 1; on 45789 waiting 3-6 and you draw the 9; on 23467 waiting 5-8 and you draw the 2; on 34678 waiting 2-5 and you draw the 8 — <b>fake the hand discard</b>.</p>
+    <p class="lede" style="color:var(--ink)">You have <b>12356</b> and are waiting on 4–7, then draw <b>1</b>.<br>You have <b>45789</b> and are waiting on 3–6, then draw <b>9</b>.<br>You have <b>23467</b> and are waiting on 5–8, then draw <b>2</b>.<br>You have <b>34678</b> and are waiting on 2–5, then draw <b>8</b>.</p>
   </div>
 </section>
 
 <section>
-  <h2>How often does it happen</h2>
-  <p class="lede">Every position where a player was ready in one of these shapes and drew that 1 (9) or 2 (8). Hands that had already declared riichi are excluded: after the declaration there is no choice of discard, so there is no lie to tell.</p>
+  <h2>How Often Does It Happen?</h2>
+  <p class="lede">To find out, I analyzed all available game records from M.League through the 2025–26 season and from hanchan games played at Tenhou’s Phoenix Table. The datasets contain <b>93,340 player-hands</b> — equivalent to <b>23,335 deals</b> — from M.League and <b>19,102,636 player-hands</b> — equivalent to <b>4,775,659 deals</b> — from Tenhou.<sup class="fn"><a href="#fn4" id="fnref4">[4]</a></sup><br><br>I extracted every instance in which a player was in tenpai with one of the relevant shapes and then drew the corresponding 1, 2, 8, or 9. Hands in which the player had already declared riichi were excluded: after declaring riichi, the player has no choice but to discard the drawn tile, so a fake hand discard is impossible.</p>
   <div class="counts" id="counts"></div>
-  <p class="lede">The two shapes draw karagiri at almost the same rate. On Tenhou <b>more than one in four</b> was a fake hand discard. A dama hand, with everything still concealed, does it more often (<b>33.1%</b>); an open hand, already showing, less (<b>25.5%</b>).</p>
+  <p class="lede">The two shape families produce fake hand discards at nearly identical rates. On Tenhou, players choose to fake a slide in <b>more than one-quarter</b> of the relevant opportunities — that is, when they are in tenpai with one of these shapes and draw the corresponding 1, 2, 8, or 9. They do so more frequently with a closed <i>dama</i> hand (<b>33.1%</b>) than with an open hand (<b>25.5%</b>).</p>
 
-  <h3 style="margin-top:1rem">The chance itself is rare</h3>
-  <p class="lede">Reaching the shape and then drawing that 1 (9) or 2 (8) at all. Long before the choice comes up, the chance itself is rare — and two entirely separate populations land on <b>almost the same frequency</b>.</p>
+  <h3 style="margin-top:1rem">The opportunity itself is rare</h3>
+  <p class="lede">Being in tenpai with one of these shapes and then drawing the relevant 1, 2, 8, or 9 is already a rare occurrence — and two entirely separate populations land on <b>almost the same frequency</b>.</p>
   <div class="freq">
     <div class="fq"><div class="lab">Tenhou Houou</div>
       <div class="of">once in</div><div class="big">708</div><div class="of">hands　<span>6,748 in 4,775,659</span></div></div>
@@ -276,23 +301,31 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 </section>
 
 <section>
-  <h2>All 28 M.League cases</h2>
+  <h2>All 28 M.League Cases</h2>
   <p class="lede">The shape came up 28 times in M.League play; 12 of them were karagiri. Each row links to the record. (The official viewer animates a hand discard and a draw discard identically, so the motion gives nothing away — though the colour of the discarded tile does distinguish them.)</p>
   <div class="tablebox"><table id="ml"></table></div>
-  <p class="lede todo">[EN] 小林剛 in 2018-19, then nobody for five seasons. 仲林 and 石橋 never got the shape. The four who did it, and 佐々木寿人 who never did.</p>
+  <p class="lede">Go Kobayashi was the first M.League player to fake a slide in this way, doing so during the 2018–19 season. Interestingly, no other player did so for the next five seasons. Some players renowned for their hand-reading abilities — including Nakabayashi, whom I introduced above — have never even had an opportunity to use the tactic.</p>
+  <p class="lede">I first learned about this strategy from a book by Nobuhiro “Black Digital” Ishibashi. Yet even he has never encountered the necessary combination of hand shape and draw in an M.League game.</p>
+  <p class="lede">The list of players who have used the tactic also includes some of the “usual suspects” — players frequently associated with hand reading and psychological play. They include Ken “I’ll Do Everything I Can to Win” Sonoda, Namba “The Demon’s Read” Shibukawa, Kenji “Mahjong IQ 220” Katsumata, and Yu “Freak-Psychometric Mahjong” Suzuki.</p>
+  <p class="lede">At the same time, it seems fitting that some highly successful M.League players, such as Hisato “The Devil” Sasaki, never engage in this kind of deceptive play. This suggests that whether a player uses the tactic has, at most, a marginal effect on their overall performance.</p>
 </section>
 
 <section>
-  <h2>Does it work</h2>
-  <p class="lede">The point of the lie is to make the 4-7 suji (for 12356) or the 5-8 suji (for 23467) look safe, so that somebody pushes it. Only a player who still has a choice of discard can be fooled, which means one who has not declared riichi. So: <b>did the hand win by ron on that suji, from a non-riichi opponent</b> — when the discard was faked, and when it was not? 6,748 cases from three years of Tenhou Houou south-game records (4.7M+ hands).</p>
+  <h2>Does It Work?</h2>
+  <p class="lede">The purpose of this tactic is to make the 4–7s wait of 12356s — or the 5–8s wait of 23467s — appear safe, thereby encouraging an opponent to push one of the winning tiles. How often do opponents fall for the deception? Only opponents who still have a choice of what to discard can potentially be fooled, so the analysis is restricted to opponents who have not declared riichi.<br><br>I compare the frequency with which a player wins by <i>ron</i> on the target <i>suji</i> against a non-riichi opponent, depending on whether the player made a fake hand discard or simply discarded the tile they had just drawn. The Tenhou dataset contains <b>6,748</b> relevant instances drawn from approximately 4.7 million deals.</p>
   <div class="tablebox"><table id="eff"></table></div>
-  <p class="lede" style="font-size:.84rem">The two right-hand columns differ by 12 cases (0.8% of 1,481): hands whose wait moved after the discard, most often onto a pair already held — 9 of them were holding the winning tile at that moment. Put the other way, <b>99.2% won on the wait they had when they discarded</b>. The shape at that moment is never compound: the extraction requires exactly 112356 or its kin in that suit, so the wait is always the two target tiles.</p>
-  <p class="lede todo">[EN] 22.8% vs 21.4% overall; −0.72pt for 12356 (interval crosses 0), +2.89pt for 23467 (it does not). Same logic, different tile, different result.</p>
+  <p class="lede" style="font-size:.84rem">The counts in the two rightmost columns differ slightly — 425 versus 422, and 1,056 versus 1,047 — because in a few cases the player’s wait changed afterward. For example, 12356s might become 12366s.</p>
+  <p class="lede">Overall, players won by ron on the target <i>suji</i> in <b>22.8%</b> of cases after making a fake hand discard, compared with <b>21.4%</b> after making a draw discard. When the results are separated by hand shape, the patterns differ.</p>
+  <ul class="findings">
+    <li>For the <b>12356s / 45789s</b> family, the estimated difference is <b>−0.72 percentage points</b>, with a 95% confidence interval of [−4.43, +2.43]. This difference is statistically indistinguishable from zero.</li>
+    <li>For the <b>23467s / 34678s</b> family, fake hand discards are associated with a <b style="color:var(--shu)">2.89-percentage-point increase</b> in the probability of winning by ron on the target <i>suji</i>. The 95% confidence interval is [+0.04, +5.82] percentage points.</li>
+  </ul>
+  <p class="lede">Thus, the results provide some evidence that the tactic works with the 23467s / 34678s family, but not with the 12356s / 45789s family. Because this is observational evidence, however, the difference should not necessarily be interpreted as the causal effect of making a fake hand discard. In a separate analysis that also includes hands not yet in tenpai, the association becomes more pronounced.</p>
 </section>
 
 <section>
-  <h2>Stronger players do it more</h2>
-  <p class="lede">The share who fake the discard rather than take the draw discard rises monotonically with rank. On its own that could just mean stronger players fake discards everywhere. So the blue line adds a baseline: <b>the same players' rate of faking a discard of a tile of the same rank, across every ready hand where they could have</b> — terminal (1/9) for the 12356 rows, 2/8 for the 23467 rows, weighted by how the two shapes divide. It is the strictest control the data allows, matched on the one thing that matters: a spot where a slide could be feigned. Whiskers are 95% intervals.</p>
+  <h2>Stronger Players Use It More Often</h2>
+  <p class="lede">The proportion of relevant opportunities in which players make a fake hand discard rather than a draw discard rises monotonically with rank and rating. This pattern is not driven by a general tendency among stronger players to make more fake hand discards in all situations. Rather, stronger players appear to use them selectively when holding one of the shapes discussed above.<br><br>The blue line shows the baseline fake-hand-discard rate among players who draw a 1 or 9, or a 2 or 8, while in tenpai. Whiskers are 95% confidence intervals.</p>
   <div class="charts">
     <div class="chartcard">
       <h3>By rank</h3><p>10-dan and above omitted: too few cases</p>
@@ -307,21 +340,23 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
     <span><i class="sw" style="background:var(--shu)"></i>karagiri rate in these two shapes</span>
     <span><i class="sw" style="background:var(--ai);height:3px;align-self:center"></i>baseline: same players faking a discard of a same-rank tile when ready</span>
   </div>
-  <p class="lede" style="color:var(--ink)"><b>The baseline is flat</b> (18.0% → 17.5% → 18.1%). Stronger players are not simply fonder of faking discards. The gap opens in this shape and nowhere else.</p>
+  <p class="lede" style="color:var(--ink)">The baseline remains essentially flat across ranks and ratings (18.0% → 17.5% → 18.1%). In other words, stronger players do not simply make more fake hand discards overall; they are more likely to make one specifically when it can imitate a slide and potentially disguise their wait.</p>
 </section>
 
 <section>
   <h2>Notes</h2>
   <div class="notes">
-    <div class="note"><h3>No difference between years</h3><p>Three years of Tenhou pooled. Year by year: 2023, 255 of 992 (25.7%); 2022, 322 of 1,089 (29.6%); Jan-Aug 2026, 187 of 710 (26.3%). 2022 runs a little high, but not by enough to read anything into, and pooling sharpens the rank and rating breakdowns.</p></div>
+    <div class="note"><h3>No meaningful differences across years</h3><p>The analysis pools three years of Tenhou data. Year by year: 2022, <b>729 of 2,505</b> opportunities (29.1%); 2023, <b>662 of 2,529</b> (26.2%); January–August 2026, <b>461 of 1,714</b> (26.9%). The rate is somewhat higher in 2022, but the difference is not large enough to support a meaningful conclusion. Pooling the years also produces more precise breakdowns by rank and rating.</p></div>
     <div class="note"><h3>Declaration tiles are separate</h3><p>In the 64 cases where riichi was declared on this shape, 51 (79.7%) were hand discards. That is not a property of the shape. Counting every discard in Tenhou 2023 where a player discarded a tile of the same kind as the one drawn: <b>75.6% of riichi declaration tiles are hand discards</b> (8,880 of 11,740), against <b>8.9% of all other discards</b> (351,904 of 3,938,806). Declaration tiles running eight times higher is a feature of the game at large, not of this lie, so they are excluded from the counts above.</p></div>
   </div>
 </section>
 
 <section class="footnotes">
   <ol>
-    <li id="fn1">[EN] Footnote 1: 仲林 rates the slide itself correct; the 猿川 karagiri he does not.</li>
-    <li id="fn2">[EN] Footnote 2: observational, not experimental — the spots differ, and pushed-but-not-dealt-in is not measured.</li>
+    <li id="fn1">If you do not speak Japanese, try YouTube’s automatic dubbing feature. Together with the visual information in the video, it should help you follow the reasoning. <a href="#fnref1">↩</a></li>
+    <li id="fn2">A slide discard can also occur when drawing 6 and discarding 3, or when drawing 4 and discarding 7. We do not focus on these cases because 3 and 7 are not necessarily safer than 6 and 4. Similarly, we do not discuss reverse slides, such as drawing 9 and discarding 6. <a href="#fnref2">↩</a></li>
+    <li id="fn3">For Date to be waiting on 3s, she would need a shape such as 23445s. However, she had discarded 5s and then 1s, which would imply that she had previously held 1234455s. Because a player would be unlikely to discard 5s from 1234455s, she was unlikely to have ended up with the 23445s shape. <a href="#fnref3">↩</a></li>
+    <li id="fn4">Here, a “player-hand” means one player’s hand in a single deal. Because each deal involves four players, dividing the number of player-hands by four gives the number of deals analyzed. <a href="#fnref4">↩</a></li>
   </ol>
 </section>
 
