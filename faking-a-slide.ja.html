@@ -170,6 +170,10 @@ sup.fn a{text-decoration:none;padding:0 .1em}
   display:flex;flex-direction:column;gap:.6rem}
 .commentbox h2{font-size:1.1rem}
 footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* the record table is 11 columns; let it break out of the text column */
+.tablebox.wide{position:relative;left:50%;transform:translateX(-50%);
+  width:min(100vw - clamp(1.4rem,5vw,3rem), 96rem)}
 </style>
 
 <div class="wrap">
@@ -279,7 +283,7 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 <section>
   <h2>Mリーグ 全28ケース</h2>
   <p class="lede">Mリーグの対局で該当したのは28回。うち12回が空切りだった。牌譜へのリンク付き（牌譜ビューアでは、ツモ切りと手出しのエフェクトが同様で、見分けがつかない。ただし、捨牌の色で手出し・ツモ切りが区別できるようになっている）。</p>
-  <div class="tablebox"><table id="ml"></table></div>
+  <div class="tablebox wide"><table id="ml"></table></div>
   <p class="lede">Mリーグでこれを最初にやったのが小林剛選手というのがちょっと意外。そしてその後5年間誰もやっていない。仲林選手や、著書でこのメカニズムの説明をしてくれていた「黒いデジタル」こと石橋選手には、この形の手牌が現れなかった。「魔神の読み」こと渋川選手、「できることは全部やる」こと園田選手、「麻雀IQ220」こと勝又選手、「ヤバい麻雀心理術」こと鈴木優選手がやっているのは、それぞれ納得感がある。一方で、まったくやらず、それでも勝っているのが佐々木寿人選手だというのも、かなり納得感がある。</p>
 </section>
 

@@ -175,6 +175,10 @@ sup.fn a{text-decoration:none;padding:0 .1em}
   display:flex;flex-direction:column;gap:.6rem}
 .commentbox h2{font-size:1.1rem}
 footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* the record table is 11 columns; let it break out of the text column */
+.tablebox.wide{position:relative;left:50%;transform:translateX(-50%);
+  width:min(100vw - clamp(1.4rem,5vw,3rem), 96rem)}
 </style>
 
 <div class="wrap">
@@ -306,7 +310,7 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 <section>
   <h2>All 28 M.League Cases</h2>
   <p class="lede">The shape came up 28 times in M.League play; 12 of them were karagiri. Each row links to the record. (The official viewer animates a hand discard and a draw discard identically, so the motion gives nothing away — though the colour of the discarded tile does distinguish them.)</p>
-  <div class="tablebox"><table id="ml"></table></div>
+  <div class="tablebox wide"><table id="ml"></table></div>
   <p class="lede">Go Kobayashi was the first M.League player to fake a slide in this way, doing so during the 2018–19 season. Interestingly, no other player did so for the next five seasons. Some players renowned for their hand-reading abilities — including Nakabayashi, whom I introduced above — have never even had an opportunity to use the tactic.</p>
   <p class="lede">I first learned about this strategy from a book by Nobuhiro “Black Digital” Ishibashi. Yet even he has never encountered the necessary combination of hand shape and draw in an M.League game.</p>
   <p class="lede">The list of players who have used the tactic also includes some of the “usual suspects” — players frequently associated with hand reading and psychological play. They include Ken “I’ll Do Everything I Can to Win” Sonoda, Namba “The Demon’s Read” Shibukawa, Kenji “Mahjong IQ 220” Katsumata, and Yu “Freak-Psychometric Mahjong” Suzuki.</p>
@@ -395,12 +399,15 @@ document.getElementById("counts").innerHTML = C.map(([lab,n,k]) =>
    <div class="big">${k}</div>
    <div class="of">/ ${n.toLocaleString()} cases &nbsp;<b>${(100*k/n).toFixed(1)}%</b></div></div>`).join("");
 
+const ROMAJI = {"園田賢": "Ken Sonoda", "滝沢和典": "Kazunori Takizawa", "鈴木たろう": "Taro Suzuki", "勝又健志": "Kenji Katsumata", "多井隆晴": "Takaharu Ooi", "村上淳": "Jun Murakami", "渋川難波": "Namba Shibukawa", "鈴木大介": "Daisuke Suzuki", "醍醐大": "Hiroshi Daigo", "鈴木優": "Yu Suzuki", "二階堂亜樹": "Aki Nikaido", "堀慎吾": "Shingo Hori", "小林剛": "Go Kobayashi", "本田朋広": "Tomohiro Honda", "東城りお": "Rio Tojo", "渡辺太": "Futoshi Watanabe", "竹内元太": "Genta Takeuchi", "黒沢咲": "Saki Kurosawa", "佐々木寿人": "Hisato Sasaki", "茅森早香": "Sayaka Kayamori", "猿川真寿": "Masatoshi Sarukawa", "日向藍子": "Aiko Hinata"};
+const TEAMR = {"赤坂ドリブンズ": "Akasaka Drivens", "EX風林火山": "EX Furinkazan", "KADOKAWAサクラナイツ": "KADOKAWA Sakura Knights", "渋谷ABEMAS": "Shibuya ABEMAS", "セガサミーフェニックス": "Sega Sammy Phoenix", "TEAM RAIDEN / 雷電": "TEAM RAIDEN", "KONAMI 麻雀格闘倶楽部": "KONAMI Mahjong Fight Club"};
 document.getElementById("ml").innerHTML =
   `<thead><tr><th></th><th>Season</th><th>player</th><th>Team</th><th>Hand</th><th>Turn</th>
    <th>Shape</th><th>Tiles</th><th>Wait</th><th>State</th><th>Record</th></tr></thead><tbody>` +
   D.ml.map(r => `<tr class="${r.k?'k':''}">
     <td class="tag">${r.k?'karagiri':'draw discard'}</td><td>${r.season}</td>
-    <td><b>${r.name}</b></td><td>${r.team}</td><td>${r.kyoku}</td><td>${r.turn}</td>
+    <td title="${ROMAJI[r.name] || ""}"><b>${r.name}</b></td>
+    <td ${TEAMR[r.team] ? `title="${TEAMR[r.team]}"` : ""}>${r.team}</td><td>${r.kyoku}</td><td>${r.turn}</td>
     <td class="mono">${r.shape}</td><td class="mono">${r.hand}</td>
     <td class="mono">${r.wait}</td><td>${r.state}</td>
     <td><a href="${r.url}" target="_blank" rel="noopener">open ↗</a></td></tr>`).join("")
