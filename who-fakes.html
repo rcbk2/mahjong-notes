@@ -1,0 +1,390 @@
+<title>The Schemer’s Downfall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+</style>
+
+<style>
+/* additions for this article */
+.plist{display:flex;flex-direction:column;gap:.75rem}
+.prow{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1.1rem;background:var(--card);
+  border:1px solid var(--rule);border-radius:5px;padding:.8rem 1.1rem;box-shadow:var(--shadow)}
+.prow .pv{margin-left:auto;font-family:"Roboto Mono",monospace;font-size:.86rem;white-space:nowrap}
+.prow .pv b{font-size:1.05rem}
+.prow .pbar{flex-basis:100%;height:.45rem;border-radius:99px;background:var(--band);overflow:hidden}
+.prow .pbar i{display:block;height:100%;background:var(--shu)}
+.meld{margin-left:1.1rem;white-space:nowrap}
+.tl.rot{transform:rotate(90deg);margin:0 .42rem}
+.hbars{display:flex;flex-direction:column;gap:.55rem}
+.hbars .hrow{display:grid;grid-template-columns:6.2rem 1fr 8.5rem;align-items:center;gap:.7rem;
+  font-family:"Roboto Mono",monospace;font-size:.78rem}
+.hbars .hlab{text-align:right;color:var(--muted)}
+.hbars .htrk{height:1.15rem;background:var(--band);border-radius:2px;overflow:hidden}
+.hbars .htrk i{display:block;height:100%;background:var(--shu)}
+.hbars .hval{color:var(--ink);font-variant-numeric:tabular-nums}
+.hbars .hval span{color:var(--muted)}
+.barcell{min-width:9rem}
+.mini{display:inline-block;height:.65rem;border-radius:2px;background:var(--shu);vertical-align:middle}
+.mini.z{background:var(--rule);width:2px}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">GAME RECORDS / M.LEAGUE &amp; TENHOU HOUOU</p>
+  <h1>The Schemer’s Downfall</h1>
+  <p class="sub">You can fake a slide with a <i>noten</i> hand to make a future wait look safe. But there’s a catch: your deception may end up revealing the truth.</p>
+  <p class="postmeta"><time datetime="2026-09-13">13 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-en">English</a><a class="tag" href="index.html#tag=logs">Log analysis</a><a class="tag" href="index.html#tag=reading">Discard reading</a><a class="tag" href="index.html#tag=tenhou">Tenhou</a><a class="tag" href="index.html#tag=mleague">M.League</a></span></p>
+</header>
+
+<section>
+  <div class="tldr">
+    <span class="k">In short</span>
+    <ul>
+      <li>A fake slide can be done <b>before the hand reaches tenpai</b>.</li>
+      <li>However, the hand may eventually take a different wait, making the 4-7 suji <b>genuinely safe</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Faking a Slide</h2>
+  <p class="lede">The <a href="faking-a-slide.html">previous analysis</a> focused on situations in which a player draws a 1, 2, 8, or 9 while already in <i>tenpai</i>, waiting on 4-7, 3-6, 5-8, or 2-5. The same tactic can be attempted when the hand is still <i>noten</i>. By faking a slide in advance, you may be able to make a future 4-7 wait appear safe. The same principle applies to the corresponding 3-6, 5-8, and 2-5 waits.</p>
+  <p class="lede">However, doing so carries a risk: the “lie” may eventually become the truth. Suppose you have a <i>tenpai</i> hand as follows:</p>
+  <div class="card"><div class="readrow"><span class="cap">Tenpai</span>
+    <span class="hand" data-h="345m99p12356s" data-meld="777z" data-draw="1s"></span></div></div>
+  <p class="lede">If you fake hand discard (<i>karagiri</i>) a <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">, the <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> wait may appear safe to opponents who pay attention to the distinction. In reality, however, you are waiting on exactly <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s">.</p>
+  <p class="lede">Now suppose you draw <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> with the following hand, which is one tile away from tenpai:</p>
+  <div class="card"><div class="readrow"><span class="cap">Noten</span>
+    <span class="hand" data-h="34m99p12356s3z" data-meld="777z" data-draw="1s"></span></div></div>
+  <p class="lede">You could discard a <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> from your hand (fake hand discard) and make <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> appear safe. This time, however, the hand has not yet reached <i>tenpai</i>, so its eventual wait remains undetermined.</p>
+  <div class="branch">
+    <div class="arm trick"><span class="who">Draw <img class="ti" src="assets/tiles/Man2.svg" alt="2m"> or <img class="ti" src="assets/tiles/Man5.svg" alt="5m"></span>
+      <p class="seen">Your hand reaches <i>tenpai</i> with the intended <b><img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> wait</b>. Your opponents’ inference will then be wrong.</p></div>
+    <div class="arm honest"><span class="who">Draw <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"> or <img class="ti" src="assets/tiles/Sou7.svg" alt="7s"></span>
+      <p class="seen">Your hand reaches <i>tenpai</i> with a <b><img class="ti" src="assets/tiles/Man2.svg" alt="2m"><img class="ti" src="assets/tiles/Man5.svg" alt="5m"> wait</b>. <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> will genuinely be safe, so your opponents will have reached the correct conclusion, even though their understanding of your hand was incorrect.</p></div>
+  </div>
+  <p class="lede">Assuming that equal numbers of <img class="ti" src="assets/tiles/Man2.svg" alt="2m">, <img class="ti" src="assets/tiles/Man5.svg" alt="5m">, <img class="ti" src="assets/tiles/Sou4.svg" alt="4s">, and <img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> remain live, there is a 50% chance that the final wait will be <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s">. There is also a 50% chance that the hand will instead wait on <img class="ti" src="assets/tiles/Man2.svg" alt="2m"><img class="ti" src="assets/tiles/Man5.svg" alt="5m">, making <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> genuinely safe. With a hand already in <i>tenpai</i>, the final wait is certain (100% chance of a <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> wait). With a <i>noten</i> hand, however, the probability of the <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"><img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"><img class="ti" src="assets/tiles/Sou6.svg" alt="6s"> shape surviving as the final <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> wait can become quite low when the other blocks accept relatively few tiles.<sup class="fn" id="fnref1"><a href="#fn1">1</a></sup></p>
+
+  <h3>One Tile Away from Tenpai</h3>
+  <div class="plist">
+    <div class="prow"><span class="hand" data-h="22m334567p12356s" data-draw="1s"></span>
+      <span class="pv"><b>15/23</b> ≈ 65%</span><span class="pbar"><i style="width:65%"></i></span></div>
+    <div class="prow"><span class="hand" data-h="22m34567p12356s3z" data-draw="1s"></span>
+      <span class="pv"><b>11/19</b> ≈ 58%</span><span class="pbar"><i style="width:58%"></i></span></div>
+    <div class="prow"><span class="hand" data-h="22m34789p12356s3z" data-draw="1s"></span>
+      <span class="pv"><b>8/16</b> = 50%</span><span class="pbar"><i style="width:50%"></i></span></div>
+    <div class="prow"><span class="hand" data-h="22m23479p12356s3z" data-draw="1s"></span>
+      <span class="pv"><b>4/12</b> ≈ 33%</span><span class="pbar"><i style="width:33%"></i></span></div>
+  </div>
+
+  <h3>Two Tiles Away from Tenpai</h3>
+  <div class="plist">
+    <div class="prow"><span class="hand" data-h="22m3478p12356s23z" data-draw="1s"></span>
+      <span class="pv"><b>128/384</b> ≈ 33%</span><span class="pbar"><i style="width:33%"></i></span></div>
+    <div class="prow"><span class="hand" data-h="22m1289p12356s23z" data-draw="1s"></span>
+      <span class="pv"><b>32/160</b> = 20%</span><span class="pbar"><i style="width:20%"></i></span></div>
+  </div>
+  <p class="fnote">The percentage is the probability that the hand ends up waiting on <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s">.</p>
+
+  <p class="lede">Faking a slide with a <i>noten</i> hand is therefore a double-edged sword. You may disguise a future <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> wait, but you may also persuade your opponents that <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> is safe when it really is safe.</p>
+  <p class="lede">Indeed, the rate of fake hand discards with these shapes monotonically increases as the hand approaches <i>tenpai</i>. This pattern is consistent with players using the tactic deliberately to mislead their opponents.</p>
+
+  <div class="tablebox"><table>
+    <thead><tr><th></th><th colspan="3">M.League</th><th colspan="3">Tenhou Phoenix</th></tr>
+    <tr><th></th><th>Cases</th><th>Fake discards</th><th>Rate</th><th>Cases</th><th>Fake discards</th><th>Rate</th></tr></thead>
+    <tbody>
+      <tr><td class="tag">TENPAI</td><td class="mono">28</td><td class="mono">12</td><td class="mono"><b>42.9%</b></td>
+          <td class="mono">6,825</td><td class="mono">1,874</td><td class="mono"><b>27.5%</b></td></tr>
+      <tr><td class="tag">NOTEN</td><td class="mono">326</td><td class="mono">95</td><td class="mono"><b>29.1%</b></td>
+          <td class="mono">55,601</td><td class="mono">7,130</td><td class="mono"><b>12.8%</b></td></tr>
+    </tbody></table></div>
+
+  <div class="charts">
+    <div class="chartcard"><h3>Tenhou Phoenix</h3><p>Fake-hand-discard rate, by shanten when the tile is drawn</p>
+      <div class="hbars" id="hb-tenhou"></div></div>
+    <div class="chartcard"><h3>M.League</h3><p>Same, all seasons — note the small counts</p>
+      <div class="hbars" id="hb-ml"></div></div>
+  </div>
+
+  <p class="lede">Interestingly, the fake-hand-discard rate is generally higher in M.League than on Tenhou, for both <i>tenpai</i> and <i>noten</i> hands. One possible explanation is that M.League games attract more spectators, giving players an additional incentive to attempt subtle, strategically interesting plays. Even when the tactic does not affect the outcome, players may expect commentators to notice it and explain their intentions to the audience. Nobuhiro “Black Digital” Ishibashi, for example, is a regular commentator. Some commentators take pride in identifying such subtle tactics and explaining the reasoning behind choices that might otherwise seem mysterious at first glance. Alternatively, M.League players may expect their opponents to pay closer attention to the distinction between a hand discard and a draw discard.</p>
+</section>
+
+<section>
+  <h2>Does Your Left Player Fall for It?</h2>
+  <p class="lede">One reason to fake a slide with a <i>noten</i> hand may be to encourage the left player to discard <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"> or <img class="ti" src="assets/tiles/Sou7.svg" alt="7s">, allowing you to call it. Whether this tactic works should be evaluated based on the information actually available to the left player. They cannot see whether your hand really contains 12356; all they see is that a <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> left your hand as a hand discard rather than a draw discard. I examined every first discard of a 1, 2, 8, or 9 by a player who had not declared riichi (75 million discards across three years of Phoenix Table records) and checked whether the left player subsequently discarded either of the two tiles the apparent slide would suggest was safe (e.g., <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"> or <img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> for a <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">). I excluded cases in which either target tile was already in the discarder’s pile, since this would make the tiles <i>genbutsu</i> or <i>suji</i>.</p>
+  <div class="tablebox"><table>
+    <thead><tr><th></th><th>Cases</th><th>Left player discarded the suji</th><th>Mean turn</th></tr></thead>
+    <tbody>
+      <tr class="k"><td class="tag">HAND DISCARD</td><td class="mono">35,896,680</td><td class="mono"><b>30.67%</b></td><td class="mono">5.57</td></tr>
+      <tr><td class="tag">DRAW DISCARD</td><td class="mono">13,562,918</td><td class="mono"><b>26.77%</b></td><td class="mono">7.37</td></tr>
+      <tr><td class="tag">DIFFERENCE</td><td class="mono" colspan="3">raw +3.90pt → turn-by-turn adjusted <b>+0.43pt</b>&nbsp;&nbsp;95% CI [+0.40, +0.46]</td></tr>
+    </tbody></table></div>
+  <p class="lede">At first glance, hand discards are nearly four percentage points more likely than draw discards to be followed by one of the target half-<i>suji</i> tiles. However, hand discards of 1, 2, 8, 9 occur about two turns earlier on average than draw discards. After adjusting the comparison by turn, the observed difference shrinks to just 0.43 percentage points. Given how small the adjusted difference is, there is little evidence that the left player responds to the apparent slide.
+  </p>
+</section>
+
+<section>
+  <h2>M.League 52 Players</h2>
+  <p class="lede">The chart below includes everyone who has had the chance, with <i>tenpai</i> and <i>noten</i> counted separately.</p>
+  <div class="tablebox"><table id="pl"></table></div>
+
+  <p class="lede">It makes perfect sense to me that Ken “Mahjong Wizard” and “I’ll Do Everything I Can to Win” Sonoda tops this list. We also see several players who did not appear in the previous analysis, which focused exclusively on <i>tenpai</i> hands, including Akina Mizuhara and Kotaro Uchikawa. Also noteworthy are the players who consistently avoided this tactic: Saki “Celebrity Mahjong” Kurosawa (no usage in 11 <i>noten</i> hands or one <i>tenpai</i> hand), Hisato “The Devil” Sasaki (no usage in eight <i>noten</i> hands or three <i>tenpai</i> hands), and Mari “Lady Berserker” Takamiya (no usage in ten <i>noten</i> hands). I can see that this kind of deceptive maneuver does not fit their playing styles. It is fascinating to see players with such different styles succeed, demonstrating that there is no single path to success in mahjong.</p>
+</section>
+
+<section>
+  <h2>Conclusion</h2>
+  <p class="lede">As I mentioned in the previous article, this tactic is more of a curiosity than an essential piece of knowledge for improving your skills. Still, I hope these two articles serve two purposes. First, paying attention to tactics like this can allow us to enjoy watching M.League matches and Phoenix Table games. Second, this example illustrates the importance of understanding the mechanism behind a rule of thumb rather than blindly following a memorized “formula.” If you simply memorize that you should fake a hand discard of 1 when holding 12356, you might try it with a hand that is still three tiles away from <i>tenpai</i> or against opponents who are not paying attention to the distinction between hand discards and draw discards. As with many mahjong strategies, knowing exceptions (when not to use the tactic) is just as important as knowing the tactic itself.</p>
+</section>
+
+<section class="footnotes">
+  <ol>
+    <li id="fn1">Ishibashi’s “Black Digital” book (pages 139–143) mentions that he does this when the probability of getting the intended final wait is greater than 30%. <a href="#fnref1">↩</a></li>
+  </ol>
+</section>
+
+<section class="notes">
+  <div class="note"><h3>Data</h3><p>Tenhou Phoenix Table (South games), 2022, 2023, and 2026 through early September; M.League, all seasons, from konoui’s published records. Hands already in riichi are excluded throughout.</p></div>
+  <div class="note"><h3>The left-player comparison</h3><p>Only information visible to the left player is used: the tile, hand discard against draw discard, and the discarder’s river. One event per player, deal, and tile kind (the first discard). Cases where an advertised tile was already in the discarder’s pile are excluded, and a later self-discard of one censors the case — 34% in all. The difference is Mantel-Haenszel weighted over each turn crossed with whether anyone had declared riichi; the interval is a cluster bootstrap on the hanchan.</p></div>
+</section>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+<footer><p>Data: all M.League seasons / Tenhou Phoenix Table south games, 2022, 2023 and 2026 through early September.</p><p>The first article: <a href="faking-a-slide.html">Faking a Slide</a>. <a href="index.html">All posts</a></p><p>Tile images: <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. M.League records from <a href="https://m-league.konoui.dev/">konoui&rsquo;s published data</a>.</p></footer>
+</div>
+
+<script>
+// hand renderer: "22m34567p12356s3z" -> tile images.  data-draw appends a
+// gapped tile, data-meld a dimmed group.
+const FILE = i => {
+  const s = "mpsz"[Math.floor(i / 9)], r = i % 9 + 1;
+  return s === "z" ? ["Ton","Nan","Shaa","Pei","Haku","Hatsu","Chun"][r - 1]
+       : {m:"Man",p:"Pin",s:"Sou"}[s] + r;
+};
+const parse = h => {
+  const out = []; let ds = "";
+  for (const ch of h) {
+    if (ch >= "0" && ch <= "9") ds += ch;
+    else { const b = {m:0,p:9,s:18,z:27}[ch];
+           for (const d of ds) out.push(b + +d - 1); ds = ""; }
+  }
+  return out;
+};
+const tile = (i, cls) => `<span class="tl${cls ? " " + cls : ""}">
+  <img src="assets/tiles/${FILE(i)}.svg" alt=""></span>`;
+document.querySelectorAll(".hand").forEach(el => {
+  let o = parse(el.dataset.h).map(i => tile(i)).join("");
+  if (el.dataset.meld) o += `<span class="meld">` +
+    parse(el.dataset.meld).map((i, j) => tile(i, j ? "" : "rot")).join("") + `</span>`;
+  if (el.dataset.draw) o += parse(el.dataset.draw).map(i => tile(i, "drawn")).join("");
+  el.innerHTML = o;
+});
+
+// fake rate by shanten
+const SH = {
+  tenhou: [["Tenpai", 1874, 6825], ["1-shanten", 4888, 33403],
+           ["2-shanten", 2096, 20198], ["3+", 146, 2000]],
+  ml:     [["Tenpai", 12, 28], ["1-shanten", 70, 194],
+           ["2-shanten", 22, 116], ["3+", 3, 16]],
+};
+for (const [id, rows] of [["hb-tenhou", SH.tenhou], ["hb-ml", SH.ml]])
+  document.getElementById(id).innerHTML = rows.map(([lab, k, n]) => {
+    const r = 100 * k / n;
+    return `<div class="hrow"><span class="hlab">${lab}</span>
+      <span class="htrk"><i style="width:${r / 45 * 100}%"></i></span>
+      <span class="hval">${r.toFixed(1)}% <span>n=${n.toLocaleString()}</span></span></div>`;
+  }).join("");
+
+// the 52 players
+const PL = [{"name": "園田賢", "team": "赤坂ドリブンズ", "tp": [1, 1], "no": [18, 14]}, {"name": "滝沢和典", "team": "EX風林火山", "tp": [1, 1], "no": [15, 8]}, {"name": "鈴木たろう", "team": "赤坂ドリブンズ", "tp": [1, 1], "no": [11, 8]}, {"name": "勝又健志", "team": "EX風林火山", "tp": [1, 1], "no": [18, 6]}, {"name": "内川幸太郎", "team": "KADOKAWAサクラナイツ", "tp": [0, 0], "no": [10, 7]}, {"name": "瑞原明奈", "team": "U-NEXT Pirates", "tp": [0, 0], "no": [9, 7]}, {"name": "多井隆晴", "team": "渋谷ABEMAS", "tp": [2, 1], "no": [15, 5]}, {"name": "村上淳", "team": "赤坂ドリブンズ", "tp": [1, 0], "no": [7, 4]}, {"name": "魚谷侑未", "team": "セガサミーフェニックス", "tp": [0, 0], "no": [7, 4]}, {"name": "白鳥翔", "team": "渋谷ABEMAS", "tp": [0, 0], "no": [11, 3]}, {"name": "渋川難波", "team": "KADOKAWAサクラナイツ", "tp": [1, 1], "no": [4, 2]}, {"name": "松本吉弘", "team": "渋谷ABEMAS", "tp": [0, 0], "no": [11, 2]}, {"name": "萩原聖人", "team": "TEAM RAIDEN / 雷電", "tp": [0, 0], "no": [11, 2]}, {"name": "鈴木大介", "team": "BEAST X", "tp": [1, 1], "no": [5, 1]}, {"name": "石井一馬", "team": "EARTH JETS", "tp": [0, 0], "no": [6, 2]}, {"name": "岡田紗佳", "team": "KADOKAWAサクラナイツ", "tp": [0, 0], "no": [6, 2]}, {"name": "醍醐大", "team": "セガサミーフェニックス", "tp": [2, 2], "no": [3, 0]}, {"name": "鈴木優", "team": "U-NEXT Pirates", "tp": [1, 1], "no": [3, 1]}, {"name": "瀬戸熊直樹", "team": "TEAM RAIDEN / 雷電", "tp": [0, 0], "no": [11, 1]}, {"name": "二階堂亜樹", "team": "EX風林火山", "tp": [1, 1], "no": [9, 0]}, {"name": "堀慎吾", "team": "KADOKAWAサクラナイツ", "tp": [1, 0], "no": [8, 1]}, {"name": "小林剛", "team": "U-NEXT Pirates", "tp": [1, 1], "no": [8, 0]}, {"name": "本田朋広", "team": "TEAM RAIDEN / 雷電", "tp": [3, 0], "no": [5, 1]}, {"name": "近藤誠一", "team": "セガサミーフェニックス", "tp": [0, 0], "no": [8, 1]}, {"name": "仲林圭", "team": "U-NEXT Pirates", "tp": [0, 0], "no": [6, 1]}, {"name": "東城りお", "team": "セガサミーフェニックス", "tp": [1, 0], "no": [5, 1]}, {"name": "渡辺太", "team": "赤坂ドリブンズ", "tp": [1, 0], "no": [4, 1]}, {"name": "藤崎智", "team": "KONAMI 麻雀格闘倶楽部", "tp": [0, 0], "no": [5, 1]}, {"name": "二階堂瑠美", "team": "EX風林火山", "tp": [0, 0], "no": [5, 1]}, {"name": "竹内元太", "team": "セガサミーフェニックス", "tp": [1, 0], "no": [3, 1]}, {"name": "朝倉康心", "team": "U-NEXT Pirates", "tp": [0, 0], "no": [3, 1]}, {"name": "松ヶ瀬隆弥", "team": "EX風林火山", "tp": [0, 0], "no": [3, 1]}, {"name": "浅見真紀", "team": "赤坂ドリブンズ", "tp": [0, 0], "no": [3, 1]}, {"name": "石橋伸洋", "team": "U-NEXT Pirates", "tp": [0, 0], "no": [3, 1]}, {"name": "浅井堂岐", "team": "セガサミーフェニックス", "tp": [0, 0], "no": [3, 1]}, {"name": "HIRO柴田", "team": "EARTH JETS", "tp": [0, 0], "no": [2, 1]}, {"name": "三浦智博", "team": "EARTH JETS", "tp": [0, 0], "no": [2, 1]}, {"name": "黒沢咲", "team": "TEAM RAIDEN / 雷電", "tp": [1, 0], "no": [11, 0]}, {"name": "佐々木寿人", "team": "KONAMI 麻雀格闘倶楽部", "tp": [3, 0], "no": [8, 0]}, {"name": "高宮まり", "team": "KONAMI 麻雀格闘倶楽部", "tp": [0, 0], "no": [10, 0]}, {"name": "茅森早香", "team": "セガサミーフェニックス", "tp": [1, 0], "no": [4, 0]}, {"name": "前原雄大", "team": "KONAMI 麻雀格闘倶楽部", "tp": [0, 0], "no": [5, 0]}, {"name": "猿川真寿", "team": "BEAST X", "tp": [1, 0], "no": [3, 0]}, {"name": "日向藍子", "team": "渋谷ABEMAS", "tp": [1, 0], "no": [2, 0]}, {"name": "和久津晶", "team": "セガサミーフェニックス", "tp": [0, 0], "no": [3, 0]}, {"name": "丸山奏子", "team": "赤坂ドリブンズ", "tp": [0, 0], "no": [3, 0]}, {"name": "沢崎誠", "team": "KADOKAWAサクラナイツ", "tp": [0, 0], "no": [3, 0]}, {"name": "中田花奈", "team": "BEAST X", "tp": [0, 0], "no": [2, 0]}, {"name": "永井孝典", "team": "EX風林火山", "tp": [0, 0], "no": [2, 0]}, {"name": "菅原千瑛", "team": "BEAST X", "tp": [0, 0], "no": [2, 0]}, {"name": "阿久津翔太", "team": "KADOKAWAサクラナイツ", "tp": [0, 0], "no": [1, 0]}, {"name": "伊達朱里紗", "team": "KONAMI 麻雀格闘倶楽部", "tp": [0, 0], "no": [1, 0]}];
+const ROMAJI = {"園田賢": "Ken Sonoda", "滝沢和典": "Kazunori Takizawa", "鈴木たろう": "Taro Suzuki", "勝又健志": "Kenji Katsumata", "内川幸太郎": "Kotaro Uchikawa", "瑞原明奈": "Akina Mizuhara", "多井隆晴": "Takaharu Ooi", "村上淳": "Jun Murakami", "魚谷侑未": "Yuumi Uotani", "白鳥翔": "Sho Shiratori", "渋川難波": "Namba Shibukawa", "松本吉弘": "Yoshihiro Matsumoto", "萩原聖人": "Masato Hagiwara", "鈴木大介": "Daisuke Suzuki", "石井一馬": "Kazuma Ishii", "岡田紗佳": "Sayaka Okada", "醍醐大": "Hiroshi Daigo", "鈴木優": "Yu Suzuki", "瀬戸熊直樹": "Naoki Setokuma", "二階堂亜樹": "Aki Nikaido", "堀慎吾": "Shingo Hori", "小林剛": "Go Kobayashi", "本田朋広": "Tomohiro Honda", "近藤誠一": "Seiichi Kondo", "仲林圭": "Kei Nakabayashi", "東城りお": "Rio Tojo", "渡辺太": "Futoshi Watanabe", "藤崎智": "Satoshi Fujisaki", "二階堂瑠美": "Rumi Nikaido", "竹内元太": "Genta Takeuchi", "朝倉康心": "Koshin Asakura", "松ヶ瀬隆弥": "Takaya Matsugase", "浅見真紀": "Maki Asami", "石橋伸洋": "Nobuhiro Ishibashi", "浅井堂岐": "Takaki Asai", "HIRO柴田": "Hiro Shibata", "三浦智博": "Tomohiro Miura", "黒沢咲": "Saki Kurosawa", "佐々木寿人": "Hisato Sasaki", "高宮まり": "Mari Takamiya", "茅森早香": "Sayaka Kayamori", "前原雄大": "Yudai Maehara", "猿川真寿": "Masatoshi Sarukawa", "日向藍子": "Aiko Hinata", "和久津晶": "Akira Wakutsu", "丸山奏子": "Kanako Maruyama", "沢崎誠": "Makoto Sawazaki", "中田花奈": "Kana Nakada", "永井孝典": "Takanori Nagai", "菅原千瑛": "Hiroe Sugawara", "阿久津翔太": "Shota Akutsu", "伊達朱里紗": "Arisa Date"};
+const TEAMR = {"赤坂ドリブンズ": "Akasaka Drivens", "EX風林火山": "EX Furinkazan", "KADOKAWAサクラナイツ": "KADOKAWA Sakura Knights", "U-NEXT Pirates": "", "渋谷ABEMAS": "Shibuya ABEMAS", "セガサミーフェニックス": "Sega Sammy Phoenix", "TEAM RAIDEN / 雷電": "TEAM RAIDEN", "BEAST X": "", "EARTH JETS": "", "KONAMI 麻雀格闘倶楽部": "KONAMI Mahjong Fight Club"};
+const pc = (k, n) => n ? (100 * k / n).toFixed(0) + "%" : "–";
+document.getElementById("pl").innerHTML =
+  `<thead><tr><th>Player</th><th>Team</th><th>Noten</th><th>Tenpai</th><th class="barcell">Fake rate</th></tr></thead><tbody>` +
+  PL.map(p => {
+    const k = p.no[1] + p.tp[1], n = p.no[0] + p.tp[0];
+    const w = n ? 100 * k / n : 0;
+    return `<tr class="${k >= 5 ? "k" : ""}"><td title="${ROMAJI[p.name]}">${p.name}</td>
+      <td style="color:var(--muted)"${TEAMR[p.team] ? ` title="${TEAMR[p.team]}"` : ""}>${p.team}</td>
+      <td class="mono">${p.no[1]} / ${p.no[0]}</td>
+      <td class="mono">${p.tp[1]} / ${p.tp[0]}</td>
+      <td class="barcell"><span class="mini ${w ? "" : "z"}" style="width:${(w * 0.72).toFixed(0)}%"></span>
+        <span class="mono" style="font-family:'Roboto Mono',monospace;font-size:.78rem"><b>${pc(k, n)}</b></span></td></tr>`;
+  }).join("") + `</tbody>`;
+</script>
+<script src="comments.js"></script>
