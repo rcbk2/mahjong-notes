@@ -258,6 +258,16 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   <div class="card" style="border-left:4px solid var(--shu);padding-left:1.3rem">
     <p class="lede" style="color:var(--ink)">「12356 の 4-7 待ちテンパイに 1 を、45789 の 3-6 待ちテンパイに 9 を、23467 の 5-8 待ちテンパイに 2 を、34678 の 2-5 待ちテンパイに 8 を引いてきた時は、<b>空切りせよ</b>」ということになるだろう。</p>
   </div>
+
+
+  <p class="lede">なお、空切りをした方が良い例外的な状況を4種類、平澤元気氏が以下の動画に分かりやすくまとめている。スライド偽装は、空切りをすべき4つの状況の1つである。</p>
+  <a class="clip" href="https://www.youtube.com/watch?v=blTwCEHhobU" data-yt="blTwCEHhobU"
+     target="_blank" rel="noopener">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/blTwCEHhobU/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
+    <span class="ct"><span class="cn">空切りをした方が良い4つの状況（平澤元気氏）</span>
+      <span class="cd">原則としてすべきでない空切りを、例外的にすべき状況の整理。スライド偽装はその1つ。</span>
+      <span class="cm">YouTube</span></span>
+  </a>
 </section>
 
 <section>
@@ -425,7 +435,7 @@ document.querySelectorAll("a.clip").forEach(a => {
     ev.preventDefault();
     const f = document.createElement("iframe");
     f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.yt}`
-          + `?start=${a.dataset.t}&autoplay=1&rel=0`;
+          + `?start=${a.dataset.t || 0}&autoplay=1&rel=0`;
     f.title = a.querySelector(".cn").textContent;
     f.allow = "accelerometer; autoplay; encrypted-media; picture-in-picture";
     f.allowFullscreen = true;

@@ -285,6 +285,16 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
   <div class="card" style="border-left:4px solid var(--shu);padding-left:1.3rem">
     <p class="lede" style="color:var(--ink)">You have <b>12356</b> and are waiting on 4–7, then draw <b>1</b>.<br>You have <b>45789</b> and are waiting on 3–6, then draw <b>9</b>.<br>You have <b>23467</b> and are waiting on 5–8, then draw <b>2</b>.<br>You have <b>34678</b> and are waiting on 2–5, then draw <b>8</b>.</p>
   </div>
+
+
+  <p class="lede">Genki Hirasawa has a video that neatly organizes the four exceptional situations where karagiri is the right choice. Faking a slide is one of the four. There’s no automatic English dub, but English subtitles are available.</p>
+  <a class="clip" href="https://www.youtube.com/watch?v=blTwCEHhobU" data-yt="blTwCEHhobU"
+     target="_blank" rel="noopener">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/blTwCEHhobU/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
+    <span class="ct"><span class="cn">Four situations where karagiri is right (Genki Hirasawa)</span>
+      <span class="cd">Karagiri is normally a mistake; this organizes the exceptions. Faking a slide is one of them.</span>
+      <span class="cm">YouTube · English subtitles</span></span>
+  </a>
 </section>
 
 <section>
@@ -465,7 +475,7 @@ document.querySelectorAll("a.clip").forEach(a => {
     ev.preventDefault();
     const f = document.createElement("iframe");
     f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.yt}`
-          + `?start=${a.dataset.t}&autoplay=1&rel=0`;
+          + `?start=${a.dataset.t || 0}&autoplay=1&rel=0`;
     f.title = a.querySelector(".cn").textContent;
     f.allow = "accelerometer; autoplay; encrypted-media; picture-in-picture";
     f.allowFullscreen = true;
