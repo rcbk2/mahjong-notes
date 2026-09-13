@@ -175,6 +175,17 @@ sup.fn a{text-decoration:none;padding:0 .1em}
   display:flex;flex-direction:column;gap:.6rem}
 .commentbox h2{font-size:1.1rem}
 footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
 </style>
 
 <style>
@@ -203,8 +214,12 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 
 <div class="wrap">
 <header>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">The beast that counted tiles at the edge of the world.</span></span>
+  </a>
   <p class="eyebrow">牌譜解析 / Mリーグ &amp; 天鳳 鳳凰卓</p>
-  <h1>ノーテンからのスライド偽装：策士策に溺れる？</h1>
+  <h1>ノーテンからのスライド偽装</h1>
   <p class="sub">スライド偽装で 4-7 を安全に見せるテクはノーテンの手からでも使える。ただし、嘘から出たまことで 4-7 が待ちになってしまうこともある。</p>
   <p class="postmeta"><time datetime="2026-09-13">13 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-ja">日本語</a><a class="tag" href="index.html#tag=logs">牌譜分析</a><a class="tag" href="index.html#tag=reading">読み</a><a class="tag" href="index.html#tag=tenhou">天鳳</a><a class="tag" href="index.html#tag=mleague">Mリーグ</a></span></p>
 </header>

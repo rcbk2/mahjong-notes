@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-"""Keep the published pages' data in step with the analysis.
-
-The pages are written by hand -- the prose is the author's, and they carry
-dates, tags and a comments section that no artifact knows about -- so nothing
-here regenerates one.  All this does is lift the `const D = {...}` block out
-of the artifact and drop it into each page, which keeps every table and chart
-following the analysis without touching a word of the writing.
-
-The one-time transformations that turned the artifacts into pages -- real
-tiles, relative cross-links, the public footer -- are already applied in the
-files themselves and are not repeated.
-"""
+"""Sync the `const D = {...}` data blocks into the published pages."""
 import os, pathlib, re, sys
 
 # Point MAHJONG_OUT at the analysis output directory.

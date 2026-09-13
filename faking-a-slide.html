@@ -179,10 +179,25 @@ footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color
 /* the record table is 11 columns; let it break out of the text column */
 .tablebox.wide{position:relative;left:50%;transform:translateX(-50%);
   width:min(100vw - clamp(1.4rem,5vw,3rem), 96rem)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
 </style>
 
 <div class="wrap">
 <header>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">The beast that counted tiles at the edge of the world.</span></span>
+  </a>
   <p class="eyebrow">GAME RECORDS / M.LEAGUE &amp; TENHOU HOUOU</p>
   <h1>Faking a Slide</h1>
   <p class="sub">There is a subtle tactic in which you make a fake hand discard to disguise your wait. <br>Does it work, and how often does it occur? I examined game records from Tenhou and M.League to find out.</p>
