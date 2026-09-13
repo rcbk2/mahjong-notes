@@ -1,0 +1,483 @@
+<title>Are You Ready?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
+
+.home{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;align-self:flex-start}
+.home:hover,.home:focus-visible{color:var(--ink)}
+</style>
+
+<style>
+/* chart & table plumbing for this article */
+:root{--okc:#2F6D4F; --c1:#4E7391; --c2:var(--gold); --c3:var(--shu);
+  --c4:color-mix(in srgb, var(--shu) 55%, var(--ink) 45%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--okc:#63B98C; --c1:#7FAECD}}
+:root[data-theme="dark"]{--okc:#63B98C; --c1:#7FAECD}
+.gridline{stroke:var(--rule);stroke-width:1;opacity:.6}
+.axis{stroke:var(--rule);stroke-width:1}
+.bandfill{fill:var(--band);opacity:.55}
+.bandlab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.08em}
+.tick{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11.5px}
+.refl{stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;opacity:.85}
+.reflab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;font-weight:600}
+.ln{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ci{stroke:none;opacity:.16}
+.s1{stroke:var(--c1)} .s2{stroke:var(--c2)} .s3{stroke:var(--c3)} .s4{stroke:var(--c4)}
+.f1{fill:var(--c1)} .f2{fill:var(--c2)} .f3{fill:var(--c3)} .f4{fill:var(--c4)}
+.endlab{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:600}
+.xmark{stroke-width:1.4;fill:var(--card)}
+figure.chartfig{margin:0;background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.3rem 1.2rem 1rem;box-shadow:var(--shadow)}
+figure.chartfig figcaption{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.chartbox{overflow-x:auto}
+.chartbox svg{display:block;width:100%;height:auto;min-width:33rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;padding:.6rem .2rem 0;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.5rem}
+.sw{display:inline-block;width:1.5rem;height:3px;border-radius:2px}
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.claim{background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.1rem 1.2rem 1.2rem;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.5rem}
+.claim .rw{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.claim .stmt{font-size:.93rem;line-height:1.6}
+.claim .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;line-height:1.2}
+.claim .vs{font-size:.78rem;color:var(--muted)}
+.verdict{font-size:.78rem;font-weight:700}
+.verdict.hit{color:var(--okc)} .verdict.miss{color:var(--shu)}
+.pmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(26rem,1fr));gap:1rem}
+.pmgrid svg{min-width:24rem}
+.pmgrid h3{margin-bottom:.15rem}
+td.num{font-family:"Roboto Mono",monospace;font-size:.8rem;text-align:right}
+</style>
+
+<div class="wrap">
+<header>
+  <a class="home" href="index.html">&larr; All posts</a>
+  <p class="eyebrow">GAME RECORDS / TENHOU HOUOU &amp; M.LEAGUE</p>
+  <h1>Are You Ready?</h1>
+  <p class="sub">3 calls in row 1, 2 calls in row 2, and 1 call in row 3. Are the callers ready?</p>
+  <p class="postmeta"><time datetime="2026-09-14">14 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-en">English</a><a class="tag" href="index.html#tag=logs">Log analysis</a><a class="tag" href="index.html#tag=reading">Discard reading</a><a class="tag" href="index.html#tag=tenhou">Tenhou</a><a class="tag" href="index.html#tag=mleague">M.League</a></span></p>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">The beast that counted tiles at the edge of the world.</span></span>
+  </a>
+</header>
+
+<section>
+  <h2>The Rule of Thumb</h2>
+  <p class="lede">Defending against open hands is an essential skill for players who want to progress from the intermediate (&asymp; Tenhou 4d&ndash;6d; Jantama Master 2&ndash;Saint 1) to the advanced level (&asymp; Tenhou 7d+, Saint 2+). One challenge is that, unlike riichi hands, open hands provide no definitive indication that they are ready. Genki Hirasawa, a prominent mahjong author and <a href="https://www.youtube.com/@ch-ks6zt">YouTuber</a>, offers the following rule of thumb for estimating the likelihood that an opponent with an open hand is in tenpai:</p>
+  <div class="card" style="border-left:4px solid var(--ai)">
+    <p class="lede" style="color:var(--ink)">An open hand has roughly a 50% chance of being in tenpai if:</p>
+    <ul style="margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.3rem">
+      <li>its <b>third</b> call occurs by the end of the <b>first</b> row of the discard pond (turns 1&ndash;6);</li>
+      <li>its <b>second</b> call occurs by the end of the <b>second</b> row (turns 7&ndash;12); or</li>
+      <li>its <b>first</b> call occurs by the end of the <b>third</b> row (turns 13&ndash;18)</li>
+    </ul>
+  </div>
+  <p class="lede">Hirasawa mentions this rule several times in his books and videos, describing it as something like a folk theorem. My guess is that he encountered supporting statistics somewhere but can no longer locate the source. I therefore wanted to see whether the data support the rule. Note that Hirasawa presents it as a potentially useful baseline estimate, not a definitive statistic. In practice, we would combine it with other information, such as the distribution of middle tiles (3-7) vs terminals and near-terminals (1, 2, 8, and 9), possible imbalances among the suits, the number of hand discards after calls, and other features of the discard pond.</p>
+  <p class="lede">I explored this question using game data from Tenhou and M.League.</p>
+</section>
+
+<section>
+  <h2>Results from Tenhou</h2>
+  <p class="lede">The Tenhou dataset covers all East&ndash;South games played at the Phoenix Table from 2018 through 2023, along with the first eight months of 2026.<sup class="fn" id="fnref1"><a href="#fn1">1</a></sup> It contains more than 1.2 million East&ndash;South games, 12,833,743 hands (局), and more than 24 million calls. Overall, I would say that the data support the folk theorem. However, the rule leaves many details unspecified. For example, at what point in the first row does the tenpai probability reach 50%? Our analysis helps fill in these details. The following figure summarizes the results.</p>
+  <div class="claims" id="claims"></div>
+  <figure class="chartfig">
+    <div class="chartbox"><svg id="chart-tenhou" viewBox="0 0 900 470" role="img" aria-label="Tenpai rate by meld count and turn, Tenhou"></svg></div>
+    <div class="legend" id="legend"></div>
+    <figcaption>Tenhou Phoenix Table, South games, 2018&ndash;2023 and 2026 &mdash; 1,206,625 games, 24,634,799 call moments. Cells with n&lt;30 are not drawn. Bands are 95% CIs (cluster bootstrap on the game).</figcaption>
+  </figure>
+  <div id="cross"></div>
+  <p class="lede">The curves show the proportion of hands in <i>tenpai</i> among players making their <i>n</i>th call on a given turn. <i>Tenpai</i> is measured immediately after the <i>n</i>th call; that is, when the player discards a tile after calling, even if another player wins on that discard. Having four calls guarantees <i>tenpai</i>, except in the extremely rare situation in which one&rsquo;s <i>tanki</i> wait tiles have already been used in one of their own open sets. I therefore focus on first, second, and third calls.</p>
+  <p class="lede">The <i>tenpai</i> probability for a player with three calls exceeds 50% as early as turn 4. By the end of the first row, three-call hands are in <i>tenpai</i> about three-quarters of the time. Similarly, the probability for a player with two calls exceeds 50% as early as turn 8.</p>
+</section>
+
+<section>
+  <h2>Results from M.League</h2>
+  <p class="lede">The average call rate among M.League players is lower than that among Tenhou players (23.7% versus 32.6%), suggesting that M.League players call more selectively. Accordingly, their probability of being in <i>tenpai</i> after calling is generally higher than that of Tenhou players. For a one-call hand, the probability exceeds 50% during the second row rather than the third row, as specified by the folk theorem. That said, we have only 1,004 observations of hands with a third call, so these results should be treated as a rough reference.</p>
+  <figure class="chartfig">
+    <div class="chartbox"><svg id="chart-mleague" viewBox="0 0 900 400" role="img" aria-label="Tenpai rate by meld count and turn, M.League"></svg></div>
+    <figcaption>All M.League seasons &mdash; 1,915 games, 29,323 call moments. The third-meld line rests on 1,004 cases; treat it as indicative.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Numeric Data from Tenhou</h2>
+  <div class="tablebox"><table id="tbl"></table></div>
+  <p class="fnote">Tenhou data. Brackets are 95% CIs; the right figure in each cell is n.</p>
+</section>
+
+<section>
+  <h2>Hand Discards after Call</h2>
+  <p class="lede">Hirasawa goes on to write that we should adjust our estimate of an open-hand opponent&rsquo;s tenpai probability upward after observing a hand discard following their most recent call.<sup class="fn" id="fnref2"><a href="#fn2">2</a></sup> Although this seems intuitive, the analysis below shows that it is often not the case.</p>
+  <p class="lede">I treat hands whose first call occurred on turn k (for k = 3, 6, 9, or 12) as a cohort. For each subsequent turn t (t = k + m, &hellip;, 18), I then calculate the probability of <i>tenpai</i> after the <i>m</i>th hand discard following the call (for m = 1, 2, or 3). In the figures below, the blue curves show the <i>tenpai</i> probability when the first hand discard occurs on turn t, the yellow curves show it when the second hand discard occurs on turn t, and the orange curves show it when the third hand discard occurs on turn t. The gray curves show the baseline tenpai probability on turn t for all hands in the cohort, including those that have not made a hand discard since the call. Observations leave the cohort once the player calls again or the hand ends (by any player&rsquo;s win or an exhaustive draw). Curves are omitted for cases with fewer than 200 observations.</p>
+  <div class="legend" style="padding-bottom:.2rem">
+    <span><span class="sw" style="background:var(--muted);opacity:.45"></span>Baseline (all discards)</span>
+    <span><span class="sw" style="background:var(--c1)"></span>1st hand discard</span>
+    <span><span class="sw" style="background:var(--c2)"></span>2nd</span>
+    <span><span class="sw" style="background:var(--c3)"></span>3rd</span>
+  </div>
+  <div class="pmgrid" id="pmcharts"></div>
+  <p class="fnote">The baseline probabilities mostly level off after five or six turns because <i>tenpai</i> hands leave the denominator when they win. The saturation level therefore depends on the turn of the most recent call.</p>
+  <p class="lede">Remarkably, the colored curves fall below the gray baseline in many cases. This suggests that, after observing an open-hand player make a hand discard, we should adjust our estimate of their <i>tenpai</i> probability <b>downward</b> rather than upward. For hands with a very early first call (k = 3), the number of subsequent hand discards is mostly noise: the <i>tenpai</i> probabilities differ little through roughly turn 10, and only modestly thereafter. For hands with a later first call (k = 6, 9, or 12), the number of hand discards begins to matter, but in a <b>counterintuitive way</b>. In all three cohorts, a greater number of hand discards between the most recent call and turn t is associated with a lower <i>tenpai</i> probability (m = 1 &gt; m = 2 &gt; m = 3). These differences become larger as k increases. Among hands whose first call occurred on turn 12, those that subsequently made three consecutive hand discards through turn 15 had only a 14.5% chance of being in <i>tenpai</i>, less than one-third of the baseline probability.</p>
+  <p class="lede">The blue curves (m = 1) do appear to cross above the gray baseline toward the end of the hand. As we will see in the next section, however, this is because the baseline probability is not conditioned on the number of previous hand discards.</p>
+
+  <h3 style="margin-top:.6rem">Figures for n = 2 cohorts</h3>
+  <div class="pmgrid" id="pmcharts2"></div>
+  <p class="lede">The relationship is even clearer among cohorts defined by a second call. Because the baseline <i>tenpai</i> probabilities are already so high, the probabilities associated with hand discards (m = 1, 2, or 3) never exceed the baseline, except on turn 18 for k = 6. For hands with two calls, the timing of the second call is a stronger signal of <i>tenpai</i> than the number of subsequent hand discards. As long as the player continues to discard from their hand, their tenpai probability remains lower than the baseline.</p>
+
+  <h3 style="margin-top:.6rem">Conditioning on History</h3>
+  <p class="lede">Although the figures above are descriptively accurate, they do not directly answer the question we face while defending: should we adjust our estimate based on whether the opponent makes a hand discard or a draw discard? The hand-discard groups (m = 1, 2, or 3) are restricted to hands with m &minus; 1 previous hand discards following the most recent call, whereas the baseline group has no such restriction. Because the defending player knows how many previous hand discards they have observed, the appropriate comparison is between hand discards and draw discards while controlling for the number of previous hand discards (r). The table below presents the results.</p>
+  <div class="tablebox"><table>
+    <thead><tr><th rowspan="2">t</th><th colspan="3">0 prior hand discards</th><th colspan="3">1 prior</th><th colspan="3">2 prior</th></tr>
+    <tr><th>Hand discard</th><th>Draw discard</th><th>Gap</th><th>Hand discard</th><th>Draw discard</th><th>Gap</th><th>Hand discard</th><th>Draw discard</th><th>Gap</th></tr></thead>
+    <tbody><tr><td>7</td><td class="num">14.8%</td><td class="num">22.1%</td><td class="num" style="color:var(--okc)">-7.2</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr><tr><td>8</td><td class="num">20.6%</td><td class="num">31.0%</td><td class="num" style="color:var(--okc)">-10.4</td><td class="num">15.9%</td><td class="num">23.4%</td><td class="num" style="color:var(--okc)">-7.4</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr><tr><td>9</td><td class="num">25.4%</td><td class="num">40.3%</td><td class="num" style="color:var(--okc)">-14.9</td><td class="num">20.6%</td><td class="num">31.7%</td><td class="num" style="color:var(--okc)">-11.0</td><td class="num">15.0%</td><td class="num">25.9%</td><td class="num" style="color:var(--okc)">-10.9</td></tr><tr><td>10</td><td class="num">30.3%</td><td class="num">49.6%</td><td class="num" style="color:var(--okc)">-19.3</td><td class="num">24.8%</td><td class="num">40.2%</td><td class="num" style="color:var(--okc)">-15.3</td><td class="num">18.9%</td><td class="num">33.6%</td><td class="num" style="color:var(--okc)">-14.6</td></tr><tr><td>11</td><td class="num">34.2%</td><td class="num">58.4%</td><td class="num" style="color:var(--okc)">-24.3</td><td class="num">28.2%</td><td class="num">48.5%</td><td class="num" style="color:var(--okc)">-20.2</td><td class="num">22.1%</td><td class="num">41.6%</td><td class="num" style="color:var(--okc)">-19.4</td></tr><tr><td>12</td><td class="num">38.0%</td><td class="num">66.1%</td><td class="num" style="color:var(--okc)">-28.1</td><td class="num">31.4%</td><td class="num">56.5%</td><td class="num" style="color:var(--okc)">-25.1</td><td class="num">25.1%</td><td class="num">48.9%</td><td class="num" style="color:var(--okc)">-23.8</td></tr><tr><td>13</td><td class="num">41.2%</td><td class="num">73.5%</td><td class="num" style="color:var(--okc)">-32.3</td><td class="num">34.4%</td><td class="num">63.6%</td><td class="num" style="color:var(--okc)">-29.2</td><td class="num">27.6%</td><td class="num">55.8%</td><td class="num" style="color:var(--okc)">-28.2</td></tr><tr><td>14</td><td class="num">44.4%</td><td class="num">78.8%</td><td class="num" style="color:var(--okc)">-34.4</td><td class="num">38.1%</td><td class="num">69.7%</td><td class="num" style="color:var(--okc)">-31.6</td><td class="num">30.4%</td><td class="num">62.7%</td><td class="num" style="color:var(--okc)">-32.3</td></tr><tr><td>15</td><td class="num">45.3%</td><td class="num">83.6%</td><td class="num" style="color:var(--okc)">-38.3</td><td class="num">39.8%</td><td class="num">75.4%</td><td class="num" style="color:var(--okc)">-35.5</td><td class="num">33.0%</td><td class="num">68.9%</td><td class="num" style="color:var(--okc)">-35.9</td></tr><tr><td>16</td><td class="num">52.7%</td><td class="num">87.7%</td><td class="num" style="color:var(--okc)">-35.1</td><td class="num">43.4%</td><td class="num">80.9%</td><td class="num" style="color:var(--okc)">-37.5</td><td class="num">36.0%</td><td class="num">73.8%</td><td class="num" style="color:var(--okc)">-37.8</td></tr><tr><td>17</td><td class="num">55.5%</td><td class="num">90.4%</td><td class="num" style="color:var(--okc)">-34.9</td><td class="num">46.7%</td><td class="num">85.3%</td><td class="num" style="color:var(--okc)">-38.5</td><td class="num">38.6%</td><td class="num">78.6%</td><td class="num" style="color:var(--okc)">-40.0</td></tr><tr><td>18</td><td class="num">57.4%</td><td class="num">92.8%</td><td class="num" style="color:var(--okc)">-35.3</td><td class="num">48.8%</td><td class="num">89.6%</td><td class="num" style="color:var(--okc)">-40.8</td><td class="num">40.2%</td><td class="num">83.9%</td><td class="num" style="color:var(--okc)">-43.8</td></tr></tbody></table></div>
+  <p class="fnote">First meld called on turn 6. Each cell is the tenpai rate right after this turn&rsquo;s discard. Both arms n&ge;200 or the cell is blank.</p>
+  <p class="lede">The results are strikingly consistent. In every cohort, turn, and history level examined, hands with a hand discard have a lower probability of being in <i>tenpai</i> than hands with a draw discard. A defender who knows the number of previous hand discards should therefore adjust their estimate of the opponent&rsquo;s <i>tenpai</i> probability downward after a hand discard and upward after a draw discard. This makes intuitive sense: players who continue making draw discards toward the end of a hand are more likely to have already reached <i>tenpai</i>.</p>
+</section>
+
+<section>
+  <h2>How to Read These Numbers</h2>
+  <div class="notes">
+    <div class="note"><h3>&ldquo;The moment of the call&rdquo;</h3><p>The discard that follows a pon, chi or open kan &mdash; including when that discard deals in. An added kan upgrades an existing pon without exposing a new block, so it does not advance the meld count (89,507 of them, kept separate). A concealed kan leaves the hand closed and is not counted as a meld.</p></div>
+    
+    <div class="note"><h3>Tenpai &ne; able to ron</h3><p>Tenpai here is shape tenpai (shanten = 0), matching Tenhou&rsquo;s end-of-hand ruling: a wait all four of whose tiles are in your own hand is noten, while one whose four tiles are visible elsewhere still counts. An open hand can be tenpai with no yaku and unable to ron, so this is not the same thing as deal-in risk.</p></div>
+    <div class="note"><h3>The fourth meld</h3><p>A one-tile hand waiting on a tanki, so it is tenpai almost by construction. The exceptions are hands whose last tile is the fourth copy of a tile they themselves ponned &mdash; 5 cases in 5,996.</p></div>
+  </div>
+</section>
+
+<section class="footnotes">
+  <ol>
+    <li id="fn1">I currently do not have data from 2024 or 2025 because Tenhou stopped publishing old game logs. <a href="#fnref1">&#8617;</a></li>
+    <li id="fn2"><i>Zettaini Rasu wo Hikanai Mahjong</i>, p.&nbsp;56; <i>Mahjong Naki Yomi no Gokui</i>, p.&nbsp;53. <a href="#fnref2">&#8617;</a></li>
+  </ol>
+</section>
+
+<footer><p>Data: Tenhou Phoenix Table south games, 2018&ndash;2023 and 2026 through early September; M.League, all seasons, from konoui&rsquo;s published records.</p><p><a href="index.html">All posts</a></p><p>Tile images: <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff &mdash; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. M.League records from <a href="https://m-league.konoui.dev/">konoui&rsquo;s published data</a>.</p></footer>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+</div>
+
+<script>
+const CURVES = {"tenhou": {"1": [{"t": 1, "n": 747330, "r": 0.18, "lo": 0.17, "hi": 0.19}, {"t": 2, "n": 1601372, "r": 0.86, "lo": 0.84, "hi": 0.87}, {"t": 3, "n": 1757209, "r": 2.38, "lo": 2.36, "hi": 2.41}, {"t": 4, "n": 1796708, "r": 5.07, "lo": 5.04, "hi": 5.1}, {"t": 5, "n": 1722298, "r": 8.92, "lo": 8.87, "hi": 8.96}, {"t": 6, "n": 1591239, "r": 13.91, "lo": 13.85, "hi": 13.96}, {"t": 7, "n": 1426011, "r": 19.83, "lo": 19.76, "hi": 19.89}, {"t": 8, "n": 1239748, "r": 26.16, "lo": 26.08, "hi": 26.24}, {"t": 9, "n": 1038332, "r": 32.39, "lo": 32.3, "hi": 32.49}, {"t": 10, "n": 845079, "r": 38.2, "lo": 38.09, "hi": 38.3}, {"t": 11, "n": 680352, "r": 42.38, "lo": 42.27, "hi": 42.48}, {"t": 12, "n": 549740, "r": 44.79, "lo": 44.66, "hi": 44.91}, {"t": 13, "n": 460279, "r": 46.13, "lo": 45.98, "hi": 46.26}, {"t": 14, "n": 400777, "r": 47.83, "lo": 47.66, "hi": 47.99}, {"t": 15, "n": 346472, "r": 50.61, "lo": 50.44, "hi": 50.77}, {"t": 16, "n": 287065, "r": 52.79, "lo": 52.64, "hi": 53.0}, {"t": 17, "n": 229847, "r": 52.41, "lo": 52.2, "hi": 52.61}, {"t": 18, "n": 150271, "r": 46.95, "lo": 46.73, "hi": 47.18}], "2": [{"t": 2, "n": 72024, "r": 4.83, "lo": 4.67, "hi": 5.0}, {"t": 3, "n": 249827, "r": 10.68, "lo": 10.56, "hi": 10.79}, {"t": 4, "n": 455838, "r": 18.12, "lo": 18.02, "hi": 18.22}, {"t": 5, "n": 649228, "r": 26.43, "lo": 26.32, "hi": 26.52}, {"t": 6, "n": 768844, "r": 34.93, "lo": 34.83, "hi": 35.02}, {"t": 7, "n": 798045, "r": 42.87, "lo": 42.76, "hi": 42.98}, {"t": 8, "n": 750534, "r": 50.06, "lo": 49.94, "hi": 50.16}, {"t": 9, "n": 651560, "r": 56.26, "lo": 56.14, "hi": 56.38}, {"t": 10, "n": 534204, "r": 61.79, "lo": 61.64, "hi": 61.92}, {"t": 11, "n": 419381, "r": 66.26, "lo": 66.14, "hi": 66.39}, {"t": 12, "n": 321047, "r": 69.21, "lo": 69.04, "hi": 69.37}, {"t": 13, "n": 244273, "r": 71.13, "lo": 70.94, "hi": 71.29}, {"t": 14, "n": 189184, "r": 71.73, "lo": 71.54, "hi": 71.91}, {"t": 15, "n": 151697, "r": 71.8, "lo": 71.56, "hi": 72.0}, {"t": 16, "n": 125835, "r": 71.82, "lo": 71.6, "hi": 72.07}, {"t": 17, "n": 105374, "r": 72.63, "lo": 72.41, "hi": 72.92}, {"t": 18, "n": 82888, "r": 74.11, "lo": 73.85, "hi": 74.41}], "3": [{"t": 3, "n": 5994, "r": 40.04, "lo": 38.88, "hi": 41.31}, {"t": 4, "n": 26810, "r": 54.09, "lo": 53.51, "hi": 54.67}, {"t": 5, "n": 62028, "r": 64.48, "lo": 64.11, "hi": 64.9}, {"t": 6, "n": 101949, "r": 72.86, "lo": 72.59, "hi": 73.11}, {"t": 7, "n": 130990, "r": 78.37, "lo": 78.16, "hi": 78.6}, {"t": 8, "n": 144046, "r": 82.87, "lo": 82.65, "hi": 83.06}, {"t": 9, "n": 140824, "r": 85.86, "lo": 85.67, "hi": 86.01}, {"t": 10, "n": 126166, "r": 88.13, "lo": 87.95, "hi": 88.31}, {"t": 11, "n": 105937, "r": 89.76, "lo": 89.58, "hi": 89.94}, {"t": 12, "n": 85016, "r": 90.69, "lo": 90.48, "hi": 90.88}, {"t": 13, "n": 66682, "r": 91.1, "lo": 90.9, "hi": 91.33}, {"t": 14, "n": 51121, "r": 91.02, "lo": 90.77, "hi": 91.27}, {"t": 15, "n": 39942, "r": 90.32, "lo": 90.02, "hi": 90.61}, {"t": 16, "n": 32528, "r": 89.28, "lo": 88.95, "hi": 89.64}, {"t": 17, "n": 27448, "r": 88.49, "lo": 88.12, "hi": 88.89}, {"t": 18, "n": 23713, "r": 88.94, "lo": 88.58, "hi": 89.36}], "4": [{"t": 4, "n": 123, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 5, "n": 529, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 6, "n": 1168, "r": 99.91, "lo": 99.74, "hi": 100.0}, {"t": 7, "n": 1774, "r": 99.94, "lo": 99.83, "hi": 100.0}, {"t": 8, "n": 2250, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 9, "n": 2608, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 10, "n": 2518, "r": 99.96, "lo": 99.84, "hi": 100.0}, {"t": 11, "n": 2485, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 12, "n": 2030, "r": 99.95, "lo": 99.85, "hi": 100.0}, {"t": 13, "n": 1766, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 14, "n": 1491, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 15, "n": 1274, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 16, "n": 1171, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 17, "n": 1200, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 18, "n": 1306, "r": 99.69, "lo": 99.38, "hi": 99.93}]}, "mleague": {"1": [{"t": 1, "n": 610, "r": 0.0, "lo": 0.0, "hi": 0.0}, {"t": 2, "n": 1665, "r": 0.84, "lo": 0.42, "hi": 1.25}, {"t": 3, "n": 1803, "r": 2.88, "lo": 2.19, "hi": 3.73}, {"t": 4, "n": 1935, "r": 5.68, "lo": 4.67, "hi": 6.62}, {"t": 5, "n": 1977, "r": 10.57, "lo": 9.15, "hi": 11.89}, {"t": 6, "n": 1856, "r": 15.68, "lo": 14.29, "hi": 17.14}, {"t": 7, "n": 1773, "r": 24.42, "lo": 22.43, "hi": 26.49}, {"t": 8, "n": 1734, "r": 30.51, "lo": 28.68, "hi": 32.47}, {"t": 9, "n": 1499, "r": 35.82, "lo": 33.37, "hi": 38.02}, {"t": 10, "n": 1301, "r": 44.66, "lo": 42.34, "hi": 47.53}, {"t": 11, "n": 1096, "r": 47.63, "lo": 44.84, "hi": 50.29}, {"t": 12, "n": 840, "r": 51.79, "lo": 48.35, "hi": 55.42}, {"t": 13, "n": 748, "r": 55.88, "lo": 52.17, "hi": 59.4}, {"t": 14, "n": 630, "r": 54.29, "lo": 50.5, "hi": 58.22}, {"t": 15, "n": 520, "r": 56.15, "lo": 52.31, "hi": 60.35}, {"t": 16, "n": 531, "r": 55.74, "lo": 51.62, "hi": 59.83}, {"t": 17, "n": 470, "r": 55.74, "lo": 51.4, "hi": 60.61}, {"t": 18, "n": 248, "r": 52.82, "lo": 46.95, "hi": 58.12}], "2": [{"t": 2, "n": 64, "r": 6.25, "lo": 1.52, "hi": 12.9}, {"t": 3, "n": 259, "r": 13.13, "lo": 9.12, "hi": 17.64}, {"t": 4, "n": 490, "r": 19.59, "lo": 16.13, "hi": 23.09}, {"t": 5, "n": 607, "r": 29.82, "lo": 26.29, "hi": 33.11}, {"t": 6, "n": 788, "r": 36.8, "lo": 32.8, "hi": 40.1}, {"t": 7, "n": 831, "r": 48.01, "lo": 44.25, "hi": 51.17}, {"t": 8, "n": 743, "r": 54.11, "lo": 50.88, "hi": 57.45}, {"t": 9, "n": 714, "r": 57.28, "lo": 53.37, "hi": 60.62}, {"t": 10, "n": 613, "r": 66.4, "lo": 62.68, "hi": 70.43}, {"t": 11, "n": 463, "r": 68.03, "lo": 63.49, "hi": 71.95}, {"t": 12, "n": 416, "r": 72.84, "lo": 68.57, "hi": 76.93}, {"t": 13, "n": 290, "r": 78.28, "lo": 73.67, "hi": 83.02}, {"t": 14, "n": 235, "r": 76.6, "lo": 70.86, "hi": 81.68}, {"t": 15, "n": 176, "r": 73.86, "lo": 67.61, "hi": 80.63}, {"t": 16, "n": 165, "r": 79.39, "lo": 72.87, "hi": 84.74}, {"t": 17, "n": 116, "r": 79.31, "lo": 71.23, "hi": 86.64}, {"t": 18, "n": 98, "r": 69.39, "lo": 61.32, "hi": 78.36}], "3": [{"t": 3, "n": 5, "r": 0.0, "lo": 0.0, "hi": 0.0}, {"t": 4, "n": 36, "r": 52.78, "lo": 38.08, "hi": 70.14}, {"t": 5, "n": 60, "r": 61.67, "lo": 49.07, "hi": 72.28}, {"t": 6, "n": 88, "r": 70.45, "lo": 61.15, "hi": 78.53}, {"t": 7, "n": 98, "r": 83.67, "lo": 75.99, "hi": 91.83}, {"t": 8, "n": 124, "r": 79.03, "lo": 71.03, "hi": 86.48}, {"t": 9, "n": 109, "r": 88.99, "lo": 82.97, "hi": 94.71}, {"t": 10, "n": 100, "r": 90.0, "lo": 83.7, "hi": 95.72}, {"t": 11, "n": 94, "r": 92.55, "lo": 85.71, "hi": 97.56}, {"t": 12, "n": 61, "r": 88.52, "lo": 80.54, "hi": 96.12}, {"t": 13, "n": 74, "r": 91.89, "lo": 85.33, "hi": 97.28}, {"t": 14, "n": 38, "r": 92.11, "lo": 81.41, "hi": 100.0}, {"t": 15, "n": 43, "r": 97.67, "lo": 91.77, "hi": 100.0}, {"t": 16, "n": 34, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 17, "n": 23, "r": 86.96, "lo": 72.11, "hi": 100.0}, {"t": 18, "n": 17, "r": 100.0, "lo": 100.0, "hi": 100.0}], "4": [{"t": 4, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 6, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 7, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 8, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 9, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 10, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 11, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 12, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 13, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 14, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 15, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 18, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}]}};
+const PMK = {"3": [{"t": 4, "base": [1530560, 73146], "m1": [917928, 43381]}, {"t": 5, "base": [1314611, 107044], "m1": [277172, 21682], "m2": [432956, 33796]}, {"t": 6, "base": [1115070, 136891], "m1": [100833, 11299], "m2": [265671, 30047], "m3": [190768, 21077]}, {"t": 7, "base": [935070, 157943], "m1": [40628, 6267], "m2": [141387, 21279], "m3": [177338, 25650]}, {"t": 8, "base": [774652, 166868], "m1": [17543, 3470], "m2": [73059, 13770], "m3": [123633, 22043]}, {"t": 9, "base": [635002, 164359], "m1": [7847, 1885], "m2": [38329, 8532], "m3": [77230, 16168]}, {"t": 10, "base": [514994, 152446], "m1": [3643, 995], "m2": [19548, 5130], "m3": [46560, 11183]}, {"t": 11, "base": [413416, 134526], "m1": [1791, 555], "m2": [10327, 3047], "m3": [26524, 7250]}, {"t": 12, "base": [329886, 114143], "m1": [970, 375], "m2": [5455, 1783], "m3": [15067, 4606]}, {"t": 13, "base": [261260, 93699], "m1": [510, 207], "m2": [2923, 1049], "m3": [8777, 2941]}, {"t": 14, "base": [206665, 74958], "m1": [246, 90], "m2": [1602, 594], "m3": [4935, 1779]}, {"t": 15, "base": [163396, 59345], "m1": [152, 64], "m2": [872, 361], "m3": [2876, 1054]}, {"t": 16, "base": [129336, 46666], "m1": [94, 43], "m2": [527, 241], "m3": [1624, 670]}, {"t": 17, "base": [103009, 37002], "m1": [36, 18], "m2": [303, 152], "m3": [1053, 468]}, {"t": 18, "base": [76404, 27753], "m1": [25, 11], "m2": [164, 73], "m3": [602, 268]}], "6": [{"t": 7, "base": [1322632, 246710], "m1": [623634, 92568]}, {"t": 8, "base": [1090573, 256476], "m1": [229240, 47211], "m2": [247640, 39439]}, {"t": 9, "base": [889408, 249460], "m1": [98789, 25126], "m2": [172744, 35671], "m3": [102862, 15432]}, {"t": 10, "base": [718036, 230042], "m1": [45758, 13867], "m2": [103351, 25664], "m3": [101560, 19223]}, {"t": 11, "base": [574206, 202030], "m1": [22873, 7819], "m2": [59029, 16666], "m3": [75319, 16682]}, {"t": 12, "base": [454821, 170302], "m1": [11523, 4380], "m2": [33661, 10581], "m3": [50009, 12567]}, {"t": 13, "base": [358405, 139220], "m1": [6175, 2542], "m2": [18927, 6506], "m3": [31745, 8763]}, {"t": 14, "base": [281542, 111501], "m1": [3271, 1453], "m2": [10804, 4116], "m3": [19788, 6018]}, {"t": 15, "base": [220964, 87674], "m1": [1836, 831], "m2": [6255, 2491], "m3": [11967, 3948]}, {"t": 16, "base": [174076, 68944], "m1": [1107, 583], "m2": [3657, 1587], "m3": [7203, 2595]}, {"t": 17, "base": [137782, 54033], "m1": [602, 334], "m2": [2152, 1006], "m3": [4451, 1718]}, {"t": 18, "base": [100351, 39615], "m1": [371, 213], "m2": [1254, 612], "m3": [2639, 1060]}], "9": [{"t": 10, "base": [830292, 300297], "m1": [330919, 77804]}, {"t": 11, "base": [658181, 258694], "m1": [127190, 39119], "m2": [125461, 23933]}, {"t": 12, "base": [516224, 215517], "m1": [58437, 21196], "m2": [85925, 20963], "m3": [54081, 7830]}, {"t": 13, "base": [401900, 174515], "m1": [28899, 11502], "m2": [52402, 15126], "m3": [49968, 9353]}, {"t": 14, "base": [311462, 137785], "m1": [14971, 6383], "m2": [30495, 9664], "m3": [35973, 8030]}, {"t": 15, "base": [240731, 107357], "m1": [8091, 3694], "m2": [17851, 6247], "m3": [23960, 6041]}, {"t": 16, "base": [186774, 83431], "m1": [4280, 2108], "m2": [10439, 4056], "m3": [15305, 4394]}, {"t": 17, "base": [145394, 64910], "m1": [2438, 1324], "m2": [6024, 2485], "m3": [9648, 3114]}, {"t": 18, "base": [104290, 47029], "m1": [1481, 841], "m2": [3508, 1522], "m3": [5835, 2027]}], "12": [{"t": 13, "base": [421445, 194290], "m1": [165238, 43413]}, {"t": 14, "base": [323197, 151849], "m1": [59500, 20734], "m2": [66686, 12555]}, {"t": 15, "base": [246863, 117061], "m1": [26732, 10745], "m2": [41247, 10236], "m3": [30869, 4490]}, {"t": 16, "base": [188420, 89705], "m1": [13036, 5916], "m2": [23627, 6927], "m3": [25313, 4694]}, {"t": 17, "base": [144261, 69257], "m1": [6597, 3315], "m2": [13174, 4587], "m3": [17403, 4043]}, {"t": 18, "base": [100440, 49068], "m1": [3520, 1918], "m2": [7214, 2727], "m3": [10028, 2687]}]};
+const PMK2 = {"3": [{"t": 4, "base": [223945, 35104], "m1": [106651, 15657]}, {"t": 5, "base": [198694, 41685], "m1": [42278, 8278], "m2": [40901, 7672]}, {"t": 6, "base": [174284, 45831], "m1": [19372, 4574], "m2": [32571, 7525], "m3": [15023, 3334]}, {"t": 7, "base": [151117, 47733], "m1": [9682, 2720], "m2": [21681, 5897], "m3": [17432, 4580]}, {"t": 8, "base": [129307, 47069], "m1": [5027, 1625], "m2": [13590, 4162], "m3": [15188, 4332]}, {"t": 9, "base": [108819, 44217], "m1": [2840, 983], "m2": [8451, 2776], "m3": [11410, 3602]}, {"t": 10, "base": [90399, 40014], "m1": [1484, 542], "m2": [5347, 1956], "m3": [8181, 2750]}, {"t": 11, "base": [74293, 35171], "m1": [827, 342], "m2": [3190, 1221], "m3": [5621, 2035]}, {"t": 12, "base": [60462, 30052], "m1": [485, 216], "m2": [1820, 748], "m3": [3674, 1403]}, {"t": 13, "base": [48922, 25314], "m1": [304, 137], "m2": [1165, 530], "m3": [2378, 947]}, {"t": 14, "base": [39729, 21038], "m1": [185, 94], "m2": [758, 328], "m3": [1580, 681]}, {"t": 15, "base": [32285, 17386], "m1": [102, 51], "m2": [432, 178], "m3": [1089, 460]}, {"t": 16, "base": [26112, 14187], "m1": [70, 39], "m2": [303, 133], "m3": [727, 316]}, {"t": 17, "base": [21265, 11689], "m1": [46, 20], "m2": [206, 105], "m3": [466, 216]}, {"t": 18, "base": [17106, 9527], "m1": [28, 17], "m2": [132, 67], "m3": [347, 175]}], "6": [{"t": 7, "base": [658021, 264123], "m1": [214319, 68026]}, {"t": 8, "base": [556753, 249655], "m1": [102469, 38389], "m2": [65229, 19801]}, {"t": 9, "base": [464787, 227592], "m1": [55131, 22914], "m2": [58109, 19963], "m3": [21794, 5776]}, {"t": 10, "base": [382739, 200013], "m1": [30173, 13461], "m2": [42726, 15864], "m3": [27242, 7825]}, {"t": 11, "base": [310951, 170393], "m1": [17352, 8227], "m2": [29382, 11667], "m3": [24595, 7720]}, {"t": 12, "base": [250434, 141496], "m1": [10400, 5036], "m2": [19407, 8008], "m3": [19492, 6424]}, {"t": 13, "base": [200376, 115176], "m1": [6380, 3178], "m2": [12826, 5396], "m3": [14676, 5120]}, {"t": 14, "base": [160062, 92920], "m1": [3886, 1950], "m2": [8331, 3680], "m3": [10884, 3893]}, {"t": 15, "base": [127979, 74285], "m1": [2434, 1260], "m2": [5677, 2613], "m3": [7437, 2766]}, {"t": 16, "base": [102871, 59597], "m1": [1526, 787], "m2": [3721, 1672], "m3": [5241, 1990]}, {"t": 17, "base": [82859, 47978], "m1": [1014, 574], "m2": [2490, 1185], "m3": [3801, 1546]}, {"t": 18, "base": [66225, 38669], "m1": [673, 405], "m2": [1748, 908], "m3": [2695, 1175]}], "9": [{"t": 10, "base": [530676, 313557], "m1": [135038, 55328]}, {"t": 11, "base": [425694, 260187], "m1": [66663, 30500], "m2": [39244, 12138]}, {"t": 12, "base": [337411, 210306], "m1": [37081, 17970], "m2": [34147, 11853], "m3": [14338, 3137]}, {"t": 13, "base": [265120, 166714], "m1": [21354, 10561], "m2": [24937, 9153], "m3": [16529, 4048]}, {"t": 14, "base": [207510, 130203], "m1": [12898, 6547], "m2": [17193, 6604], "m3": [14390, 3840]}, {"t": 15, "base": [162866, 101639], "m1": [7828, 4075], "m2": [11719, 4707], "m3": [11349, 3245]}, {"t": 16, "base": [127931, 79090], "m1": [4786, 2608], "m2": [7823, 3256], "m3": [8418, 2600]}, {"t": 17, "base": [101112, 62095], "m1": [3089, 1772], "m2": [5349, 2457], "m3": [6069, 2013]}, {"t": 18, "base": [79394, 48561], "m1": [2008, 1175], "m2": [3606, 1691], "m3": [4340, 1600]}], "12": [{"t": 13, "base": [244779, 169130], "m1": [57187, 24052]}, {"t": 14, "base": [187134, 127877], "m1": [27345, 12959], "m2": [18291, 4972]}, {"t": 15, "base": [142918, 96328], "m1": [15190, 7645], "m2": [14323, 4399], "m3": [7462, 1416]}, {"t": 16, "base": [109425, 72331], "m1": [8482, 4422], "m2": [9953, 3353], "m3": [7717, 1680]}, {"t": 17, "base": [84396, 54962], "m1": [5078, 2790], "m2": [6735, 2536], "m3": [6221, 1557]}, {"t": 18, "base": [64471, 41499], "m1": [3249, 1849], "m2": [4453, 1817], "m3": [4677, 1269]}]};
+const SEGS = [[1,6,"ROW 1"],[7,12,"ROW 2"],[13,18,"ROW 3"]];
+const NAMES = {1:"1st meld",2:"2nd meld",3:"3rd meld",4:"4th meld"};
+const MINN = 30;
+const pts = (src,f) => (CURVES[src][f]||[]).filter(d => d.n >= MINN);
+function segRate(src,f,a,b){
+  let n=0,k=0;
+  for(const d of (CURVES[src][f]||[])) if(d.t>=a && d.t<=b){ n+=d.n; k+=d.n*d.r/100; }
+  return n ? {rate:100*k/n, n} : null;
+}
+function crossing(src,f){
+  const p = pts(src,f);
+  for(let i=1;i<p.length;i++){
+    const a=p[i-1].r, b=p[i].r;
+    if(a<50 && b>=50) return p[i-1].t + (50-a)/(b-a);
+    if(a>=50 && b<50) return p[i-1].t + (a-50)/(a-b);
+  }
+  return p.length && p[0].r>=50 ? p[0].t : null;
+}
+const fmt = n => n.toLocaleString("en-US");
+
+const CLAIMS = [
+  {f:3, a:1,  b:6,  row:"ROW 1 OF THE POND", stmt:"3rd meld by the 6th discard"},
+  {f:2, a:7,  b:12, row:"ROW 2", stmt:"2nd meld on discards 7\u201312"},
+  {f:1, a:13, b:18, row:"ROW 3", stmt:"1st meld from the 13th on"},
+];
+document.getElementById("claims").innerHTML = CLAIMS.map(c => {
+  const s = segRate("tenhou", c.f, c.a, c.b);
+  const gap = Math.abs(s.rate - 50);
+  const hit = gap < 3;
+  return `<div class="claim">
+    <div class="rw">${c.row}</div>
+    <div class="stmt">${c.stmt}<br><span style="color:var(--muted)">\u2192 said to be ~50% tenpai</span></div>
+    <div><span class="big" style="color:var(--c${c.f})">${s.rate.toFixed(1)}%</span>
+      <span class="vs">measured \u00B7 n=${fmt(s.n)}</span></div>
+    <div class="verdict ${hit?"hit":"miss"}">${hit ? "\u2713 close" : (s.rate>50?"\u25B2 ":"\u25BC ") + gap.toFixed(0) + " points off"}</div>
+  </div>`;
+}).join("");
+
+function draw(id, src, h, maxF){
+  const svg = document.getElementById(id);
+  const W=900, L=52, R=104, T=18, B=44, PW=W-L-R, PH=h-T-B;
+  const x = t => L + (t-1)/17*PW;
+  const y = v => T + (1-v/100)*PH;
+  let o = "";
+  SEGS.forEach((s,i) => {
+    if(i%2===0){
+      const xa = Math.max(L, x(s[0]-0.5)), xb = Math.min(L+PW, x(s[1]+0.5));
+      o += `<rect class="bandfill" x="${xa}" y="${T}" width="${xb-xa}" height="${PH}"/>`;
+    }
+    o += `<text class="bandlab" x="${(x(s[0])+x(s[1]))/2}" y="${T+14}" text-anchor="middle">${s[2]}</text>`;
+  });
+  for(let v=0; v<=100; v+=25) o += `<line class="gridline" x1="${L}" y1="${y(v)}" x2="${L+PW}" y2="${y(v)}"/>`
+    + `<text class="tick" x="${L-9}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+  for(let t=1; t<=18; t++) if(t%2===1 || t===18)
+    o += `<text class="tick" x="${x(t)}" y="${h-B+20}" text-anchor="middle">${t}</text>`;
+  o += `<line class="axis" x1="${L}" y1="${T+PH}" x2="${L+PW}" y2="${T+PH}"/>`;
+  o += `<line class="refl" x1="${L}" y1="${y(50)}" x2="${L+PW}" y2="${y(50)}"/>`;
+  o += `<text class="reflab" x="${L+4}" y="${y(50)-7}">50%</text>`;
+  o += `<text class="tick" x="${L+PW/2}" y="${h-6}" text-anchor="middle" style="font-size:12px">Turn (your own discard count)</text>`;
+  for(let f=maxF; f>=1; f--){
+    const p = pts(src,f);
+    if(p.length < 2) continue;
+    o += `<path class="ci f${f}" d="${
+      p.map(d=>`${x(d.t)},${y(d.hi)}`).join(" L ").replace(/^/,"M ")
+      + " L " + p.slice().reverse().map(d=>`${x(d.t)},${y(d.lo)}`).join(" L ") + " Z"}"/>`;
+    o += `<path class="ln s${f}" d="M ${p.map(d=>`${x(d.t)},${y(d.r)}`).join(" L ")}"/>`;
+    const last = p[p.length-1];
+    o += `<text class="endlab f${f}" x="${x(last.t)+9}" y="${y(last.r)+4}">${NAMES[f]}</text>`;
+    const c = crossing(src,f);
+    if(c) o += `<circle class="xmark s${f}" cx="${x(c)}" cy="${y(50)}" r="4.5"/>`;
+  }
+  svg.innerHTML = o;
+}
+draw("chart-tenhou","tenhou",470,4);
+draw("chart-mleague","mleague",400,3);
+
+document.getElementById("legend").innerHTML = [1,2,3,4].map(f =>
+  `<span><i class="sw" style="background:var(--c${f})"></i>${NAMES[f]}</span>`).join("")
+  + `<span><i class="sw" style="background:var(--muted);height:2px"></i>50% line \u00B7 \u25CB = crossing</span>`;
+
+document.getElementById("cross").innerHTML =
+  `<div class="claims" style="margin-top:1rem">` + [1,2,3].map(f => {
+    const c = crossing("tenhou",f), m = crossing("mleague",f);
+    return `<div class="claim"><div class="rw">${NAMES[f].toUpperCase()}</div>
+      <div><span class="big" style="color:var(--c${f})">${c.toFixed(1)}</span>
+      <span class="vs">turn where it crosses 50%</span></div>
+      <div class="stmt" style="color:var(--muted);font-size:.86rem">M.League: turn ${m.toFixed(1)}</div></div>`;
+  }).join("") + `</div>`;
+
+let th = `<thead><tr><th>Turn</th>` + [1,2,3,4].map(f=>`<th>${NAMES[f]}</th>`).join("") + `</tr></thead><tbody>`;
+for(let t=1; t<=18; t++){
+  th += `<tr><td>${t}</td>` + [1,2,3,4].map(f => {
+    const d = (CURVES.tenhou[f]||[]).find(z=>z.t===t);
+    if(!d || d.n < MINN) return `<td class="num" style="color:var(--muted)">\u2014</td>`;
+    return `<td class="num">${d.r.toFixed(1)}% <span style="color:var(--muted)">[${d.lo.toFixed(1)}, ${d.hi.toFixed(1)}] ${fmt(d.n)}</span></td>`;
+  }).join("") + `</tr>`;
+}
+document.getElementById("tbl").innerHTML = th + `</tbody>`;
+
+function cohortPanels(data, boxId, nth){
+  const box = document.getElementById(boxId);
+  const W=560,H=330,L=48,R=16,T=16,B=40,PW=W-L-R,PH=H-T-B;
+  const y=v=>T+(1-v/100)*PH, x=t=>L+(t-1)/(18-1)*PW;
+  const MCOL={1:"var(--c1)",2:"var(--c2)",3:"var(--c3)"};
+  const line=(pts,val)=>pts.map((d,i)=>(i?"L":"M")+x(d.t).toFixed(1)+" "+y(val(d)).toFixed(1)).join("");
+  for(const k of ["3","6","9","12"]){
+    const rows = data[k];
+    let o=`<figure class="chartfig"><h3>${nth} called on turn ${k}</h3>
+      <div class="chartbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:24rem">`;
+    for(let v=0;v<=100;v+=25)
+      o+=`<line class="gridline" x1="${L}" y1="${y(v)}" x2="${L+PW}" y2="${y(v)}"/>`
+        +`<text class="tick" x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+    o+=`<line class="refl" x1="${L}" y1="${y(50)}" x2="${L+PW}" y2="${y(50)}"/>`;
+    o+=`<line x1="${x(+k)}" y1="${T}" x2="${x(+k)}" y2="${T+PH}" stroke="var(--rule)" stroke-width="1.6"/>`
+      +`<text class="tick" x="${x(+k)}" y="${T+12}" text-anchor="middle">call</text>`;
+    const base = rows.filter(d=>d.base[0]>=200);
+    o+=`<path d="${line(base,d=>100*d.base[1]/d.base[0])}" fill="none" stroke="var(--muted)" stroke-width="2.4" opacity=".45"/>`;
+    for(const m of [1,2,3]){
+      const pts = rows.filter(d=>d["m"+m] && d["m"+m][0]>=200);
+      if(pts.length>1) o+=`<path d="${line(pts,d=>100*d["m"+m][1]/d["m"+m][0])}" fill="none" stroke="${MCOL[m]}" stroke-width="2.2"/>`;
+    }
+    for(let t=3;t<=18;t+=3)
+      o+=`<text class="tick" x="${x(t)}" y="${H-10}" text-anchor="middle">${t}</text>`;
+    o+=`</svg></div><figcaption>x-axis: turn t. Vertical line = the call (k=${k}). Points with n&lt;200 are not drawn.</figcaption></figure>`;
+    box.innerHTML+=o;
+  }
+}
+cohortPanels(PMK, "pmcharts", "First meld");
+cohortPanels(PMK2, "pmcharts2", "Second meld");
+</script>
+<script src="comments.js"></script>
