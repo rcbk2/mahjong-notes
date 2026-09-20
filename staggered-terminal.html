@@ -1,0 +1,481 @@
+<title>Staggered Discards of Terminal Pairs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:17px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+h4{font-size:.88rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.tcap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:-.8rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
+
+.home{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;align-self:flex-start}
+.home:hover,.home:focus-visible{color:var(--ink)}
+</style>
+
+<style>
+h4{font-size:.92rem;font-weight:700;margin:.3rem 0 0}
+.fig{margin:0;background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:.9rem;box-shadow:var(--shadow)}
+.fig img{max-width:100%;display:block;border-radius:3px}
+.fig figcaption{font-size:.8rem;color:var(--muted);margin-top:.5rem}
+.pat{display:inline-flex;align-items:center;gap:.15rem;border:1px solid var(--rule);
+  border-radius:4px;padding:.18rem .4rem;margin:.14rem .18rem;background:var(--card)}
+.pat .pl{font-family:"Roboto Mono",monospace;font-size:.66rem;color:var(--muted);margin-right:.2rem}
+.pat .pdraw{margin-left:.3rem;padding-left:.3rem;border-left:1px dashed var(--rule)}
+.pat .pdraw .ti{box-shadow:0 0 0 2px var(--gold)}
+td.num{font-family:"Roboto Mono",monospace;font-size:.8rem;text-align:right}
+td.num .ci{font-size:.68rem;color:var(--muted);font-weight:400}
+ul.pt,ol.pt{margin:.2rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.25rem;max-width:64ch;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <a class="home" href="index.html">&larr; All posts</a>
+  <p class="eyebrow">GAME RECORDS / TENHOU HOUOU</p>
+  <h1>Staggered Discards of Terminal Pairs</h1>
+  <p class="sub">Testing Zundamon&rsquo;s terminal-pair discard theory against eighteen million hands of Tenhou records.</p>
+  <p class="postmeta"><time datetime="2026-09-20">20 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-en">English</a><a class="tag" href="index.html#tag=logs">Log analysis</a><a class="tag" href="index.html#tag=reading">Discard reading</a><a class="tag" href="index.html#tag=tenhou">Tenhou</a></span></p>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">The beast that counted tiles at the edge of the world.</span></span>
+  </a>
+</header>
+
+<div class="tldr">
+  <p class="k">TL;DR</p>
+  <ul>
+    <li>Only <b>60.6%</b> of apparent staggered terminal-pair discards come from genuine pairs. A short interval (1&ndash;4 turns) with no intervening block discard raises this to about 80%.</li>
+    <li>The theory&rsquo;s main prediction fails: waits on the <b>first inward <i>suji</i></b> (2&ndash;5 / 5&ndash;8) are about <b>20% more likely</b> after the pattern, not less.</li>
+    <li>Waits on the <b>second inward <i>suji</i></b> (3&ndash;6 / 4&ndash;7) are about <b>5% less likely</b> &mdash; too small a difference to act on by itself.</li>
+    <li>The auxiliary prediction holds best: <b>bad-shape waits on 5</b> are about <b>20% less likely</b>.</li>
+  </ul>
+</div>
+
+<section>
+  <h2>Hand-Discard Reading</h2>
+
+<p class="lede">I&rsquo;m a huge fan of Jangoro Zundamon (<a href="https://www.youtube.com/@mkiruchan">@M Kiru Channel</a>), who provides critical commentary on M.League games.<sup class="fn" id="fnref1"><a href="#fn1">1</a></sup> Although the commentary can be quite harsh, Zundamon combines sharp hand reading with a deep understanding of the game. Several professional players, including M.Leaguers Hori and Uchikawa, have publicly praised Zundamon&rsquo;s insights. I enjoy watching the commentary alongside the game records available <a href="https://m-league.konoui.dev/">here</a> to see how well the reads hold up.</p>
+<p class="lede">I was therefore excited when Zundamon launched a new series titled &ldquo;A Course on Hand-Discard Reading&rdquo; in August 2026. The lectures are introductory and aimed at viewers who have never studied hand-discard reading. In the regular commentary videos, Zundamon often refers to hand-reading theories without explaining them in much detail. The new lecture series, by contrast, walks viewers through the logic behind them.</p>
+  <a class="clip" href="https://www.youtube.com/watch?v=0OLOEVPbRsM" data-yt="0OLOEVPbRsM"
+     target="_blank" rel="noopener">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/0OLOEVPbRsM/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
+    <span class="ct"><span class="cn">Zundamon&rsquo;s Hand-Reading Lecture #1</span>
+      <span class="cd">Zundamon shares their hand-reading techniques, starting from the basics.</span>
+      <span class="cm">YouTube</span></span>
+  </a>
+<p class="lede">One theory Zundamon occasionally invokes is what I will call &ldquo;<b>Staggered Discards of Terminal Pair</b>&rdquo;（端牌の間隔対子落とし、端牌対子の間隔切り, etc.）. The theory appears, for example, in <a href="https://www.youtube.com/watch?v=qYrcIWNUAJs&amp;t=1s">episode 14</a>, <a href="https://www.youtube.com/watch?v=t0C8IKVv3Y8">episode 19</a>, <a href="https://www.youtube.com/watch?v=gHw2U4JwmOI">episode 66</a>, and <a href="https://www.youtube.com/watch?v=AQS6aIPkQho">episode 70</a>.</p>
+<p class="lede">The theory&rsquo;s main prediction is that when a player hand-discards a pair of terminal tiles several turns apart &mdash; for example, discarding <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> from the hand on turns four and six &mdash; the two neighboring <i>suji</i>, <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> and <img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou6.svg" alt="6s">, become safer than they would be under ordinary circumstances.</p>
+<p class="lede">I was fascinated by this theory. Although I have read my fair share of mahjong strategy books, I have never seen it explained in any of them. The logic behind it initially appeared airtight, and the resulting read could be useful on both offense and defense. I therefore wanted to examine the data to see how useful this theory would be in practice &mdash; for example, how often this type of discard shows up in actual games, and whether the prediction has boundary conditions.</p>
+<p class="lede">My analysis of Tenhou game records, however, suggests that the theory&rsquo;s main prediction is inconsistent with the data. In fact, one of the <i>suji</i> predicted to be safer appears to be more dangerous than the baseline. At the same time, the data support one of the theory&rsquo;s auxiliary predictions.</p>
+<p class="lede">Before presenting the results, I will first sketch the logic behind the theory. My explanation is based almost entirely on Zundamon&rsquo;s lectures &mdash; primarily lectures <a href="https://www.youtube.com/watch?v=0OLOEVPbRsM">1</a> and <a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">2</a>, but also lecture <a href="https://www.youtube.com/watch?v=MtsJ5TDSzjk">6</a> &mdash; so readers already familiar with the theory can skip this section. I then divide the theory&rsquo;s empirical predictions into two parts. The first asks whether staggered discards really indicate that the player originally held a pair. The second asks whether staggered discards actually make the adjacent <i>suji</i> safer.</p>
+</section>
+
+<section>
+  <h2>Zundamon&rsquo;s Hand-Discard Reading Theory</h2>
+  <h3>Definitions</h3>
+<p class="lede">Zundamon begins by arguing that only three types of hand discards (<i>tedashi</i>) convey reliable information. Other hand discards are generally too noisy to serve as useful signals.</p>
+<h4>1. Reverse discards</h4><ul class="pt"><li>A player discards a tile from 3 through 7 and later hand-discards a 1, 2, 8, or 9 in any suit.</li><li>Alternatively, a player discards a 2 or 8 and later hand-discards a 1 or 9 in any suit.</li><li>Example: the player discards <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"> on turn three and later hand-discards <img class="ti" src="assets/tiles/Sou9.svg" alt="9s">.</li></ul>
+<h4>2. Staggered protorun (<i>taatsu</i>) discards</h4><ul class="pt"><li>A player discards a number tile on turn <i>t</i> and then, on turn <i>t</i> + 2 or later, hand-discards another tile that would form a protorun with it.</li><li>Example: the player discards <img class="ti" src="assets/tiles/Pin4.svg" alt="4p"> on turn three and hand-discards <img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> on turn five.</li></ul>
+<h4>3. Staggered pair (<i>toitsu</i>) discards</h4><ul class="pt"><li>A player discards a number tile on turn <i>t</i> and then, on turn <i>t</i> + 2 or later, hand-discards another copy of the same tile.</li><li>Example: the player discards <img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> on turn three and hand-discards another <img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> on turn five.</li></ul>
+<p class="lede">What these three cases have in common is that the second tile was unlikely to have been kept as an isolated tile. In a normal hand &mdash; that is, one not pursuing <i>kokushi</i>, <i>chiitoitsu</i>, or a one-suit hand &mdash; a player would not normally keep an isolated <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> over an isolated <img class="ti" src="assets/tiles/Pin7.svg" alt="7p">, or keep an isolated <img class="ti" src="assets/tiles/Man4.svg" alt="4m"> after discarding <img class="ti" src="assets/tiles/Man2.svg" alt="2m">. In these examples, the retained <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> or <img class="ti" src="assets/tiles/Man4.svg" alt="4m"> was therefore probably connected to other tiles.</p>
+<p class="lede">Most other hand discards are less informative because the discarded tile may have been either isolated or connected. For example, if a player hand-discards <img class="ti" src="assets/tiles/Pin9.svg" alt="9p"> on consecutive turns rather than several turns apart, the player may simply have held an isolated pair of <img class="ti" src="assets/tiles/Pin9.svg" alt="9p"> in a hand containing three pairs. According to Zundamon, we can therefore concentrate on these three categories rather than trying to remember every hand discard made by all three opponents.<sup class="fn" id="fnref2"><a href="#fn2">2</a></sup></p>
+<h3>Exceptions</h3>
+<p class="lede">Several exceptions must be kept in mind. According to Zundamon, however, these situations often produce other visible clues.</p>
+<p class="lede"><b>A. The second tile was retained as a safety tile.</b> In particular, the player may have drawn the second copy after discarding the first. Suppose the player is in the process of abandoning a tile block, such as a <img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> protorun, and then draws a copy of a previously discarded <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">. The player might retain <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> because it appears safer, discard <img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> instead, and then hand-discard <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> on the following turn.</p>
+<p class="lede"><b>B. The second tile was retained as a potential pair for chiitoitsu.</b></p>
+<p class="lede"><b>C. The second tile was retained as a floating tile to pursue a yaku, such as <i>sanshoku</i> or <i>ittsu</i>.</b></p>
+<h3>The Logic</h3>
+<p class="lede">After we detect one of those hand discards, the next step is to enumerate all possible patterns of relevant connected tiles and then eliminate unlikely patterns. Suppose we observed staggered hand discards of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p">. Upon observing the second discard of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p">, the possible connected tiles we should consider are illustrated in the following screenshot (taken from Zundamon&rsquo;s <a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">lecture 2</a>).</p>
+<figure class="fig"><img src="assets/figures/stagger_patterns.png" alt="Pattern enumeration from the lecture" loading="lazy"></figure>
+<p class="lede">I list them below.</p>
+<p class="tcap">Table 1. Possible patterns behind staggered discards of a terminal</p>
+<div class="tablebox"><table>
+  <thead><tr><th>#</th><th>Pattern family</th><th>Shapes (gold ring = the tile just drawn)</th></tr></thead>
+  <tbody><tr><td class="num">1</td><td style="white-space:normal">Slide-ish / fake hand</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">f</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"></span></span></td></tr><tr><td class="num">2</td><td style="white-space:normal">A completed group (<i>mentsu</i>)</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></span><span class="pat"><span class="pl">f</span><span style="color:var(--muted)">more complicated shapes</span></span></td></tr><tr><td class="num">3</td><td style="white-space:normal">Fixing a bad shape</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span><span class="pat"><span class="pl">f</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">g</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span><span class="pat"><span class="pl">h</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p"></span><span class="pat"><span class="pl">i</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span></td></tr><tr><td class="num">4</td><td style="white-space:normal">Fixing a good-shaped protorun</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span></td></tr><tr><td class="num">5</td><td style="white-space:normal">From 4-tile block to 3-tile block</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></td></tr><tr><td class="num">6</td><td style="white-space:normal">Strong floating tile</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span></td></tr><tr><td class="num">7</td><td style="white-space:normal">Dropping a pair or protorun</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></td></tr></tbody></table></div>
+<p class="lede">The observation that the player had discarded one <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> several turns earlier allows us to eliminate or discount many of these patterns.</p>
+<ul class="pt"><li>2-a, 2-b, 3-a, 3-b, 4-a, 4-c, 5-b, 5-e, 7-a. Having these patterns now implies the player had a triplet of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> when one copy of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> was discarded several turns earlier, which is unnatural.</li><li>1-b, 1-c, 7-b, 7-c are unlikely (though not impossible). Having these shapes now implies the player committed to a bad-shaped protorun when one copy of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> was discarded several turns earlier. This happens much less frequently compared with fixing a good-shaped protorun or a pair.</li><li>5-c, 6-b are also less likely (11355 or 11345 are less likely to be broken)</li></ul>
+<p class="lede">After these patterns are eliminated or discounted, the most plausible remaining shapes tend either to contain multiple copies of <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"> or <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"> or to include an already completed pinzu block. Only one of the remaining patterns, 4-b, produces a <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> <i>ryanmen</i> wait, and only one, 4-d, produces a <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> <i>ryanmen</i> wait. These possibilities become even less likely when two or more copies of the relevant supporting tiles (<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"> or <img class="ti" src="assets/tiles/Pin4.svg" alt="4p">) are visible.</p>
+<p class="lede">As for 2-f (more complicated shapes), shapes such as <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> (staggered <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> discard would generate a <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> wait) or <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> (staggered <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> discard would generate a <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> wait) are unlikely because it is unnatural to discard the first <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> in these shapes. <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> (staggered <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> discard would generate a <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> wait) is a possibility.</p>
+<h3>Auxiliary prediction</h3>
+<p class="lede">As an auxiliary proposition, Zundamon argues that a staggered discard of <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> or <img class="ti" src="assets/tiles/Pin9.svg" alt="9p"> also makes a bad-shape wait on <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> slightly less likely. The elimination process leaves fewer patterns containing a <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"> sequence and proportionally more containing <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"> or <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">. These remaining patterns are less likely to coexist with an isolated <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> <i>tanki</i>, a <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> <i>shanpon</i>, or a <img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> <i>kanchan</i> waiting on <img class="ti" src="assets/tiles/Pin5.svg" alt="5p">.</p>
+<p class="lede">For example, if the hand contains <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"> together with a <i>shanpon</i> involving <img class="ti" src="assets/tiles/Pin5.svg" alt="5p">, the relevant shape must have been something like <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> when the second <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> was discarded. Fixing the <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> pair at that point would be unlikely. Similarly, if the hand contains <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"> together with a <img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> <i>kanchan</i>, the shape must have been something like <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> when the second <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"> was discarded. Committing to the <i>kanchan</i> at that stage would also be unlikely.</p>
+<p class="lede">If the hand contains <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">, shapes such as <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> or <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> would produce a <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> wait rather than a standalone bad-shape wait on <img class="ti" src="assets/tiles/Pin5.svg" alt="5p">. A bad-shape wait on <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> remains possible, but the theory predicts that it should occur less frequently.</p>
+<h3>Hypotheses</h3>
+<p class="lede">In summary, this process produces the following predictions:</p>
+<div class="tldr" style="border-left-color:var(--ai)">
+  <span class="k">Predictions</span>
+  <ul>
+    <li><b>P1.</b> Conditional on the staggered discards, the <b>first inward <i>suji</i></b> (2&ndash;5) should be less likely to be the wait. The theory ranks this as the safest of the two &mdash; the elimination leaves only one pattern (4-b) that produces it.</li>
+    <li><b>P2.</b> The <b>second inward <i>suji</i></b> (3&ndash;6) should also be less likely, though not as unlikely as the first: one pattern (4-d) plus a corner case (112245) survive the elimination.</li>
+    <li><b>P3.</b> A <b>bad-shape wait on 5</b> should also be less likely.</li>
+  </ul>
+  <p style="font-size:.9rem;color:var(--muted);margin:0">These are stated for staggered hand discards of 1; discards of 9 mirror them, with 5&ndash;8 and 4&ndash;7 as the corresponding <i>suji</i>.</p>
+</div>
+</section>
+
+<section>
+  <h2>Applications</h2>
+<p class="lede">Zundamon argues that the theory can be useful on both offense and defense. The first screenshot below, taken from <a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">episode 2</a>, presents a difficult push&ndash;fold decision with a 1-<i>shanten</i> hand. Without noticing the right-hand player&rsquo;s staggered hand discards of <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">, we might face a difficult choice between folding completely with <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"> and pushing either <img class="ti" src="assets/tiles/Man8.svg" alt="8m"> or <img class="ti" src="assets/tiles/Sou7.svg" alt="7s"> to preserve 1-<i>shanten</i>.</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd1.png" alt="Push-fold decision 1" loading="lazy"></figure>
+<p class="lede">The theory, however, points to <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> as another option. Because <img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> is <i>genbutsu</i>, the <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> <i>suji</i> is impossible. The staggered discards of <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> means the <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> <i>suji</i> should be unlikely. The theory also predicts that a <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> <i>shanpon</i>, <i>tanki</i>, or <i>kanchan</i> should be relatively unlikely. Zundamon claims that this <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> is almost as safe as a never-discarded honor tile such as <img class="ti" src="assets/tiles/Chun.svg" alt="Chun">, therefore recommending pushing <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> to maintain 1-<i>shanten</i>.</p>
+<p class="lede">In the second screenshot, the staggered hand discards of <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> are taken to make both <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> and <img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou6.svg" alt="6s"> waits less likely. Zundamon therefore recommends discarding the <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> <img class="ti" src="assets/tiles/Sou6.svg" alt="6s"> block to maintain 1-<i>shanten</i>.</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd2.png" alt="Push-fold decision 2" loading="lazy"></figure>
+<p class="lede">In the final screenshot, we want to fold completely but have no fully safe tile. Zundamon recommends discarding <img class="ti" src="assets/tiles/Sou2.svg" alt="2s">. Because all four copies of <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"> are visible, we can eliminate pattern 4-b (<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou4.svg" alt="4s">), making it extremely unlikely that the right-hand player has a <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> wait.</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd3.png" alt="Fold decision 3" loading="lazy"></figure>
+</section>
+
+<section>
+  <h2>Empirical Test</h2>
+<p class="lede">Zundamon claims that this theory is more useful than many other hand-discard reading theories but warns that staggered pair discards occur much less frequently than the other two types. I therefore wanted to examine Tenhou game records to estimate how often the pattern occurs and, as a derivative, whether its predictions are supported by the data.</p>
+<p class="lede">Statistical analysis of game records is particularly well suited to testing hand-reading theories. I am more skeptical of observational studies that attempt to estimate the causal effects of strategic choices on game outcomes &mdash; for example, studies comparing the average hand-level expected value (<i>kyoku sh&#363;shi</i>, 局収支) of riichi and dama. The problem is that players choose between riichi and dama rather than being randomly assigned to one of them. Moreover, they are more likely to choose riichi when they believe, for reasons that may not be observed or understood by the analyst, that riichi is the better option. Consequently, even if riichi is associated with a higher average hand-level EV, the observed association does not by itself establish that declaring riichi caused the improvement.</p>
+<p class="lede">Hand-reading theories generally make predictive rather than causal claims. The present question is not what would happen if we forced a player to discard a terminal pair in a staggered fashion. Instead, it is what we can infer about the player&rsquo;s concealed hand after observing that discard pattern. The player&rsquo;s endogenous discard choice is therefore not necessarily a source of bias. On the contrary, the relationship between the concealed hand and the player&rsquo;s discard choice is precisely what makes the discard informative.<sup class="fn" id="fnref3"><a href="#fn3">3</a></sup></p>
+<p class="lede">I divide the theory&rsquo;s observable implications into two components. The first prediction is that staggered discards of a terminal tile usually represent the breakup of a genuine pair. I test this by asking whether the player already held the second copy of the terminal tile when discarding the first. In a later supplementary video, <a href="https://www.youtube.com/watch?v=MtsJ5TDSzjk">episode 6</a>, Zundamon acknowledges that the original lecture may have overstated this probability. In particular, the signal may be weak when the player discards several number tiles between the first and second terminal-tile discards.</p>
+<p class="lede">The second component consists of predictions <b>P1&ndash;P3</b> as boxed above &mdash; including the ordering claim that the first inward <i>suji</i> should be the safer of the two.</p>
+<p class="lede">Each prediction must be evaluated relative to an appropriate baseline. My initial baseline consists of other riichi hands without staggered terminal-pair discards. Because producing a staggered discard pattern necessarily takes time, players with such a pattern tend to declare riichi later than other players. I therefore adjust the comparison for the turn on which riichi was declared.<sup class="fn" id="fnref4"><a href="#fn4">4</a></sup></p>
+</section>
+
+<section>
+  <h2>Findings</h2>
+<p class="lede">The data come from Tenhou&rsquo;s Phoenix Table. They cover 2015&ndash;2023 and January through mid-September 2026, comprising 1,692,981 <i>hanchan</i> (半荘), 18,034,322 hands (局). I currently do not have access to Tenhou data for 2024 or 2025.</p>
+<h3>First-Stage Results: Did the Player Actually Hold a Pair?</h3>
+<p class="lede">Conditional on observing what appears to be a staggered discard of a terminal pair, how likely is it that the player actually held both copies when making the first discard? The theory depends on the assumption that the player initially held a terminal pair. If the player discarded one copy on turn <i>t</i> while retaining the other for several turns, we may infer that the retained copy was connected to a nearby tile block. That inference, in turn, provides the basis for predicting that the inward <i>suji</i> are safer. If the player did not initially hold both copies, however, we have no reason to expect that the hand has a nearby block or that the inward <i>suji</i> tiles are safer.</p>
+<p class="lede">Among all observed cases of staggered terminal-tile discards, only 60.6% represented genuine pairs&mdash;approximately 1.986 million out of 3.278 million cases. In the remaining cases, the player first discarded an isolated terminal, later drew another copy, retained it for at least one turn, and then hand-discarded it.</p>
+<p class="lede">As discussed above, a player might retain the second terminal despite its lack of connection to nearby blocks for several reasons. The player may be pursuing a one-suit hand, <i>kokushi</i>, or <i>chiitoitsu</i>. These explanations are generally less plausible after the player has already discarded that terminal, and such hands often produce other visible clues in the discard pond. A more important possibility is that the player retained the terminal as a safety tile. This explanation is more difficult to identify because it may leave few visible clues.</p>
+<p class="lede">The good news is that several observable features are associated with the probability that the two discards came from a genuine pair. The first is the length of the interval between the discards, as shown in Table 2. When the interval is between one and four,<sup class="fn" id="fnref5"><a href="#fn5">5</a></sup> approximately three-quarters of the cases involve genuine pairs. When the interval is between five and eight, the proportion falls below one-third. Another useful indicator is whether the player discards a tile block&mdash;a <i>taatsu</i> or <i>toitsu</i>&mdash;during the interval. When the interval is between one and four and no block is discarded, the proportion of genuine pairs rises to 80.8%.</p>
+<p class="tcap">Table 2. Genuine-pair rate by gap length</p>
+<div class="tablebox"><table>
+  <thead><tr><th>Tiles between</th><th>n</th><th>Actually a pair</th><th>No block drop between</th><th>Block drop between</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>1&ndash;4</td><td class="num">2,246,866</td><td class="num"><b>75.5%</b></td><td class="num">80.8% (1,988,995)</td><td class="num">35.2% (257,871)</td></tr>
+  <tr><td>5&ndash;8</td><td class="num">724,778</td><td class="num">32.3%</td><td class="num">42.9% (320,827)</td><td class="num">23.9% (403,951)</td></tr>
+  <tr><td>9+</td><td class="num">306,248</td><td class="num"><b>17.8%</b></td><td class="num">31.1% (49,635)</td><td class="num">15.2% (256,613)</td></tr>
+  </tbody></table></div>
+<p class="lede">The presence or absence of an intervening block discard remains informative at longer intervals. As Table 3 shows, when no block is discarded during the interval, approximately 75% of the cases involve genuine pairs, regardless of interval length. When the player does discard a block, the proportion falls by nearly 50 percentage points. If the player hand-discards an honor or terminal after discarding the block, the probability of a genuine pair increases slightly. Such a discard may indicate that the focal terminal was not retained solely as a safety tile. The difference, however, is small (27.0% vs 24.2%).</p>
+<p class="tcap">Table 3. Genuine-pair rate by block drops in between</p>
+<div class="tablebox"><table>
+  <thead><tr><th>Between the two discards</th><th>n</th><th>Actually a pair</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>No block drop</td><td class="num">2,359,457</td><td class="num"><b>74.6%</b></td></tr>
+  <tr><td>Block drop, then a hand-discarded honor/terminal</td><td class="num">150,818</td><td class="num">27.0%</td></tr>
+  <tr><td>Block drop, nothing after</td><td class="num">767,617</td><td class="num">24.2%</td></tr>
+  </tbody></table></div>
+<h3>Second-Stage Results: Are the Relevant Waits Less Likely?</h3>
+<p class="lede">I next examine whether staggered discards of terminal pairs are associated with a lower probability of inward <i>suji</i> waits and bad-shape waits on 5.</p>
+<p class="lede">The three outcomes are:</p>
+<ol class="pt" style="gap:.4rem">
+  <li>a wait on the first inward <i>suji</i>: 2&ndash;5 after staggered discards of 1, or 5&ndash;8 after staggered discards of 9;</li>
+  <li>a wait on the second inward <i>suji</i>: 3&ndash;6 after discards of 1, or 4&ndash;7 after discards of 9; and</li>
+  <li>a bad-shape wait on 5: a <i>tanki</i>, <i>kanchan</i>, or <i>shanpon</i> wait.</li>
+</ol>
+<p class="lede">Among riichi hands with staggered terminal-pair discards&mdash;the treated cases&mdash;the probability of a wait on the first inward <i>suji</i> is 4.725%. The corresponding probability for the second inward <i>suji</i> is 4.099%, while the probability of a bad-shape wait on 5 is 1.319%.</p>
+<p class="lede">I compare these probabilities with the corresponding risks under several control conditions. I define the risk ratio as the probability in the staggered-discard group divided by the probability in the control group. The theory therefore predicts a risk ratio below 1 for all three outcomes. Table 4 summarizes the results.</p>
+<p class="tcap">Table 4. Wait-rate ratios against each control group</p>
+<div class="tablebox"><table>
+  <thead><tr><th>Control group</th><th>n</th><th>1st inward suji (2&ndash;5)</th><th>2nd inward suji (3&ndash;6)</th><th>Bad-shape wait on 5</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>All other riichi</td><td class="num">76,802,181</td><td class="num">1.22 <span class="ci">[1.20, 1.23]</span></td><td class="num">0.95 <span class="ci">[0.93, 0.96]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.81]</span></td></tr>
+  <tr><td>&emsp;Terminal absent from the pond</td><td class="num">53,502,664</td><td class="num">1.32 <span class="ci">[1.30, 1.34]</span></td><td class="num">1.01 <span class="ci">[0.99, 1.02]</span></td><td class="num">0.81 <span class="ci">[0.78, 0.83]</span></td></tr>
+  <tr><td>&emsp;One copy discarded</td><td class="num">20,803,191</td><td class="num">1.08 <span class="ci">[1.06, 1.09]</span></td><td class="num">0.87 <span class="ci">[0.86, 0.88]</span></td><td class="num">0.77 <span class="ci">[0.75, 0.79]</span></td></tr>
+  <tr><td>&emsp;Two+ copies, consecutive turns only</td><td class="num">895,004</td><td class="num">0.97 <span class="ci">[0.96, 0.99]</span></td><td class="num">0.87 <span class="ci">[0.86, 0.88]</span></td><td class="num">0.75 <span class="ci">[0.73, 0.77]</span></td></tr>
+  <tr class="k"><td>&emsp;Staggered, second copy draw-discarded</td><td class="num">1,498,797</td><td class="num">1.11 <span class="ci">[1.09, 1.13]</span></td><td class="num">0.79 <span class="ci">[0.78, 0.80]</span></td><td class="num">0.71 <span class="ci">[0.69, 0.73]</span></td></tr>
+  <tr><td>&emsp;Staggered hand discard, after another riichi</td><td class="num">102,525</td><td class="num">0.99 <span class="ci">[0.94, 1.03]</span></td><td class="num">1.02 <span class="ci">[0.98, 1.06]</span></td><td class="num">0.83 <span class="ci">[0.77, 0.89]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">Ratios of the treated group&rsquo;s wait rates to each control group&rsquo;s, Mantel&ndash;Haenszel weighted over riichi turn (5 bins) &times; prior riichi (2). Treated group: n = 367,293; raw rates 4.725% / 4.099% / 1.319%. Small figures: 95% cluster-bootstrap intervals on the game.</p>
+<h4>The first inward <i>suji</i></h4>
+<p class="lede">Contrary to the theory&rsquo;s principal prediction, waits on the first inward <i>suji</i> are <b>more common</b> after staggered terminal-pair discards. Compared with all other riichi hands, a hand with staggered discards of a pair of 1 is approximately 22% more likely to have a 2&ndash;5 wait. The probability is 4.725% in the staggered-discard group, compared with 3.873% among all other riichi hands. This corresponds to an absolute increase of 0.852 percentage points.</p>
+<p class="lede">The predicted relationship appears only when the comparison group consists of riichi hands in which the player discarded a terminal pair on consecutive turns. Relative to that narrow comparison group, staggered discards are associated with a reduction of approximately 3%. This, however, does not appear to be the comparison Zundamon has in mind when applying the theory.</p>
+<p class="lede">The data therefore do not support the theory&rsquo;s strongest prediction. In the main comparison, the first inward <i>suji</i> is more dangerous.</p>
+<h4>The second inward <i>suji</i></h4>
+<p class="lede">The results for the second inward <i>suji</i> are more consistent with the theory, although the difference is small.</p>
+<p class="lede">Compared with all other riichi hands, hands with staggered terminal-pair discards are approximately 5% less likely to have a wait on the second inward <i>suji</i>. The probability is 4.099% in the staggered-discard group, compared with 4.315% among all other riichi hands. This corresponds to an absolute reduction of 0.216 percentage points.</p>
+<p class="lede">Whether a reduction of this size should affect a practical push&ndash;fold decision depends on the precision of the player&rsquo;s existing risk assessment and the other information available. My conjecture is that a difference of this magnitude will rarely change the correct decision by itself.</p>
+<h4>Bad-shape waits on 5</h4>
+<p class="lede">The largest difference concerns the auxiliary prediction about bad-shape waits on 5. Staggered terminal-pair discards are associated with an approximately 20% reduction in the probability of these waits. Thus, the prediction Zundamon presents as auxiliary receives more support than either of the theory&rsquo;s principal predictions about inward <i>suji</i>.</p>
+<h4>Shorter intervals produce stronger signals</h4>
+<p class="lede">The first-stage analysis showed that the probability of a genuine pair declines as the interval between the two terminal-tile discards increases. Table 5 incorporates this finding by presenting the second-stage results separately for different interval lengths.</p>
+<p class="tcap">Table 5. Wait-rate ratios by gap length</p>
+<div class="tablebox"><table>
+  <thead><tr><th>Tiles between</th><th>n</th><th>Actually a pair</th><th>1st inward suji</th><th>2nd inward suji</th><th>Bad-shape 5</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>1&ndash;4</td><td class="num">278,246</td><td class="num">75.5%</td><td class="num">1.19 <span class="ci">[1.17, 1.21]</span></td><td class="num">0.91 <span class="ci">[0.90, 0.93]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.82]</span></td></tr>
+  <tr><td>5&ndash;8</td><td class="num">73,678</td><td class="num">32.3%</td><td class="num">1.26 <span class="ci">[1.23, 1.31]</span></td><td class="num">1.02 <span class="ci">[0.99, 1.06]</span></td><td class="num">0.78 <span class="ci">[0.73, 0.83]</span></td></tr>
+  <tr><td>9+</td><td class="num">15,369</td><td class="num">17.8%</td><td class="num">1.41 <span class="ci">[1.31, 1.50]</span></td><td class="num">1.24 <span class="ci">[1.15, 1.32]</span></td><td class="num">0.85 <span class="ci">[0.76, 0.95]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">Ratios against a pooled control: all non-matching riichi, plus matched riichi with a longer gap than the row&rsquo;s band; matched riichi with a shorter gap are excluded from both arms. Mantel&ndash;Haenszel weighted over riichi turn &times; prior riichi. The pair rates come from stage one (different population, so n differs). Small figures: 95% cluster-bootstrap intervals on the game.</p>
+<p class="lede">The results follow the expected pattern. As the interval becomes longer and the probability of a genuine pair declines, the relevant associations generally become weaker. The practical implication is that we should focus on staggered discards separated by relatively short intervals. Cases with intervals longer than four appear too noisy to provide a useful signal.</p>
+<p class="lede">For cases with intervals between one and four, the results can be summarized as follows:</p>
+<ul class="pt" style="gap:.4rem">
+  <li>Waits on the first inward <i>suji</i> are <b>more likely</b>: an increase of approximately 19%.</li>
+  <li>Waits on the second inward <i>suji</i> are less likely, although the difference is relatively small: a decrease of approximately 9%.</li>
+  <li>Bad-shape waits on 5 are less likely: a decrease of approximately 21%.</li>
+</ul>
+<p class="lede">These results suggest that shorter intervals strengthen the predictive signal, but not always in the direction proposed by the theory. In particular, restricting the analysis to shorter intervals does not rescue the prediction concerning the first inward <i>suji</i>.</p>
+<h3>Investigating the mechanism</h3>
+<p class="lede">So, why does the theory&rsquo;s main prediction fail? One possibility is that the first-stage assumption is unreliable: apparent staggered pair discards often do not come from genuine pairs because the second copy was drawn only after the first was discarded. If so, the observed discard pattern would not tell us anything about the shape surrounding the terminal at the time of the first discard. A second possibility is that the proposed second-stage mechanism is incomplete. Even when the player initially held a genuine pair, the retained terminal may have served a purpose other than belonging to one of the connected shapes considered in the theory&rsquo;s elimination process (i.e., Table 1).</p>
+<p class="lede">To distinguish between these explanations, I repeated the analysis using only genuine pairs. Specifically, I restricted the treated group to cases in which the player already held the second copy of the terminal when discarding the first. Opponents ordinarily do not have access to this information. Even after observing the second terminal discard, they cannot know whether the player held both copies at the time of the first discard. This restricted analysis is therefore not a directly usable hand-reading method. Instead, it is a mechanism test: it asks whether the theory&rsquo;s prediction would hold if an observer could identify genuine pairs perfectly.</p>
+<p class="tcap">Table 6. Wait-rate ratios under the theory&rsquo;s best-case restrictions</p>
+<div class="tablebox"><table>
+  <thead><tr><th>Treated group</th><th>n</th><th>1st inward suji (2&ndash;5)</th><th>2nd inward suji (3&ndash;6)</th><th>Bad-shape wait on 5</th></tr></thead>
+  <tbody>
+  <tr><td>All staggered pair drops (baseline result)</td><td class="num">367,293</td><td class="num">1.22 <span class="ci">[1.20, 1.23]</span></td><td class="num">0.95 <span class="ci">[0.93, 0.96]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.81]</span></td></tr>
+  <tr><td>Gap held to 1&ndash;4 tiles</td><td class="num">278,246</td><td class="num">1.19 <span class="ci">[1.17, 1.21]</span></td><td class="num">0.91 <span class="ci">[0.90, 0.93]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.82]</span></td></tr>
+  <tr class="k"><td>The pair was real</td><td class="num">239,432</td><td class="num"><b>1.13</b> <span class="ci">[1.11, 1.15]</span></td><td class="num"><b>0.82</b> <span class="ci">[0.80, 0.84]</span></td><td class="num"><b>0.76</b> <span class="ci">[0.73, 0.79]</span></td></tr>
+  <tr><td>The pair was fake (drawn back later)</td><td class="num">127,861</td><td class="num">1.37 <span class="ci">[1.34, 1.40]</span></td><td class="num">1.18 <span class="ci">[1.16, 1.21]</span></td><td class="num">0.85 <span class="ci">[0.81, 0.88]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">All against the pooled control, Mantel&ndash;Haenszel weighted over riichi turn &times; prior riichi. For the gap-restricted row, matched events with a gap of 5+ tiles join the control; for the realness rows, the control is non-matching riichi only, with the opposite realness group in neither arm. Small figures: 95% cluster-bootstrap intervals on the game.</p>
+<p class="lede">Even under this hypothetical perfect-information scenario, the first inward <i>suji</i> remains more dangerous. The failure of the theory&rsquo;s principal prediction therefore cannot be attributed solely to the imperfect relationship between observed staggered discards and genuine pairs. Instead, the results suggest that the theory&rsquo;s <b>elimination process is incomplete</b>. Even when the staggered discards come from a genuine pair, there appear to be enough alternative hand-development paths to prevent the first inward <i>suji</i> from becoming safer overall.</p>
+<p class="lede">To understand these alternative paths, I reviewed Tenhou records in which a player began with a genuine terminal pair, discarded one copy, retained the other for several turns, and ultimately declared riichi with a wait on the first inward <i>suji</i>. The following are a few examples that I came across, which may or may not be representative:</p>
+<ul class="pt" style="gap:.55rem">
+  <li>The player discarded one <img class="ti" src="assets/tiles/Man9.svg" alt="9m"> from a <img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"> shape, apparently to create space for a floating <img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> as a candidate for a sixth block. The player later drew <img class="ti" src="assets/tiles/Man6.svg" alt="6m">, discarded the remaining <img class="ti" src="assets/tiles/Man9.svg" alt="9m">, and ended with a <img class="ti" src="assets/tiles/Man5.svg" alt="5m"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Man8.svg" alt="8m"> wait.</li>
+  <li>The player discarded one <img class="ti" src="assets/tiles/Man9.svg" alt="9m"> from a <img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"> shape while holding two other pairs, making <img class="ti" src="assets/tiles/Man9.svg" alt="9m"> the most efficient discard. The player drew <img class="ti" src="assets/tiles/Man6.svg" alt="6m">, discarded the second <img class="ti" src="assets/tiles/Man9.svg" alt="9m">, and eventually declared riichi with a <img class="ti" src="assets/tiles/Man5.svg" alt="5m"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Man8.svg" alt="8m"> wait.</li>
+  <li>The player discarded one <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"> from a <img class="ti" src="assets/tiles/Sou1.svg" alt="1s"><img class="ti" src="assets/tiles/Sou1.svg" alt="1s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"> shape while preserving the possibility of 123 <i>sanshoku</i>. After the other <i>taatsu</i> could no longer support <i>sanshoku</i>, the player drew <img class="ti" src="assets/tiles/Sou4.svg" alt="4s"> and discarded the remaining <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">, ending up with a <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> wait.</li>
+  <li>The player had <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p"> and discarded one <img class="ti" src="assets/tiles/Pin1.svg" alt="1p">, leaving the <i>ryankan</i> shape <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p">. The player then drew <img class="ti" src="assets/tiles/Pin4.svg" alt="4p"> and discarded the remaining <img class="ti" src="assets/tiles/Pin1.svg" alt="1p">. After another block was completed, the player declared riichi by discarding <img class="ti" src="assets/tiles/Pin8.svg" alt="8p">, leaving a <img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> wait.</li>
+  <li>The player had three pairs but fewer than five usable blocks. From the shape <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin7.svg" alt="7p"><img class="ti" src="assets/tiles/Pin9.svg" alt="9p"><img class="ti" src="assets/tiles/Pin9.svg" alt="9p">, the player discarded one <img class="ti" src="assets/tiles/Pin9.svg" alt="9p"> and retained the other as a floating tile for several turns. Although <img class="ti" src="assets/tiles/Pin9.svg" alt="9p"> was not a particularly strong floating tile, it was better than the available alternatives.</li>
+</ul>
+<p class="lede">These examples suggest that the theory underestimates several possibilities: players may lock in bad-shape <i>taatsu</i> such as <img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"> in 1-shanten or 2-shanten hands; they may retain otherwise inefficient shapes while pursuing <i>sanshoku</i> or another yaku; and they may keep a terminal as a floating tile simply because they have no better alternative.</p>
+<p class="lede">Each pathway may be uncommon individually. Collectively, however, they appear frequent enough to undermine the theory&rsquo;s prediction concerning the first inward <i>suji</i>. The proposed elimination process does not account for enough of the ways in which actual hands develop.</p>
+</section>
+
+<section>
+  <h2>Conclusion</h2>
+<p class="lede">I began this analysis hoping to find statistical support for Zundamon&rsquo;s theory, but the results were more complicated than I expected. The prediction Zundamon presents as the most reliable&mdash;the relative safety of the first inward <i>suji</i>&mdash;received the least support. In fact, the first inward <i>suji</i> was more dangerous after staggered discards of the adjacent terminal pair.</p>
+<p class="lede">The prediction concerning the second inward <i>suji</i> performed better. Waits on that <i>suji</i> were less common, particularly when the interval between the two terminal discards was short. The size of the overall difference, however, was modest.</p>
+<p class="lede">The strongest evidence concerned the auxiliary prediction that bad-shape waits on 5 become less likely. This result may have practical value when a <i>ryanmen</i> wait involving 5 can be ruled out. For example, suppose an opponent declares riichi after making staggered hand discards of a pair of <img class="ti" src="assets/tiles/Sou1.svg" alt="1s">, and <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"> is genbutsu against that opponent. Because the discarded <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"> rules out a <img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> <i>ryanmen</i> wait, the remaining danger of <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> consists of <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> and bad-shape waits. If you are deciding between discarding <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> and <img class="ti" src="assets/tiles/Sou8.svg" alt="8s"> to achieve tenpai, you may want to discard <img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> in this situation.</p>
+<p class="lede">I still believe Zundamon&rsquo;s lectures and commentary videos are extremely valuable as learning materials. As Zundamon explains in <a href="https://www.youtube.com/watch?v=UeEuI5TJSmc">episode 48</a>, enumerating possible hand patterns and eliminating those that are inconsistent with the available evidence is a valuable mental exercise. Even when a particular inference does not hold statistically, working through its logic can improve our understanding of how hands develop.</p>
+<p class="lede">Online platforms also allow us to compare our in-game reads with the complete game record afterward. This provides an additional reason to review game records: we can ask not only whether our decisions were correct, but also whether our reconstruction of an opponent&rsquo;s hand was accurate. In my experience, this kind of hand-reading evaluation is one area in which current AI-based review tools remain relatively limited.</p>
+<p class="lede">Finally, my analysis may have omitted an important qualification or misunderstood some aspect of Zundamon&rsquo;s theory. The operational definitions, comparison groups, and sample restrictions used here represent only one way to test its predictions. I therefore encourage other mahjong researchers to conduct alternative analyses and determine whether they reach similar conclusions. I would be genuinely pleased if further evidence showed that my conclusions were mistaken.</p>
+</section>
+
+<section>
+  <h2>Methods</h2>
+  <div class="notes">
+    <div class="note"><h3>Treatment definition</h3><p>The same player discards the same terminal (1 or 9) two or more times with at least one discard in between, the second copy comes from the hand, and no other player has declared riichi before the second discard. Discards made after the player&rsquo;s own riichi cannot be hand discards by choice, so they are excluded.</p></div>
+    <div class="note"><h3>Wait classification</h3><p>Waits are classified by decomposing the hand shape. The 2&ndash;5 wait includes forms such as the 2345 <i>nobetan</i>, the 34567 three-sided wait, and 3444; a <i>shanpon</i> on 2 and 5 does not count. A <i>tanki</i> on 5 counts as a bad-shape wait on 5.</p></div>
+    <div class="note"><h3>Stratification</h3><p>All ratios are Mantel&ndash;Haenszel weighted across 10 strata: riichi turn (5 bins) &times; prior riichi by another player (2). Intervals are the 2.5&ndash;97.5 percentiles of a cluster bootstrap that resamples games (<i>hanchan</i>): 400 draws for Table 4, 300 for Tables 5 and 6.</p></div>
+    <div class="note"><h3>Block drops</h3><p>A block drop is a pair of discards strictly between the two terminal discards, both from the hand, forming either the same tile (a <i>toitsu</i>) or two tiles of the same suit one or two apart (a <i>taatsu</i>). The two discards need not fall on consecutive turns.</p></div>
+    <div class="note"><h3>Multiple testing</h3><p>This is an exploratory analysis, so no adjustment is made. The intervals are nominal 95% intervals.</p></div>
+    <div class="note"><h3>Limitations</h3><p>These are observational comparisons, not experiments. The stratification covers only riichi turn and prior riichi, so other differences between the groups remain. And the outcome is which wait the hand ended with, not whether a particular tile deals in&mdash;a related but different quantity from actual deal-in rates.</p></div>
+  </div>
+</section>
+<section class="footnotes">
+  <ol>
+    <li id="fn1">Several newer channels also call themselves Jangoro Zundamon and provide commentary on M.League games. One of them even claims to be the authentic one. <a href="#fnref1">&#8617;</a></li>
+    <li id="fn2">The signal from a staggered pair becomes stronger when the intervening discards were also made from the hand. It is therefore helpful to know whether those tiles were hand-discarded or draw-discarded. <a href="#fnref2">&#8617;</a></li>
+    <li id="fn3">This does not mean that tests of hand-reading theories are immune to every form of selection bias. For example, bias could arise if I analyzed only hands whose contents were eventually revealed, or only hands that later reached tenpai. The more limited point is that these tests do not face the same treatment-selection problem as a causal comparison between riichi and <i>dama</i>. <a href="#fnref3">&#8617;</a></li>
+    <li id="fn4">Adjusting only for riichi turn may not make the two groups fully comparable. Staggered terminal-pair discards may also be associated with hand speed, player strength, score situation, visible tile counts, or the kinds of shapes from which the hand developed. Because the objective is prediction rather than causal inference, these differences are not necessarily biases: some may be part of the information conveyed by the discard pattern. However, they matter if the narrower goal is to isolate the predictive contribution of the staggered discard itself. <a href="#fnref4">&#8617;</a></li>
+    <li id="fn5">An interval length is defined as the number of intervening turns. For example, when the first discard is discarded on the fourth turn, and the second is discarded on the sixth turn, the interval is one. <a href="#fnref5">&#8617;</a></li>
+  </ol>
+</section>
+<footer><p>Data: Tenhou Phoenix Table south games, 2015&ndash;2023 and 2026 through mid-September &mdash; 1,692,981 games, 18,034,322 hands (局). Screenshots from Jangoro Zundamon&rsquo;s lecture series, quoted for commentary.</p><p><a href="index.html">All posts</a></p><p>Tile images: <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff &mdash; <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</p></footer>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+</div>
+<script>
+document.querySelectorAll("a.clip").forEach(a => {
+  a.addEventListener("click", ev => {
+    if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button) return;
+    ev.preventDefault();
+    const f = document.createElement("iframe");
+    f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.yt}`
+          + `?start=${a.dataset.t || 0}&autoplay=1&rel=0`;
+    f.title = a.querySelector(".cn").textContent;
+    f.allow = "accelerometer; autoplay; encrypted-media; picture-in-picture";
+    f.allowFullscreen = true;
+    a.classList.add("playing");
+    a.querySelector(".thumb").replaceWith(f);
+  });
+  // a thumbnail that will not load should not leave an empty grey box
+  const img = a.querySelector(".thumb img");
+  img.addEventListener("error", () => {
+    a.querySelector(".thumb").style.background = "var(--band)";
+    img.remove();
+  });
+});
+
+</script>
+<script src="comments.js"></script>
