@@ -1,0 +1,443 @@
+<title>手出しはテンパイの合図か</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicons/4m.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.eq{font-family:"Roboto Mono",monospace;font-size:.92rem;text-align:center;margin:.35rem 0}
+.eq .fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 .15em;line-height:1.4}
+.eq .fr span:first-child{border-bottom:1px solid var(--ink);padding:0 .3em}
+.eq .fr span:last-child{padding:0 .3em}
+.tcap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:-.8rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+thead th{text-align:right}
+thead th:first-child{text-align:left}
+thead th[colspan]{text-align:center}
+thead tr + tr th{text-align:right}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+.footnotes li p{margin:.3rem 0}
+.footnotes .eq{font-size:.86rem;margin:.35rem 0;text-align:left;padding-left:1.2rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
+
+.home{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;align-self:flex-start}
+.home:hover,.home:focus-visible{color:var(--ink)}
+</style>
+
+<style>
+/* chart & table plumbing for this article */
+:root{--okc:#2F6D4F; --c1:#4E7391; --c2:var(--gold); --c3:var(--shu);
+  --c4:color-mix(in srgb, var(--shu) 55%, var(--ink) 45%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--okc:#63B98C; --c1:#7FAECD}}
+:root[data-theme="dark"]{--okc:#63B98C; --c1:#7FAECD}
+.gridline{stroke:var(--rule);stroke-width:1;opacity:.6}
+.axis{stroke:var(--rule);stroke-width:1}
+.bandfill{fill:var(--band);opacity:.55}
+.bandlab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.08em}
+.tick{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11.5px}
+.refl{stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;opacity:.85}
+.reflab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;font-weight:600}
+.ln{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ci{stroke:none;opacity:.16}
+.s1{stroke:var(--c1)} .s2{stroke:var(--c2)} .s3{stroke:var(--c3)} .s4{stroke:var(--c4)}
+.f1{fill:var(--c1)} .f2{fill:var(--c2)} .f3{fill:var(--c3)} .f4{fill:var(--c4)}
+.endlab{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:600}
+.xmark{stroke-width:1.4;fill:var(--card)}
+figure.chartfig{margin:0;background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.3rem 1.2rem 1rem;box-shadow:var(--shadow)}
+figure.chartfig figcaption{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.chartbox{overflow-x:auto}
+.chartbox svg{display:block;width:100%;height:auto;min-width:33rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;padding:.6rem .2rem 0;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.5rem}
+.sw{display:inline-block;width:1.5rem;height:3px;border-radius:2px}
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.claim{background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.1rem 1.2rem 1.2rem;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.5rem}
+.claim .rw{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.claim .stmt{font-size:.93rem;line-height:1.6}
+.claim .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;line-height:1.2}
+.claim .vs{font-size:.78rem;color:var(--muted)}
+.verdict{font-size:.78rem;font-weight:700}
+.verdict.hit{color:var(--okc)} .verdict.miss{color:var(--shu)}
+.pmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(26rem,1fr));gap:1rem}
+.pmgrid svg{min-width:24rem}
+.pmgrid h3{margin-bottom:.15rem}
+td.num{font-family:"Roboto Mono",monospace;font-size:.8rem;text-align:right}
+</style>
+
+<div class="wrap">
+<header>
+  <a class="home" href="index.html">&larr; 記事一覧</a>
+  <p class="eyebrow">牌譜解析 / 天鳳 鳳凰卓</p>
+  <h1>手出しはテンパイの合図か</h1>
+  <p class="sub">副露した相手が、手の中から牌を切った。テンパイの見積もりは上げるべきか、下げるべきか。</p>
+  <p class="postmeta"><time datetime="2026-09-14">14 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-ja">日本語</a><a class="tag" href="index.html#tag=logs">牌譜分析</a><a class="tag" href="index.html#tag=reading">読み</a><a class="tag" href="index.html#tag=tenhou">天鳳</a></span></p>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">世界の片隅で牌を数えたけもの</span></span>
+  </a>
+</header>
+
+<div class="tldr">
+  <p class="k">TL;DR</p>
+  <ul>
+    <li>手出しを見たら、副露手のテンパイ見積もりは上げるのではなく<b>下げる</b>べきである。</li>
+  </ul>
+</div>
+
+<section>
+  <h2>副露後の手出し</h2>
+  <p class="lede"><a href="meld-tenpai.ja.html">前回の記事</a>では、鳴いた瞬間のテンパイ率についての経験則を検証した。データは「3・2・1」の法則 — 1段目に3副露目、2段目に2副露目、3段目に1副露目が入ったとき、テンパイ率はおよそ50% — をおおむね支持していた。</p>
+
+  <p class="lede">では、鳴いた<b>あと</b>のテンパイ率はどう見積もればいいのか。平澤氏は、副露のあとに手出しが入ったら、相手がテンパイしている見積もりを<b>上げる</b>べきだと述べている<sup class="fn" id="fnref1"><a href="#fn1">1</a></sup>。3・2・1の法則を紹介するとき、平澤氏はほぼ必ずこの補足を添えている<sup class="fn" id="fnref2"><a href="#fn2">2</a></sup>。少し長くなるが、以下に引用してみよう。</p>
+
+  <div>
+  <blockquote cite="https://www.huxley.net/bnw/four.html">
+    <p>
+      ざっくりとした基準は序盤３副露、中盤２副露、終盤１副露で50%くらいテンパイというものです。
+    （中略）</br>
+      手出しをするということは手が進んでいる可能性が高いということなので、さきほどの序盤３副露、中盤２副露、終盤１副露した相手がさらに手出しをしたらテンパイ確率が上がっていきます。この基準から２回ほど手出しが入ったらさすがにテンパイだと思って対応しましょう。
+    </p>
+  </blockquote>
+  <p>—平澤元気, <cite>『麻雀・守備の基本完全ガイド』（マイナビ出版、2022年）, pp.&nbsp;158–159.</cite></p>
+  </div>
+
+
+  <p class="lede">本稿ではこの主張を、「他の条件が同じなら、手出し後のテンパイ率はツモ切り後より高い」という予測として検証する。この予測は直観的で、一見するとほとんど自明にさえ思える。手が進む有効牌を引いたら、その牌を手牌に残し、代わりに不要牌を手出しする。役に立たない牌を引いたら、そのままツモ切りする。だから手出しを見たらテンパイの見積もりを上げ、ツモ切りなら見積もりは動かさない — というのは当然の理屈のようにも聞こえる。</p>
+
+  <p class="lede">ところが不思議なことに、話が逆になる場合がある。手出しを見たら、テンパイの見積もりをむしろ<b>下げる</b>べき状況もある。まず、手出しをしたからと言って有効牌を引いたとは限らないこともあるだろう。たとえば赤５を引いて黒５と入れ替えたとか、フォロー牌を引いて安全牌と入れ替えた、ドラを引いたのでくっつきの浮き牌と入れ替えた、などの状況では、シャンテン数は変わっていない。それ以上に問題なのは、守備側は相手の手牌のもともとのシャンテン数を分かっていないということだ。相手の手牌がテンパイまで遠い手である場合、「テンパイに至らない手出し」の起こる割合は増える。逆に、相手の手牌がすでにテンパイしている場合、手牌構成を変える必要がないため、和了牌以外はそのままツモ切りする状況が増える。したがって、ツモ切りを観測した時、それは「すでにテンパイしている手牌であった可能性を上げる証拠」と解釈することもできる。</p>
+
+  <p class="lede">ここでは、「もともとのシャンテン数がツモ切り・手出しの出現率を左右する」という第二のメカニズムを、簡単な数理モデルで考えてみよう。その効果だけを取り出すため、シャンテン数を進めない牌による手出しは起こらないものとする。すなわち、「不要」牌（シャンテン数を進めない牌）を引いたときは、そのままツモ切りすると仮定する。手出しが起こるのは、有効牌（シャンテン数を進める牌）を引いた時のみと仮定する。さらに、相手のシャンテン数は分からないが、その大まかな分布は分かっているものとしよう。すなわち、見積もりとして、50%のケースでテンパイ、30%のケースで1シャンテン、15%のケースで2シャンテン、5%のケースで3シャンテン以上だというデータがあるものとしよう（数字は簡潔に説明するための仮定のものである）。テンパイのときに有効牌（和了牌）を引いたらツモアガリして、観測対象から抜ける。<i>k</i>シャンテン（<i>k</i> = 1, 2, 3, …）のときに有効牌を引いた場合、その牌を手に入れて、代わりに手の中の不要牌を1枚捨てる。最後に、有効牌を引く確率はシャンテン数に依存するとする。すなわち、テンパイ（<i>k</i> = 0）で和了牌を引く確率を5%。<i>k</i> = 1 では有効牌を引く確率を10%、<i>k</i> = 2 では20%、<i>k</i> &ge; 3 では40%とする。手牌のシャンテン数が進むほど受け入れは狭くなっていくため、このように単純化している。</p>
+
+  <p class="lede">このモデルの下では、手出しを観測するとテンパイの見積もり（事後確率）は50%から<b>37.5%に下がる</b>。逆に、ツモ切りを観測するとおよそ<b>53.1%に上がる</b><sup class="fn" id="fnref3"><a href="#fn3">3</a></sup>。すでにテンパイしている手が多くのツモ切りを生み出しているためである。</p>
+
+  <p class="lede">この単純なモデルの予測は、手出し・ツモ切りの枚数とテンパイ率に関する先行研究の知見とも整合的である。たとえば <a href="https://pathofhouou.blogspot.com/2021/04/analysis-tenpai-chance-by-tedashis-and.html">Path of HououブログのAmberの分析</a>によれば、門前手において、手出しの多さではなくツモ切りの多さこそ高いテンパイ率につながっている。</p>
+
+  <p class="lede">ここでは、2つの相反するメカニズムが正反対の効果を生み出していると考えられる。手出しは「手がいま進んだ（=これでテンパイした可能性がある）」ことを示すシグナルと捉えることもできるし、一方で、ツモ切りも「手がすでに完成している（=すでにテンパイしている可能性がある）」シグナルと捉えることができる。どちらのシグナルが情報としてより信頼できるのかということを確かめるには、副露手のデータを分析し、手出し・ツモ切りのいずれが高いテンパイ率と相関しているのかを確かめてみれば良い。平澤氏の説は「手出しが入った後のテンパイ率は、ツモ切りが入った後より高い」と予測する。上のモデルは、その逆がありうることを示している。データを見てみよう。</p>
+</section>
+
+<section>
+<h2>手出し後・ツモ切り後のテンパイ率</h2>
+
+  <p class="lede">1副露目が <i>k</i> 巡目（<i>k</i> = 3, 6, 9, 12）に入った手牌を、それぞれ一つのコホートとして扱う。続く各巡 <i>t</i> について、副露後 <i>m</i> 枚目（<i>m</i> = 1, 2, 3）の手出しがちょうど <i>t</i> 巡目に起きた手のテンパイ率を計算する。以下でいうテンパイ率は、原則として当該巡の打牌直後にその手がテンパイしている確率を指す。下の図では、青い線が手出し1枚目、黄色い線が2枚目、赤い線が3枚目のテンパイ率である。灰色の線は基準線で、副露後に手出しをしていない手も含めた、コホート全体の <i>t</i> 巡目時点のテンパイ率を示す。次の副露をするか、局が終わる（誰かの和了か流局）と、その手はコホートから抜ける。観測数200未満の点は描いていない。</p>
+  <div class="legend" style="padding-bottom:.2rem">
+    <span><span class="sw" style="background:var(--muted);opacity:.45"></span>基準線（全打牌）</span>
+    <span><span class="sw" style="background:var(--c1)"></span>手出し1枚目</span>
+    <span><span class="sw" style="background:var(--c2)"></span>2枚目</span>
+    <span><span class="sw" style="background:var(--c3)"></span>3枚目</span>
+  </div>
+  <div class="pmgrid" id="pmcharts"></div>
+  <p class="fnote">基準線が5〜6巡で頭打ちになるのは、テンパイした手が和了して分母から抜けていくためである。飽和水準は直近の副露の巡目で決まる。</p>
+  <p class="lede">注目すべきことに、色つきの線は多くの場面で灰色の基準線より下を走る。単純な比較では、副露後に手出しをした手のほうが、コホート全体よりテンパイ率が低い。ただし、各グループではそれ以前の手出し回数が異なるため、この図だけから「いま手出しを見たら見積もりを下げるべきだ」とまでは結論できない。この点については、後で履歴をそろえて検証する。ごく早い鳴き（<i>k</i> = 3）では、その後の手出し枚数はほぼノイズで、10巡目あたりまでテンパイ率にほとんど差がなく、その先の差も控えめである。鳴きが遅くなると（<i>k</i> = 6, 9, 12）、手出し枚数とテンパイ率の間に<b>明確な負の関係</b>が見られる。3つのコホートすべてで、直近の副露から <i>t</i> 巡目までの手出しが多いほどテンパイ率は低く（<i>m</i> = 1 ＞ <i>m</i> = 2 ＞ <i>m</i> = 3）、この差は <i>k</i> が大きいほど開く。12巡目に1副露目を入れ、15巡目までに3枚連続で手出しした手がテンパイしている確率はわずか14.3%で、基準線の3分の1に届かない。</p>
+  <p class="lede">青い線（<i>m</i> = 1）は、終盤に基準線を上に抜けるように見える。ただし後で見るとおり、これは基準線が過去の手出し回数で条件付けられていないことの産物である。</p>
+
+  <h3 style="margin-top:.6rem">2副露目のコホート</h3>
+  <div class="pmgrid" id="pmcharts2"></div>
+  <p class="lede">この関係は、2副露目で定義したコホートではさらにはっきりする。基準線のテンパイ率がもともと高いため、手出し（<i>m</i> = 1, 2, 3）のテンパイ率が基準線を超えることはほぼない（唯一の例外は <i>k</i> = 6 の18巡目）。2副露の手については、その後の手出しの回数よりも、2副露目が入った巡目のほうが強いテンパイのシグナルである。手の中から切り続けているあいだ、その手のテンパイ率は基準線より低いままだ。</p>
+
+  <h3 style="margin-top:.6rem">3副露目のコホート</h3>
+  <div class="pmgrid" id="pmcharts3"></div>
+  <p class="lede">この関係が最もはっきりするのが、3副露目で定義したコホートである。基準線は終盤に81〜83%までさらに高くなり、手出しの線はそれを大きく下回って走る。</p>
+
+  <h3 style="margin-top:.6rem">何が手出しされたかを見てみる</h3>
+  <p class="lede">ここまでの集計は、手出しの枚数と時期だけを見て、<b>何が切られたか</b>を見ていなかった。表1は、1副露目が6巡目に入った手について、副露後1枚目の手出しが <i>t</i> 巡目に起きた場合のテンパイ率を、切られた牌の種類 — 3〜7牌、2・8牌、1・9牌、字牌 — で4つに分けたものである。比較の基準は、副露後に手出しのないままツモ切りした手で、2列目に置いた。</p>
+  <p class="tcap">表1. 1枚目の手出しを、牌種で分ける</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>t</th><th>ツモ切り（手出し0枚）</th><th>3-7</th><th>2・8</th><th>1・9</th><th>字牌</th></tr></thead>
+    <tbody><tr><td>7</td><td class="num">22.0%</td><td class="num">19.9%</td><td class="num">14.3%</td><td class="num">10.3%</td><td class="num">9.4%</td></tr><tr><td>8</td><td class="num">30.8%</td><td class="num">26.8%</td><td class="num">20.2%</td><td class="num">16.1%</td><td class="num">12.2%</td></tr><tr><td>9</td><td class="num">40.1%</td><td class="num">32.8%</td><td class="num">25.8%</td><td class="num">20.8%</td><td class="num">14.7%</td></tr><tr><td>10</td><td class="num">49.3%</td><td class="num">39.1%</td><td class="num">30.6%</td><td class="num">24.9%</td><td class="num">16.4%</td></tr><tr><td>11</td><td class="num">58.2%</td><td class="num">43.1%</td><td class="num">36.1%</td><td class="num">29.4%</td><td class="num">18.6%</td></tr><tr><td>12</td><td class="num">66.0%</td><td class="num">47.4%</td><td class="num">40.5%</td><td class="num">32.8%</td><td class="num">19.3%</td></tr><tr><td>13</td><td class="num">73.2%</td><td class="num">50.6%</td><td class="num">46.2%</td><td class="num">34.8%</td><td class="num">20.9%</td></tr><tr><td>14</td><td class="num">78.6%</td><td class="num">52.8%</td><td class="num">48.9%</td><td class="num">38.8%</td><td class="num">19.9%</td></tr><tr><td>15</td><td class="num">83.5%</td><td class="num">52.4%</td><td class="num">49.6%</td><td class="num">45.6%</td><td class="num">24.0%</td></tr><tr><td>16</td><td class="num">87.3%</td><td class="num">59.4%</td><td class="num">53.2%</td><td class="num">44.2%</td><td class="num">–</td></tr><tr><td>17</td><td class="num">90.1%</td><td class="num">60.4%</td><td class="num">54.0%</td><td class="num">–</td><td class="num">–</td></tr><tr><td>18</td><td class="num">92.7%</td><td class="num">61.5%</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr></tbody></table></div>
+
+  <p class="lede">どの巡でも、ツモ切りの手のほうが手出しの手よりテンパイ率が高い。どの牌が手出しされたにせよ、手出しの観測はテンパイ率を低く見積もる材料になっている。下げ幅は字牌で最大になり、数牌の中では端に寄った牌ほど大きい傾向がある。</p>
+
+  <h3 style="margin-top:.6rem">ブロック（トイツ・ターツ）落とし</h3>
+  <p class="lede">トイツやターツをまるごと落とす<b>ブロック落とし</b>を見たとき、テンパイの見積もりをどう動かすべきか。表2では、1副露目が6巡目に入った手の、副露後2枚目の手出しに注目する。</p>
+  <p class="lede">2列目は表1と同じく、手出しのない手の基準値である。3列目は、1枚目の手出しを済ませたうえで、この巡はツモ切りした手。4列目は、2枚目の手出しが1枚目と無関係な牌だったケース。最後の列が比較のメインで、手出しされた2枚がトイツまたはターツを構成するケースである。</p>
+
+
+  <p class="tcap">表2. 2枚目の手出しを、1枚目との関係で分ける</p>
+  <div class="tablebox"><table>
+    <thead><tr><th>t</th><th>ツモ切り（手出し0枚）</th><th>ツモ切り（手出し1枚）</th><th>2枚がバラバラ</th><th>2枚がターツ/トイツ</th></tr></thead>
+    <tbody><tr><td>8</td><td class="num">30.8%</td><td class="num">23.3%</td><td class="num">17.0%</td><td class="num">12.0%</td></tr><tr><td>9</td><td class="num">40.1%</td><td class="num">31.6%</td><td class="num">21.7%</td><td class="num">16.2%</td></tr><tr><td>10</td><td class="num">49.3%</td><td class="num">40.0%</td><td class="num">26.0%</td><td class="num">19.8%</td></tr><tr><td>11</td><td class="num">58.2%</td><td class="num">48.3%</td><td class="num">29.6%</td><td class="num">22.8%</td></tr><tr><td>12</td><td class="num">66.0%</td><td class="num">56.1%</td><td class="num">32.7%</td><td class="num">25.8%</td></tr><tr><td>13</td><td class="num">73.2%</td><td class="num">63.3%</td><td class="num">35.6%</td><td class="num">28.6%</td></tr><tr><td>14</td><td class="num">78.6%</td><td class="num">69.8%</td><td class="num">39.6%</td><td class="num">31.6%</td></tr><tr><td>15</td><td class="num">83.5%</td><td class="num">75.4%</td><td class="num">41.6%</td><td class="num">33.2%</td></tr><tr><td>16</td><td class="num">87.3%</td><td class="num">80.6%</td><td class="num">45.1%</td><td class="num">38.0%</td></tr><tr><td>17</td><td class="num">90.1%</td><td class="num">85.1%</td><td class="num">47.3%</td><td class="num">40.5%</td></tr><tr><td>18</td><td class="num">92.7%</td><td class="num">89.6%</td><td class="num">50.3%</td><td class="num">44.5%</td></tr></tbody></table></div>
+  <p class="fnote">1副露目を6巡目に鳴いたコホート。n&ge;200 のセルのみ。</p>
+
+  <p class="lede">表のとおり、手の中からブロックを落とした手のテンパイ率はさらに低い。これは手牌読みに詳しい打ち手の見解とも一致する。たとえば川村晃裕氏は<a href="https://note.com/kawamura0603/n/nf5a4bcf232e6">「鳴き手の人が手出しでターツ落としを完了させた瞬間はテンパイ率が低い」</a>と書いている。「<a href="https://www.youtube.com/@mkiruchan">M斬るチャンネル</a>」の雀ゴロのずんだもんも、解説の中で同様の指摘をしている — たとえば辛口解説の<a href="https://www.youtube.com/watch?v=UeEuI5TJSmc">第48回</a>や<a href="https://www.youtube.com/watch?v=EWQ7CrgbeYo">第68回</a>を参照してほしい。</p>
+
+
+  <h3 style="margin-top:.6rem">履歴を揃える</h3>
+  <p class="lede">上の図は記述としては正しいが、守備側が直面する問い — いまの一打が手出しかツモ切りかで、見積もりを動かすべきか — には、そのままでは答えていない。手出しのグループ（<i>m</i> = 1, 2, 3）は「直近の副露のあとに <i>m</i> − 1 枚の手出しをした手」に限られているのに、基準線にはその条件がないからだ。守備側は打牌を見る前から過去の手出し回数を知っている。だから正しい比較は、<b>過去の手出し回数 <i>r</i> を固定した上で</b>、いまの一打が手出しだった手とツモ切りだった手を並べることである。結果を表3に示す。</p>
+  <p class="tcap">表3. 手出し対ツモ切り — 履歴を揃えた比較</p>
+<div class="tablebox"><table>
+    <thead><tr><th rowspan="2">t</th><th colspan="3">過去の手出し 0枚</th><th colspan="3">1枚</th><th colspan="3">2枚</th></tr>
+    <tr><th>手出し</th><th>ツモ切り</th><th>差</th><th>手出し</th><th>ツモ切り</th><th>差</th><th>手出し</th><th>ツモ切り</th><th>差</th></tr></thead>
+    <tbody><tr><td>7</td><td class="num">14.8%</td><td class="num">22.0%</td><td class="num" style="color:var(--okc)">-7.2</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr><tr><td>8</td><td class="num">20.6%</td><td class="num">30.8%</td><td class="num" style="color:var(--okc)">-10.3</td><td class="num">15.9%</td><td class="num">23.3%</td><td class="num" style="color:var(--okc)">-7.3</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr><tr><td>9</td><td class="num">25.5%</td><td class="num">40.1%</td><td class="num" style="color:var(--okc)">-14.6</td><td class="num">20.6%</td><td class="num">31.6%</td><td class="num" style="color:var(--okc)">-11.0</td><td class="num">14.9%</td><td class="num">25.9%</td><td class="num" style="color:var(--okc)">-11.0</td></tr><tr><td>10</td><td class="num">30.2%</td><td class="num">49.3%</td><td class="num" style="color:var(--okc)">-19.1</td><td class="num">24.8%</td><td class="num">40.0%</td><td class="num" style="color:var(--okc)">-15.2</td><td class="num">18.7%</td><td class="num">33.6%</td><td class="num" style="color:var(--okc)">-14.9</td></tr><tr><td>11</td><td class="num">34.2%</td><td class="num">58.2%</td><td class="num" style="color:var(--okc)">-24.0</td><td class="num">28.2%</td><td class="num">48.3%</td><td class="num" style="color:var(--okc)">-20.1</td><td class="num">22.1%</td><td class="num">41.5%</td><td class="num" style="color:var(--okc)">-19.4</td></tr><tr><td>12</td><td class="num">37.8%</td><td class="num">66.0%</td><td class="num" style="color:var(--okc)">-28.2</td><td class="num">31.3%</td><td class="num">56.1%</td><td class="num" style="color:var(--okc)">-24.8</td><td class="num">25.1%</td><td class="num">48.9%</td><td class="num" style="color:var(--okc)">-23.8</td></tr><tr><td>13</td><td class="num">41.4%</td><td class="num">73.2%</td><td class="num" style="color:var(--okc)">-31.8</td><td class="num">34.1%</td><td class="num">63.3%</td><td class="num" style="color:var(--okc)">-29.2</td><td class="num">27.5%</td><td class="num">55.9%</td><td class="num" style="color:var(--okc)">-28.4</td></tr><tr><td>14</td><td class="num">43.8%</td><td class="num">78.6%</td><td class="num" style="color:var(--okc)">-34.8</td><td class="num">37.9%</td><td class="num">69.8%</td><td class="num" style="color:var(--okc)">-31.9</td><td class="num">30.4%</td><td class="num">62.6%</td><td class="num" style="color:var(--okc)">-32.2</td></tr><tr><td>15</td><td class="num">46.0%</td><td class="num">83.5%</td><td class="num" style="color:var(--okc)">-37.5</td><td class="num">39.7%</td><td class="num">75.4%</td><td class="num" style="color:var(--okc)">-35.7</td><td class="num">32.8%</td><td class="num">68.7%</td><td class="num" style="color:var(--okc)">-35.8</td></tr><tr><td>16</td><td class="num">51.0%</td><td class="num">87.3%</td><td class="num" style="color:var(--okc)">-36.2</td><td class="num">43.3%</td><td class="num">80.6%</td><td class="num" style="color:var(--okc)">-37.3</td><td class="num">36.1%</td><td class="num">73.6%</td><td class="num" style="color:var(--okc)">-37.5</td></tr><tr><td>17</td><td class="num">53.5%</td><td class="num">90.1%</td><td class="num" style="color:var(--okc)">-36.5</td><td class="num">45.6%</td><td class="num">85.1%</td><td class="num" style="color:var(--okc)">-39.5</td><td class="num">38.5%</td><td class="num">78.5%</td><td class="num" style="color:var(--okc)">-40.0</td></tr><tr><td>18</td><td class="num">55.0%</td><td class="num">92.7%</td><td class="num" style="color:var(--okc)">-37.7</td><td class="num">48.9%</td><td class="num">89.6%</td><td class="num" style="color:var(--okc)">-40.7</td><td class="num">39.6%</td><td class="num">83.7%</td><td class="num" style="color:var(--okc)">-44.1</td></tr></tbody></table></div>
+  <p class="fnote">1副露目を6巡目に鳴いたコホート。各セルはその巡の打牌直後のテンパイ率。両腕とも n&ge;200 に満たないセルは表示しない。</p>
+  <p class="lede">結果は驚くほど一貫している。調べたすべてのコホート・巡・履歴で、手出しをした手のほうがツモ切りをした手よりテンパイ率が低い。過去の手出し回数を知っている守備側は、他の条件が同じなら、手出し後のテンパイ率はツモ切り後より低く見積もるべきだ、ということになる。直観的にも筋は通っている。終盤までツモ切りを続けている手ほど、すでにテンパイしている可能性が高いからだ。</p>
+</section>
+
+<section>
+<h2>終わりに</h2>
+<p class="lede">本稿では、平澤氏が繰り返し述べてきた経験則とは異なる分析結果を提示した。ただし、本稿の分析が正しく、少なくとも今回検討した条件において平澤氏の経験則がデータに当てはまらなかったとしても、それによって同氏の他の戦術論の有用性が大きく損なわれるわけではない。私は、平澤氏の卓越した言語化能力、複雑な考えを簡潔かつ効果的に伝える力、視点の独創性、そして麻雀コンテンツ全体を発展させようとする姿勢<sup class="fn" id="fnref4"><a href="#fn4">4</a></sup>に、かねてから深い敬意を抱いている。今後も同氏の動画や著作から学び続けたいと思う。
+</p>
+</section>
+
+<section class="footnotes">
+  <ol>
+
+    <li id="fn1">平澤氏は、相手の河の「濃さ」でも見積もりを調整すべきだとしている。つまり、相手の河に中張牌（特に3〜7）やドラが多く見えるほど、テンパイの見積もりを上げるべきであるとされる。 <a href="#fnref1">&#8617;</a></li>
+    <li id="fn2">両方に触れている著書：『絶対にラスを引かない麻雀』（2016）p.&nbsp;56、『デジタルに読む麻雀』（2017）pp.&nbsp;160–161、『現代麻雀の秘技 相手に対応させる技術』（2018）pp.&nbsp;160–161、『麻雀・鳴き読みの極意』（2020）pp.&nbsp;52–53、『麻雀・守備の基本完全ガイド』（2022）pp.&nbsp;158–159。ただし『1冊で上級者になる方法』（2022）pp.&nbsp;134–135では、3・2・1の法則には触れているものの、手出しを見たら見積もりを上げるという補足はない。 <a href="#fnref2">&#8617;</a></li>
+    <li id="fn3">
+      <p>なぜそうなるかは、観測した打牌で事前の見積もりを更新する、ベイズの定理で確かめられる。このモデルでは、テンパイでその巡を迎えたプレイヤーはツモアガリするかツモ切りするかのどちらかで、手出しは決してしない。したがって、手出しの直後にテンパイしているのは、1シャンテンでその巡を迎えて有効牌を引いたプレイヤーに限られる：</p>
+
+      <p class="eq">0.30 &times; 0.10 = 0.03.</p>
+
+      <p>分母は手出しをするプレイヤー全体で、1シャンテン・2シャンテン・3シャンテン以上のそれぞれから有効牌を引いたケースの合計になる：</p>
+
+      <p class="eq">(0.30 &times; 0.10) + (0.15 &times; 0.20) + (0.05 &times; 0.40) = 0.08.</p>
+
+      <p>求める条件付き確率は</p>
+
+      <p class="eq"><span class="fr"><span>0.03</span><span>0.08</span></span> = 37.5%.</p>
+
+      <p>ツモ切りは、仮定によりシャンテン数を変えない。ツモ切り後にテンパイしているのは、その巡をテンパイで迎えた手のうち、和了牌を引いた5%を除いた分である：</p>
+
+      <p class="eq">0.50 &times; (1 &minus; 0.05) = 0.475.</p>
+
+      <p>ツモ切りが観測される確率は全体で</p>
+
+      <p class="eq">(0.50 &times; 0.95) + (0.30 &times; 0.90) + (0.15 &times; 0.80) + (0.05 &times; 0.60) = 0.895.</p>
+
+      <p>したがって、ツモ切りを観測した後のテンパイの見積もりは</p>
+
+      <p class="eq"><span class="fr"><span>0.475</span><span>0.895</span></span> &asymp; 53.1%. <a href="#fnref3">&#8617;</a></p>
+    </li>
+    <li id="fn4">
+    平澤氏が以前、他の動画制作者を単なる競争相手とみなすのではなく、麻雀コンテンツの制作者の裾野を広げることで市場全体を成長させ、それが結果的に自身の利益にもつながるという趣旨の発言をしていたのを覚えている。<a href="#fnref4">&#8617;</a></li>
+  </ol>
+</section>
+
+<footer><p>データ: 天鳳 鳳凰卓 東南戦 2015〜2023年・2026年1月〜9月上旬。</p><p>前編は<a href="meld-tenpai.ja.html">副露手のテンパイ率：副露の瞬間</a>。<a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</p></footer>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+</div>
+
+<script>
+const PMK = {"3": [{"t": 4, "base": [2178482, 104429], "m1": [1305358, 61769]}, {"t": 5, "base": [1872777, 152788], "m1": [394940, 30918], "m2": [616580, 48137]}, {"t": 6, "base": [1589452, 195592], "m1": [143786, 16310], "m2": [377979, 42742], "m3": [271572, 30068]}, {"t": 7, "base": [1332349, 225155], "m1": [57968, 9047], "m2": [201314, 30184], "m3": [251837, 36386]}, {"t": 8, "base": [1103563, 237232], "m1": [25207, 4974], "m2": [104169, 19521], "m3": [176261, 31290]}, {"t": 9, "base": [904583, 233570], "m1": [11233, 2686], "m2": [54579, 12169], "m3": [110377, 23141]}, {"t": 10, "base": [732868, 216046], "m1": [5323, 1478], "m2": [28038, 7353], "m3": [66105, 15758]}, {"t": 11, "base": [588317, 190375], "m1": [2601, 802], "m2": [14745, 4344], "m3": [37849, 10276]}, {"t": 12, "base": [469330, 161115], "m1": [1382, 511], "m2": [7749, 2489], "m3": [21561, 6447]}, {"t": 13, "base": [372070, 132113], "m1": [739, 297], "m2": [4167, 1469], "m3": [12497, 4094]}, {"t": 14, "base": [294593, 105756], "m1": [351, 131], "m2": [2278, 834], "m3": [6980, 2469]}, {"t": 15, "base": [233402, 83888], "m1": [215, 91], "m2": [1294, 550], "m3": [4090, 1487]}, {"t": 16, "base": [185142, 66000], "m1": [138, 68], "m2": [730, 340], "m3": [2302, 933]}, {"t": 17, "base": [147589, 52275], "m1": [57, 26], "m2": [428, 216], "m3": [1422, 647]}, {"t": 18, "base": [109624, 39269], "m1": [37, 17], "m2": [247, 117], "m3": [847, 370]}], "6": [{"t": 7, "base": [1904571, 353909], "m1": [898597, 132714]}, {"t": 8, "base": [1569825, 367856], "m1": [329555, 67786], "m2": [356982, 56814]}, {"t": 9, "base": [1280138, 357673], "m1": [142465, 36282], "m2": [248234, 51044], "m3": [148623, 22201]}, {"t": 10, "base": [1033308, 329661], "m1": [66051, 19949], "m2": [148844, 36861], "m3": [145875, 27349]}, {"t": 11, "base": [826023, 289433], "m1": [32960, 11268], "m2": [85062, 24011], "m3": [108523, 24001]}, {"t": 12, "base": [654374, 243671], "m1": [16597, 6271], "m2": [48353, 15131], "m3": [72139, 18076]}, {"t": 13, "base": [515805, 199019], "m1": [8837, 3658], "m2": [27383, 9341], "m3": [45606, 12535]}, {"t": 14, "base": [405346, 159016], "m1": [4696, 2057], "m2": [15710, 5948], "m3": [28467, 8642]}, {"t": 15, "base": [318275, 125152], "m1": [2586, 1189], "m2": [8923, 3540], "m3": [17215, 5650]}, {"t": 16, "base": [251179, 98461], "m1": [1560, 796], "m2": [5139, 2227], "m3": [10304, 3719]}, {"t": 17, "base": [199050, 77110], "m1": [861, 461], "m2": [3073, 1401], "m3": [6420, 2470]}, {"t": 18, "base": [145407, 56725], "m1": [524, 288], "m2": [1813, 886], "m3": [3825, 1514]}], "9": [{"t": 10, "base": [1185364, 426656], "m1": [473875, 110653]}, {"t": 11, "base": [939031, 367572], "m1": [181422, 55659], "m2": [180256, 34131]}, {"t": 12, "base": [736464, 305801], "m1": [82991, 29902], "m2": [122929, 29732], "m3": [78180, 11233]}, {"t": 13, "base": [573339, 247265], "m1": [41227, 16335], "m2": [74561, 21308], "m3": [71639, 13286]}, {"t": 14, "base": [444365, 195270], "m1": [21253, 8995], "m2": [43521, 13729], "m3": [51636, 11386]}, {"t": 15, "base": [343911, 152137], "m1": [11411, 5181], "m2": [25462, 8797], "m3": [34254, 8561]}, {"t": 16, "base": [267104, 118166], "m1": [6126, 3010], "m2": [14741, 5679], "m3": [21850, 6203]}, {"t": 17, "base": [208088, 91852], "m1": [3492, 1900], "m2": [8528, 3524], "m3": [13694, 4368]}, {"t": 18, "base": [149388, 66543], "m1": [2059, 1182], "m2": [4987, 2182], "m3": [8249, 2785]}], "12": [{"t": 13, "base": [595501, 273308], "m1": [234145, 60998]}, {"t": 14, "base": [456429, 213440], "m1": [84121, 29144], "m2": [94908, 17783]}, {"t": 15, "base": [348735, 164441], "m1": [37816, 15118], "m2": [58515, 14423], "m3": [44198, 6318]}, {"t": 16, "base": [266336, 125992], "m1": [18271, 8305], "m2": [33241, 9779], "m3": [36099, 6658]}, {"t": 17, "base": [204050, 97122], "m1": [9332, 4680], "m2": [18473, 6388], "m3": [24628, 5719]}, {"t": 18, "base": [142215, 68781], "m1": [4872, 2609], "m2": [10165, 3813], "m3": [14149, 3725]}]};
+const PMK2 = {"3": [{"t": 4, "base": [313358, 49341], "m1": [148518, 21890]}, {"t": 5, "base": [278040, 58421], "m1": [59239, 11613], "m2": [57016, 10685]}, {"t": 6, "base": [243820, 64293], "m1": [27255, 6531], "m2": [45290, 10577], "m3": [20817, 4581]}, {"t": 7, "base": [211216, 66854], "m1": [13570, 3893], "m2": [30131, 8202], "m3": [24124, 6376]}, {"t": 8, "base": [180483, 65745], "m1": [7057, 2289], "m2": [18993, 5767], "m3": [21144, 6051]}, {"t": 9, "base": [151759, 61710], "m1": [3959, 1388], "m2": [11954, 3968], "m3": [16009, 5079]}, {"t": 10, "base": [125898, 55700], "m1": [2128, 808], "m2": [7448, 2677], "m3": [11406, 3838]}, {"t": 11, "base": [103444, 48897], "m1": [1181, 483], "m2": [4514, 1703], "m3": [7898, 2850]}, {"t": 12, "base": [84256, 41724], "m1": [675, 282], "m2": [2634, 1041], "m3": [5168, 1985]}, {"t": 13, "base": [68215, 35014], "m1": [430, 195], "m2": [1637, 720], "m3": [3342, 1319]}, {"t": 14, "base": [55361, 29064], "m1": [262, 123], "m2": [1048, 446], "m3": [2171, 918]}, {"t": 15, "base": [44860, 23894], "m1": [143, 64], "m2": [598, 249], "m3": [1517, 635]}, {"t": 16, "base": [36255, 19423], "m1": [93, 50], "m2": [430, 186], "m3": [984, 424]}, {"t": 17, "base": [29546, 16020], "m1": [71, 36], "m2": [286, 148], "m3": [641, 297]}, {"t": 18, "base": [23798, 13037], "m1": [35, 21], "m2": [185, 97], "m3": [484, 236]}], "6": [{"t": 7, "base": [935235, 376403], "m1": [303576, 96432]}, {"t": 8, "base": [790446, 355161], "m1": [145136, 54540], "m2": [92264, 27788]}, {"t": 9, "base": [658942, 322630], "m1": [77926, 32349], "m2": [81976, 28051], "m3": [30926, 8108]}, {"t": 10, "base": [541673, 283078], "m1": [42838, 19170], "m2": [60394, 22373], "m3": [38494, 11069]}, {"t": 11, "base": [439923, 240639], "m1": [24780, 11698], "m2": [41312, 16289], "m3": [34874, 10825]}, {"t": 12, "base": [354044, 199553], "m1": [14697, 7134], "m2": [27573, 11281], "m3": [27562, 9109]}, {"t": 13, "base": [283300, 162199], "m1": [9039, 4476], "m2": [18073, 7569], "m3": [20659, 7148]}, {"t": 14, "base": [226233, 130534], "m1": [5520, 2771], "m2": [11816, 5196], "m3": [15291, 5473]}, {"t": 15, "base": [180928, 104383], "m1": [3519, 1822], "m2": [8010, 3650], "m3": [10535, 3886]}, {"t": 16, "base": [145451, 83834], "m1": [2175, 1129], "m2": [5247, 2380], "m3": [7484, 2868]}, {"t": 17, "base": [117307, 67527], "m1": [1437, 817], "m2": [3531, 1677], "m3": [5243, 2114]}, {"t": 18, "base": [93865, 54258], "m1": [952, 555], "m2": [2482, 1279], "m3": [3778, 1619]}], "9": [{"t": 10, "base": [758700, 448795], "m1": [192710, 78796]}, {"t": 11, "base": [608714, 372183], "m1": [95199, 43560], "m2": [56084, 17282]}, {"t": 12, "base": [482815, 300781], "m1": [53038, 25609], "m2": [48894, 16755], "m3": [20574, 4466]}, {"t": 13, "base": [379396, 238339], "m1": [30625, 15121], "m2": [35632, 13051], "m3": [23684, 5767]}, {"t": 14, "base": [297001, 186066], "m1": [18356, 9314], "m2": [24639, 9382], "m3": [20759, 5511]}, {"t": 15, "base": [233187, 145058], "m1": [11207, 5777], "m2": [16762, 6692], "m3": [16337, 4612]}, {"t": 16, "base": [183227, 112942], "m1": [6853, 3722], "m2": [11266, 4665], "m3": [12112, 3782]}, {"t": 17, "base": [144928, 88674], "m1": [4328, 2440], "m2": [7562, 3449], "m3": [8777, 2885]}, {"t": 18, "base": [113837, 69338], "m1": [2923, 1737], "m2": [5124, 2393], "m3": [6161, 2254]}], "12": [{"t": 13, "base": [349245, 240939], "m1": [81987, 34260]}, {"t": 14, "base": [266845, 182055], "m1": [38991, 18420], "m2": [26454, 7194]}, {"t": 15, "base": [204007, 137208], "m1": [21592, 10757], "m2": [20542, 6339], "m3": [10780, 2062]}, {"t": 16, "base": [156399, 103146], "m1": [12135, 6242], "m2": [14313, 4852], "m3": [11123, 2462]}, {"t": 17, "base": [120524, 78343], "m1": [7198, 3954], "m2": [9623, 3562], "m3": [8929, 2246]}, {"t": 18, "base": [92220, 59261], "m1": [4608, 2620], "m2": [6314, 2590], "m3": [6715, 1829]}]};
+function cohortPanels(data, boxId, nth){
+  const box = document.getElementById(boxId);
+  const W=560,H=330,L=48,R=16,T=16,B=40,PW=W-L-R,PH=H-T-B;
+  const y=v=>T+(1-v/100)*PH, x=t=>L+(t-1)/(18-1)*PW;
+  const MCOL={1:"var(--c1)",2:"var(--c2)",3:"var(--c3)"};
+  const line=(pts,val)=>pts.map((d,i)=>(i?"L":"M")+x(d.t).toFixed(1)+" "+y(val(d)).toFixed(1)).join("");
+  for(const k of ["3","6","9","12"]){
+    const rows = data[k];
+    let o=`<figure class="chartfig"><h3>${nth}を${k}巡目に鳴いた手</h3>
+      <div class="chartbox"><svg viewBox="0 0 ${W} ${H}" style="min-width:24rem">`;
+    for(let v=0;v<=100;v+=25)
+      o+=`<line class="gridline" x1="${L}" y1="${y(v)}" x2="${L+PW}" y2="${y(v)}"/>`
+        +`<text class="tick" x="${L-8}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+    o+=`<line class="refl" x1="${L}" y1="${y(50)}" x2="${L+PW}" y2="${y(50)}"/>`;
+    o+=`<line x1="${x(+k)}" y1="${T}" x2="${x(+k)}" y2="${T+PH}" stroke="var(--rule)" stroke-width="1.6"/>`
+      +`<text class="tick" x="${x(+k)}" y="${T+12}" text-anchor="middle">鳴き</text>`;
+    const base = rows.filter(d=>d.base[0]>=200);
+    o+=`<path d="${line(base,d=>100*d.base[1]/d.base[0])}" fill="none" stroke="var(--muted)" stroke-width="2.4" opacity=".45"/>`;
+    for(const m of [1,2,3]){
+      const pts = rows.filter(d=>d["m"+m] && d["m"+m][0]>=200);
+      if(pts.length>1) o+=`<path d="${line(pts,d=>100*d["m"+m][1]/d["m"+m][0])}" fill="none" stroke="${MCOL[m]}" stroke-width="2.2"/>`;
+    }
+    for(let t=3;t<=18;t+=3)
+      o+=`<text class="tick" x="${x(t)}" y="${H-10}" text-anchor="middle">${t}</text>`;
+    o+=`</svg></div><figcaption>横軸: 巡目 t。縦線 = 鳴いた巡（k=${k}）。n&lt;200 の点は描いていない。</figcaption></figure>`;
+    box.innerHTML+=o;
+  }
+}
+const PMK3 = {"3":[{"t":4,"base":[7746,3544],"m1":[2409,920]},{"t":5,"base":[7075,3553],"m1":[1236,547],"m2":[696,286]},{"t":6,"base":[6416,3523],"m1":[678,338],"m2":[686,328],"m3":[190,75]},{"t":7,"base":[5744,3381],"m1":[377,196],"m2":[537,273],"m3":[274,130]},{"t":8,"base":[5073,3169],"m1":[266,147],"m2":[394,215],"m3":[298,140]},{"t":9,"base":[4413,2891],"m1":[187,102],"m2":[305,170],"m3":[236,122]},{"t":10,"base":[3810,2593],"m1":[94,53],"m2":[223,121],"m3":[214,107]},{"t":11,"base":[3239,2277],"m1":[60,37],"m2":[148,85],"m3":[166,89]},{"t":12,"base":[2754,1991],"m1":[50,29],"m2":[99,57],"m3":[131,78]},{"t":13,"base":[2328,1734],"m1":[32,26],"m2":[76,41],"m3":[110,65]},{"t":14,"base":[1949,1500],"m1":[28,15],"m2":[72,53],"m3":[62,37]},{"t":15,"base":[1627,1273],"m1":[17,12],"m2":[40,20],"m3":[65,40]},{"t":16,"base":[1352,1054],"m1":[9,5],"m2":[18,9],"m3":[38,17]},{"t":17,"base":[1133,907],"m1":[6,3],"m2":[17,10],"m3":[32,18]},{"t":18,"base":[965,781],"m1":[10,5],"m2":[17,12],"m3":[24,15]}],"6":[{"t":7,"base":[125812,95046],"m1":[21006,12942]},{"t":8,"base":[108973,84345],"m1":[12272,7990],"m2":[4542,2562]},{"t":9,"base":[93002,73493],"m1":[7532,4959],"m2":[4760,2863],"m3":[1232,587]},{"t":10,"base":[78315,62757],"m1":[5085,3379],"m2":[4172,2471],"m3":[1601,798]},{"t":11,"base":[65168,52690],"m1":[3404,2203],"m2":[3446,2039],"m3":[1837,924]},{"t":12,"base":[53905,43857],"m1":[2363,1523],"m2":[2593,1533],"m3":[1716,844]},{"t":13,"base":[44538,36300],"m1":[1676,1061],"m2":[1944,1144],"m3":[1464,754]},{"t":14,"base":[36732,30001],"m1":[1203,761],"m2":[1580,901],"m3":[1245,642]},{"t":15,"base":[30474,24916],"m1":[913,571],"m2":[1154,658],"m3":[1073,532]},{"t":16,"base":[25172,20559],"m1":[619,364],"m2":[880,491],"m3":[838,427]},{"t":17,"base":[21037,17204],"m1":[455,278],"m2":[687,395],"m3":[646,329]},{"t":18,"base":[17534,14412],"m1":[386,251],"m2":[534,328],"m3":[561,295]}],"9":[{"t":10,"base":[163673,141721],"m1":[19743,13660]},{"t":11,"base":[132485,114845],"m1":[11724,8164],"m2":[4246,2264]},{"t":12,"base":[105994,91508],"m1":[7733,5220],"m2":[4269,2257],"m3":[1268,500]},{"t":13,"base":[84176,72186],"m1":[5173,3298],"m2":[3742,1988],"m3":[1676,642]},{"t":14,"base":[66810,56689],"m1":[3637,2231],"m2":[2903,1513],"m3":[1742,686]},{"t":15,"base":[53341,44774],"m1":[2591,1584],"m2":[2416,1169],"m3":[1627,689]},{"t":16,"base":[42674,35458],"m1":[1753,1012],"m2":[1847,988],"m3":[1476,604]},{"t":17,"base":[34348,28264],"m1":[1188,708],"m2":[1407,702],"m3":[1142,466]},{"t":18,"base":[27876,22802],"m1":[905,539],"m2":[1126,605],"m3":[989,421]}],"12":[{"t":13,"base":[91724,82333],"m1":[10576,6793]},{"t":14,"base":[70196,62116],"m1":[6203,3917],"m2":[2627,1163]},{"t":15,"base":[53703,46735],"m1":[3962,2465],"m2":[2515,1136],"m3":[908,277]},{"t":16,"base":[41436,35329],"m1":[2580,1554],"m2":[2141,946],"m3":[1151,390]},{"t":17,"base":[32141,26969],"m1":[1743,1059],"m2":[1563,719],"m3":[1130,401]},{"t":18,"base":[24996,20647],"m1":[1194,749],"m2":[1185,542],"m3":[992,385]}]};
+cohortPanels(PMK, "pmcharts", "1副露目");
+cohortPanels(PMK2, "pmcharts2", "2副露目");
+cohortPanels(PMK3, "pmcharts3", "3副露目");
+</script>
+<script src="comments.js"></script>

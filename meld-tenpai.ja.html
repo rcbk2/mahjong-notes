@@ -1,0 +1,433 @@
+<title>副露手のテンパイ率：副露の瞬間</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicons/3m.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.tcap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:-.8rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
+
+.home{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;align-self:flex-start}
+.home:hover,.home:focus-visible{color:var(--ink)}
+</style>
+
+<style>
+/* chart & table plumbing for this article */
+:root{--okc:#2F6D4F; --c1:#4E7391; --c2:var(--gold); --c3:var(--shu);
+  --c4:color-mix(in srgb, var(--shu) 55%, var(--ink) 45%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--okc:#63B98C; --c1:#7FAECD}}
+:root[data-theme="dark"]{--okc:#63B98C; --c1:#7FAECD}
+.gridline{stroke:var(--rule);stroke-width:1;opacity:.6}
+.axis{stroke:var(--rule);stroke-width:1}
+.bandfill{fill:var(--band);opacity:.55}
+.bandlab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;letter-spacing:.08em}
+.tick{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11.5px}
+.refl{stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;opacity:.85}
+.reflab{fill:var(--muted);font-family:"Roboto Mono",monospace;font-size:11px;font-weight:600}
+.ln{fill:none;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.ci{stroke:none;opacity:.16}
+.s1{stroke:var(--c1)} .s2{stroke:var(--c2)} .s3{stroke:var(--c3)} .s4{stroke:var(--c4)}
+.f1{fill:var(--c1)} .f2{fill:var(--c2)} .f3{fill:var(--c3)} .f4{fill:var(--c4)}
+.endlab{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:600}
+.xmark{stroke-width:1.4;fill:var(--card)}
+figure.chartfig{margin:0;background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.3rem 1.2rem 1rem;box-shadow:var(--shadow)}
+figure.chartfig figcaption{font-size:.82rem;color:var(--muted);margin-top:.5rem}
+.chartbox{overflow-x:auto}
+.chartbox svg{display:block;width:100%;height:auto;min-width:33rem}
+.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;padding:.6rem .2rem 0;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.5rem}
+.sw{display:inline-block;width:1.5rem;height:3px;border-radius:2px}
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1rem}
+.claim{background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:1.1rem 1.2rem 1.2rem;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.5rem}
+.claim .rw{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.claim .stmt{font-size:.93rem;line-height:1.6}
+.claim .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;line-height:1.2}
+.claim .vs{font-size:.78rem;color:var(--muted)}
+.verdict{font-size:.78rem;font-weight:700}
+.verdict.hit{color:var(--okc)} .verdict.miss{color:var(--shu)}
+.pmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(26rem,1fr));gap:1rem}
+.pmgrid svg{min-width:24rem}
+.pmgrid h3{margin-bottom:.15rem}
+td.num{font-family:"Roboto Mono",monospace;font-size:.8rem;text-align:right}
+</style>
+
+<div class="wrap">
+<header>
+  <a class="home" href="index.html">&larr; 記事一覧</a>
+  <p class="eyebrow">牌譜解析 / 天鳳 鳳凰卓 &amp; Mリーグ</p>
+  <h1>副露手のテンパイ率：副露の瞬間</h1>
+  <p class="sub">捨牌1段目で3副露、2段目で2副露、3段目で1副露。鳴いた瞬間のテンパイ率は50%?</p>
+  <p class="postmeta"><time datetime="2026-09-14">14 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-ja">日本語</a><a class="tag" href="index.html#tag=logs">牌譜分析</a><a class="tag" href="index.html#tag=reading">読み</a><a class="tag" href="index.html#tag=tenhou">天鳳</a><a class="tag" href="index.html#tag=mleague">Mリーグ</a></span></p>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">世界の片隅で牌を数えたけもの</span></span>
+  </a>
+</header>
+
+<section>
+  <h2>経験則「3・2・1」</h2>
+  <p class="lede">麻雀戦術書を多数執筆し、<a href="https://www.youtube.com/@ch-ks6zt">多くの動画</a>も制作されている平澤元気氏は、著書や動画の中でよく次のような経験則に言及されている。すなわち：
+</p>
+  <div class="card" style="border-left:4px solid var(--ai)">
+    <p class="lede" style="color:var(--ink)">副露手は、次の場合におよそ50%の確率でテンパイしている：</p>
+    <ul style="margin:.4rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.3rem">
+      <li>捨て牌<b>1段目</b>（1〜6巡）までに<b>3副露目</b>が入った</li>
+      <li><b>2段目</b>（7〜12巡）までに<b>2副露目</b>が入った</li>
+      <li><b>3段目</b>（13〜18巡）までに<b>1副露目</b>が入った</li>
+    </ul>
+  </div>
+  <p class="lede">リーチと違ってテンパっているかどうかが分からない副露手に対し、その危険度をどう推し量るのかというのは難しい問題である。高い副露手をテンパっている相手に押しすぎて放銃してしまったり、逆にテンパっていない副露手に降りすぎて自分の和了を逃してしまったりという経験は誰しもあるだろう。副露手のテンパイ率を推測するにあたり、さしあたっての出発点として、上記の経験則はとても便利である。平澤氏はこれを絶対的に信頼できる基準という風に提案しているわけではなく、あくまでふんわりとした目安であって、実戦では他の情報も加味した調整が必要であると主張されている。</p>
+
+    <p class="lede">平澤氏はこの法則をどこで見つけられたのだろうか？　私は平澤氏の著作は多数読んでおり、少なくとも６冊の著書および複数の動画の中でこの経験則が紹介されていることを確認したのであるが
+      <sup class="fn" id="fnref1"><a href="#fn1">1</a></sup>、彼がソースに言及しているのを見たことがない。おそらくどこかで裏付けの統計を見かけたものの、そのウェブサイトが消えてしまったりなどして、出典をたどれなくなっているのではないだろうか。それなら私がソースを作ってみようと思いたち、この経験則がどれほどデータで支持されるかを確かてみた。検証には、天鳳とMリーグのデータを用いた。</p>
+</section>
+
+<section>
+  <h2>天鳳での結果</h2>
+  <p class="lede">天鳳のデータは、2015〜2023年と2026年の1月から9月上旬までの鳳凰卓半荘戦の全ゲームである。<sup class="fn" id="fnref2"><a href="#fn2">2</a></sup>。半荘数は160万以上、局数は18,034,322局、副露回数は3,500万回超である。分析の結果、この経験則はおおむね支持されたと言える。この大まかな経験則は、大まかだからこそ使い勝手が良いのではあるが、もう少し細かい知見（たとえば、k段目のどこでテンパイ率が50%を超えるのか）も得られた。結果を図にまとめた。</p>
+  <div class="claims" id="claims"></div>
+  <figure class="chartfig">
+    <div class="chartbox"><svg id="chart-tenhou" viewBox="0 0 900 470" role="img" aria-label="Tenpai rate by meld count and turn, Tenhou"></svg></div>
+    <div class="legend" id="legend"></div>
+    <figcaption>天鳳 鳳凰卓 東南戦 2015〜2023年+2026年 — 1,692,271半荘、副露の瞬間 35,053,457件。n&lt;30 のセルは描画していない。帯は95%信頼区間（半荘でクラスタしたブートストラップ）。</figcaption>
+  </figure>
+  <div id="cross"></div>
+  <p class="lede">曲線は、その巡目に n 回目の副露をしたプレイヤーのうち、テンパイしている割合である。テンパイは副露の瞬間、つまり鳴いて牌を切った時点で判定した（その打牌が放銃になった場合も含む）。4副露はほぼ構造的にテンパイなので（例外は、タンキ待ちの牌を自分の副露で使い切っているごく稀なケースだけ）、1〜3副露目に注目する。</p>
+  <p class="lede">3副露の手は、早くも4巡目に50%を超える。1段目が終わる頃には、およそ4分の3がテンパイしている。同様に、2副露の手は8巡目に50%を超える。</p>
+</section>
+
+<section>
+  <h2>Mリーグでの結果</h2>
+  <p class="lede">Mリーグのデータは、発足した2018/2019シーズンから、8年目の2025/2026シーズンまでの全データを用いた（データは、<a href="https://m-league.konoui.dev/">天鳳形式でデータを公開されているkonoui氏のページ</a>からダウンロードした。記して感謝する。）。</p>
+    <p class="lede">
+  Mリーグの選手は、平均して天鳳プレイヤーより副露率が低い（22.8%対33.6%）。副露基準を厳しく取っているということで、そのぶん、鳴いた後のテンパイ率が全体に天鳳より高い。1副露の手が50%を超えるのは、経験則の言う3段目ではなく2段目のうちである。ただし3副露目の観測は1,004件しかないので、この線は参考程度に見てほしい。</p>
+  <figure class="chartfig">
+    <div class="chartbox"><svg id="chart-mleague" viewBox="0 0 900 400" role="img" aria-label="Tenpai rate by meld count and turn, M.League"></svg></div>
+    <figcaption>Mリーグ全シーズン — 1,915半荘、副露の瞬間 29,323件。3副露目の線は1,004件に基づく参考値。</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>巡目別の数値</h2>
+  <p class="tcap">表1. 鳴いた瞬間のテンパイ率（副露数 × 巡目）</p>
+<div class="tablebox"><table id="tbl"></table></div>
+  <p class="fnote">天鳳データ。角括弧は95%信頼区間、右の数字は件数。</p>
+</section>
+
+<section>
+  <h2>読み方の注意</h2>
+  <div class="notes">
+    <div class="note"><h3>「鳴いた瞬間」の定義</h3><p>ポン・チー・大明槓を発声したあとの打牌の時点。その打牌が放銃となった場合も含む。加槓は既存の面子の昇格であり新しいブロックを晒していないので副露数を進めないものとする（別途536,273件）。暗槓は門前が維持されるため副露に数えない。</p></div>
+    
+    <div class="note"><h3>テンパイ ≠ ロンできる</h3><p>ここでのテンパイは形式テンパイ（向聴数 = 0）で、天鳳の流局時判定と一致する。自分で4枚使い切っている待ちはノーテン、他家に4枚見えている待ちはテンパイ。ただし副露手は役なしでロンできないことがあり、放銃リスクとは一致しない。</p></div>
+    <div class="note"><h3>4副露目</h3><p>手牌1枚のタンキなので構造上ほぼ必ずテンパイ。例外は、残した1枚が自分でポンした牌の4枚目であるケースで、5,996件中5件だけ確認された。</p></div>
+  </div>
+</section>
+
+<section class="footnotes">
+  <ol>
+    <li id="fn1">平澤氏の著書のうち、この法則に触れていることが確認できたのは以下の通り（網羅的なリストではない）：『絶対にラスを引かない麻雀』（2016年）p.&nbsp;56、『デジタルに読む麻雀』（2017年）pp.&nbsp;160–161、『現代麻雀の秘技 相手に対応させる技術』（2018年）pp.&nbsp;160–161、『麻雀・鳴き読みの極意』（2020年）pp.&nbsp;52–53、『人気麻雀YouTuberが教える 1冊で上級者になる方法』（2022年）pp.&nbsp;134–135、『麻雀・守備の基本完全ガイド』（2022年）pp.&nbsp;158–159。 <a href="#fnref1">&#8617;</a></li>
+    <li id="fn2">2024年と2025年のデータがないのは、天鳳公式ページおける牌譜ログデータの公開が停止になっているためだ。 <a href="#fnref2">&#8617;</a></li>
+  </ol>
+</section>
+
+
+<p class="lede">続編では、副露後の手出し・ツモ切りとテンパイ率の関係を扱う：<a href="meld-tenpai2.ja.html">手出しはテンパイの合図か</a>。</p>
+
+<footer><p>データ: 天鳳 鳳凰卓 東南戦 2015〜2023年・2026年1月〜9月上旬 / Mリーグ全シーズン。</p><p>続編は<a href="meld-tenpai2.ja.html">手出しはテンパイの合図か</a>。<a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。Mリーグ牌譜は <a href="https://m-league.konoui.dev/">konoui 氏の公開データ</a>による。</p></footer>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+</div>
+
+<script>
+const CURVES = {"tenhou": {"1": [{"t": 1, "n": 1046240, "r": 0.18, "lo": 0.18, "hi": 0.19}, {"t": 2, "n": 2251381, "r": 0.86, "lo": 0.85, "hi": 0.87}, {"t": 3, "n": 2499400, "r": 2.39, "lo": 2.37, "hi": 2.41}, {"t": 4, "n": 2573046, "r": 5.05, "lo": 5.03, "hi": 5.08}, {"t": 5, "n": 2478070, "r": 8.91, "lo": 8.87, "hi": 8.94}, {"t": 6, "n": 2291967, "r": 13.85, "lo": 13.82, "hi": 13.89}, {"t": 7, "n": 2050733, "r": 19.7, "lo": 19.65, "hi": 19.75}, {"t": 8, "n": 1777012, "r": 26.02, "lo": 25.96, "hi": 26.09}, {"t": 9, "n": 1483417, "r": 32.24, "lo": 32.16, "hi": 32.31}, {"t": 10, "n": 1203257, "r": 37.95, "lo": 37.87, "hi": 38.05}, {"t": 11, "n": 963794, "r": 42.19, "lo": 42.09, "hi": 42.29}, {"t": 12, "n": 777027, "r": 44.63, "lo": 44.53, "hi": 44.72}, {"t": 13, "n": 648597, "r": 46.03, "lo": 45.91, "hi": 46.14}, {"t": 14, "n": 562798, "r": 47.86, "lo": 47.73, "hi": 47.98}, {"t": 15, "n": 483488, "r": 50.67, "lo": 50.53, "hi": 50.8}, {"t": 16, "n": 398508, "r": 52.85, "lo": 52.69, "hi": 53.02}, {"t": 17, "n": 317176, "r": 52.83, "lo": 52.65, "hi": 53.0}, {"t": 18, "n": 206200, "r": 47.77, "lo": 47.55, "hi": 47.96}], "2": [{"t": 2, "n": 100697, "r": 4.95, "lo": 4.83, "hi": 5.08}, {"t": 3, "n": 349625, "r": 10.74, "lo": 10.63, "hi": 10.84}, {"t": 4, "n": 641083, "r": 18.24, "lo": 18.15, "hi": 18.34}, {"t": 5, "n": 917809, "r": 26.58, "lo": 26.5, "hi": 26.66}, {"t": 6, "n": 1093214, "r": 35.05, "lo": 34.97, "hi": 35.14}, {"t": 7, "n": 1139850, "r": 43.0, "lo": 42.91, "hi": 43.08}, {"t": 8, "n": 1073410, "r": 50.19, "lo": 50.08, "hi": 50.28}, {"t": 9, "n": 932410, "r": 56.39, "lo": 56.28, "hi": 56.49}, {"t": 10, "n": 765130, "r": 61.87, "lo": 61.77, "hi": 61.97}, {"t": 11, "n": 599541, "r": 66.2, "lo": 66.08, "hi": 66.32}, {"t": 12, "n": 458420, "r": 69.13, "lo": 68.98, "hi": 69.26}, {"t": 13, "n": 348365, "r": 71.1, "lo": 70.96, "hi": 71.23}, {"t": 14, "n": 269310, "r": 71.58, "lo": 71.41, "hi": 71.74}, {"t": 15, "n": 216201, "r": 71.65, "lo": 71.49, "hi": 71.86}, {"t": 16, "n": 178504, "r": 71.62, "lo": 71.43, "hi": 71.84}, {"t": 17, "n": 149298, "r": 72.72, "lo": 72.51, "hi": 72.96}, {"t": 18, "n": 116696, "r": 74.41, "lo": 74.16, "hi": 74.67}], "3": [{"t": 3, "n": 8357, "r": 40.84, "lo": 39.66, "hi": 41.82}, {"t": 4, "n": 37568, "r": 54.92, "lo": 54.35, "hi": 55.4}, {"t": 5, "n": 87003, "r": 65.21, "lo": 64.89, "hi": 65.49}, {"t": 6, "n": 143279, "r": 73.42, "lo": 73.2, "hi": 73.67}, {"t": 7, "n": 184970, "r": 78.92, "lo": 78.74, "hi": 79.11}, {"t": 8, "n": 203989, "r": 83.26, "lo": 83.12, "hi": 83.42}, {"t": 9, "n": 199848, "r": 86.2, "lo": 86.05, "hi": 86.38}, {"t": 10, "n": 179243, "r": 88.37, "lo": 88.23, "hi": 88.49}, {"t": 11, "n": 150352, "r": 89.91, "lo": 89.75, "hi": 90.06}, {"t": 12, "n": 120786, "r": 90.85, "lo": 90.69, "hi": 91.01}, {"t": 13, "n": 94783, "r": 91.23, "lo": 91.05, "hi": 91.42}, {"t": 14, "n": 72823, "r": 90.98, "lo": 90.77, "hi": 91.19}, {"t": 15, "n": 56906, "r": 90.32, "lo": 90.07, "hi": 90.55}, {"t": 16, "n": 46413, "r": 89.2, "lo": 88.92, "hi": 89.48}, {"t": 17, "n": 38986, "r": 88.4, "lo": 88.1, "hi": 88.71}, {"t": 18, "n": 33674, "r": 89.05, "lo": 88.67, "hi": 89.39}], "4": [{"t": 4, "n": 159, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 5, "n": 687, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 6, "n": 1581, "r": 99.94, "lo": 99.77, "hi": 100.0}, {"t": 7, "n": 2469, "r": 99.96, "lo": 99.84, "hi": 100.0}, {"t": 8, "n": 3104, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 9, "n": 3540, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 10, "n": 3465, "r": 99.89, "lo": 99.78, "hi": 100.0}, {"t": 11, "n": 3409, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 12, "n": 2817, "r": 99.93, "lo": 99.82, "hi": 100.0}, {"t": 13, "n": 2484, "r": 99.96, "lo": 99.88, "hi": 100.0}, {"t": 14, "n": 2073, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 15, "n": 1810, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 16, "n": 1652, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 17, "n": 1687, "r": 99.94, "lo": 99.79, "hi": 100.0}, {"t": 18, "n": 1866, "r": 99.73, "lo": 99.51, "hi": 99.95}]}, "mleague": {"1": [{"t": 1, "n": 610, "r": 0.0, "lo": 0.0, "hi": 0.0}, {"t": 2, "n": 1665, "r": 0.84, "lo": 0.42, "hi": 1.25}, {"t": 3, "n": 1803, "r": 2.88, "lo": 2.19, "hi": 3.73}, {"t": 4, "n": 1935, "r": 5.68, "lo": 4.67, "hi": 6.62}, {"t": 5, "n": 1977, "r": 10.57, "lo": 9.15, "hi": 11.89}, {"t": 6, "n": 1856, "r": 15.68, "lo": 14.29, "hi": 17.14}, {"t": 7, "n": 1773, "r": 24.42, "lo": 22.43, "hi": 26.49}, {"t": 8, "n": 1734, "r": 30.51, "lo": 28.68, "hi": 32.47}, {"t": 9, "n": 1499, "r": 35.82, "lo": 33.37, "hi": 38.02}, {"t": 10, "n": 1301, "r": 44.66, "lo": 42.34, "hi": 47.53}, {"t": 11, "n": 1096, "r": 47.63, "lo": 44.84, "hi": 50.29}, {"t": 12, "n": 840, "r": 51.79, "lo": 48.35, "hi": 55.42}, {"t": 13, "n": 748, "r": 55.88, "lo": 52.17, "hi": 59.4}, {"t": 14, "n": 630, "r": 54.29, "lo": 50.5, "hi": 58.22}, {"t": 15, "n": 520, "r": 56.15, "lo": 52.31, "hi": 60.35}, {"t": 16, "n": 531, "r": 55.74, "lo": 51.62, "hi": 59.83}, {"t": 17, "n": 470, "r": 55.74, "lo": 51.4, "hi": 60.61}, {"t": 18, "n": 248, "r": 52.82, "lo": 46.95, "hi": 58.12}], "2": [{"t": 2, "n": 64, "r": 6.25, "lo": 1.52, "hi": 12.9}, {"t": 3, "n": 259, "r": 13.13, "lo": 9.12, "hi": 17.64}, {"t": 4, "n": 490, "r": 19.59, "lo": 16.13, "hi": 23.09}, {"t": 5, "n": 607, "r": 29.82, "lo": 26.29, "hi": 33.11}, {"t": 6, "n": 788, "r": 36.8, "lo": 32.8, "hi": 40.1}, {"t": 7, "n": 831, "r": 48.01, "lo": 44.25, "hi": 51.17}, {"t": 8, "n": 743, "r": 54.11, "lo": 50.88, "hi": 57.45}, {"t": 9, "n": 714, "r": 57.28, "lo": 53.37, "hi": 60.62}, {"t": 10, "n": 613, "r": 66.4, "lo": 62.68, "hi": 70.43}, {"t": 11, "n": 463, "r": 68.03, "lo": 63.49, "hi": 71.95}, {"t": 12, "n": 416, "r": 72.84, "lo": 68.57, "hi": 76.93}, {"t": 13, "n": 290, "r": 78.28, "lo": 73.67, "hi": 83.02}, {"t": 14, "n": 235, "r": 76.6, "lo": 70.86, "hi": 81.68}, {"t": 15, "n": 176, "r": 73.86, "lo": 67.61, "hi": 80.63}, {"t": 16, "n": 165, "r": 79.39, "lo": 72.87, "hi": 84.74}, {"t": 17, "n": 116, "r": 79.31, "lo": 71.23, "hi": 86.64}, {"t": 18, "n": 98, "r": 69.39, "lo": 61.32, "hi": 78.36}], "3": [{"t": 3, "n": 5, "r": 0.0, "lo": 0.0, "hi": 0.0}, {"t": 4, "n": 36, "r": 52.78, "lo": 38.08, "hi": 70.14}, {"t": 5, "n": 60, "r": 61.67, "lo": 49.07, "hi": 72.28}, {"t": 6, "n": 88, "r": 70.45, "lo": 61.15, "hi": 78.53}, {"t": 7, "n": 98, "r": 83.67, "lo": 75.99, "hi": 91.83}, {"t": 8, "n": 124, "r": 79.03, "lo": 71.03, "hi": 86.48}, {"t": 9, "n": 109, "r": 88.99, "lo": 82.97, "hi": 94.71}, {"t": 10, "n": 100, "r": 90.0, "lo": 83.7, "hi": 95.72}, {"t": 11, "n": 94, "r": 92.55, "lo": 85.71, "hi": 97.56}, {"t": 12, "n": 61, "r": 88.52, "lo": 80.54, "hi": 96.12}, {"t": 13, "n": 74, "r": 91.89, "lo": 85.33, "hi": 97.28}, {"t": 14, "n": 38, "r": 92.11, "lo": 81.41, "hi": 100.0}, {"t": 15, "n": 43, "r": 97.67, "lo": 91.77, "hi": 100.0}, {"t": 16, "n": 34, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 17, "n": 23, "r": 86.96, "lo": 72.11, "hi": 100.0}, {"t": 18, "n": 17, "r": 100.0, "lo": 100.0, "hi": 100.0}], "4": [{"t": 4, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 6, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 7, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 8, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 9, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 10, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 11, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 12, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 13, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 14, "n": 2, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 15, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}, {"t": 18, "n": 1, "r": 100.0, "lo": 100.0, "hi": 100.0}]}};
+const SEGS = [[1,6,"1段目"],[7,12,"2段目"],[13,18,"3段目"]];
+const NAMES = {1:"1副露目",2:"2副露目",3:"3副露目",4:"4副露目"};
+const MINN = 30;
+const pts = (src,f) => (CURVES[src][f]||[]).filter(d => d.n >= MINN);
+function segRate(src,f,a,b){
+  let n=0,k=0;
+  for(const d of (CURVES[src][f]||[])) if(d.t>=a && d.t<=b){ n+=d.n; k+=d.n*d.r/100; }
+  return n ? {rate:100*k/n, n} : null;
+}
+function crossing(src,f){
+  const p = pts(src,f);
+  for(let i=1;i<p.length;i++){
+    const a=p[i-1].r, b=p[i].r;
+    if(a<50 && b>=50) return p[i-1].t + (50-a)/(b-a);
+    if(a>=50 && b<50) return p[i-1].t + (a-50)/(a-b);
+  }
+  return p.length && p[0].r>=50 ? p[0].t : null;
+}
+const fmt = n => n.toLocaleString("en-US");
+
+const CLAIMS = [
+  {f:3, a:1,  b:6,  row:"捨て牌1段目", stmt:"6巡目までに3副露目"},
+  {f:2, a:7,  b:12, row:"捨て牌2段目", stmt:"7〜12巡に2副露目"},
+  {f:1, a:13, b:18, row:"捨て牌3段目", stmt:"13巡目以降に1副露目"},
+];
+document.getElementById("claims").innerHTML = CLAIMS.map(c => {
+  const s = segRate("tenhou", c.f, c.a, c.b);
+  const gap = Math.abs(s.rate - 50);
+  const hit = gap < 3;
+  return `<div class="claim">
+    <div class="rw">${c.row}</div>
+    <div class="stmt">${c.stmt}<br><span style="color:var(--muted)">→ テンパイ率は約50%</span></div>
+    <div><span class="big" style="color:var(--c${c.f})">${s.rate.toFixed(1)}%</span>
+      <span class="vs">実測 ・ n=${fmt(s.n)}</span></div>
+    <div class="verdict ${hit?"hit":"miss"}">${hit ? "✓ ほぼ一致" : (s.rate>50?"▲ ":"▼ ") + gap.toFixed(0) + "ポイントの乖離"}</div>
+  </div>`;
+}).join("");
+
+function draw(id, src, h, maxF){
+  const svg = document.getElementById(id);
+  const W=900, L=52, R=104, T=18, B=44, PW=W-L-R, PH=h-T-B;
+  const x = t => L + (t-1)/17*PW;
+  const y = v => T + (1-v/100)*PH;
+  let o = "";
+  SEGS.forEach((s,i) => {
+    if(i%2===0){
+      const xa = Math.max(L, x(s[0]-0.5)), xb = Math.min(L+PW, x(s[1]+0.5));
+      o += `<rect class="bandfill" x="${xa}" y="${T}" width="${xb-xa}" height="${PH}"/>`;
+    }
+    o += `<text class="bandlab" x="${(x(s[0])+x(s[1]))/2}" y="${T+14}" text-anchor="middle">${s[2]}</text>`;
+  });
+  for(let v=0; v<=100; v+=25) o += `<line class="gridline" x1="${L}" y1="${y(v)}" x2="${L+PW}" y2="${y(v)}"/>`
+    + `<text class="tick" x="${L-9}" y="${y(v)+4}" text-anchor="end">${v}%</text>`;
+  for(let t=1; t<=18; t++) if(t%2===1 || t===18)
+    o += `<text class="tick" x="${x(t)}" y="${h-B+20}" text-anchor="middle">${t}</text>`;
+  o += `<line class="axis" x1="${L}" y1="${T+PH}" x2="${L+PW}" y2="${T+PH}"/>`;
+  o += `<line class="refl" x1="${L}" y1="${y(50)}" x2="${L+PW}" y2="${y(50)}"/>`;
+  o += `<text class="reflab" x="${L+4}" y="${y(50)-7}">50%</text>`;
+  o += `<text class="tick" x="${L+PW/2}" y="${h-6}" text-anchor="middle" style="font-size:12px">巡目（自分の捨て牌枚数）</text>`;
+  for(let f=maxF; f>=1; f--){
+    const p = pts(src,f);
+    if(p.length < 2) continue;
+    o += `<path class="ci f${f}" d="${
+      p.map(d=>`${x(d.t)},${y(d.hi)}`).join(" L ").replace(/^/,"M ")
+      + " L " + p.slice().reverse().map(d=>`${x(d.t)},${y(d.lo)}`).join(" L ") + " Z"}"/>`;
+    o += `<path class="ln s${f}" d="M ${p.map(d=>`${x(d.t)},${y(d.r)}`).join(" L ")}"/>`;
+    const last = p[p.length-1];
+    o += `<text class="endlab f${f}" x="${x(last.t)+9}" y="${y(last.r)+4}">${NAMES[f]}</text>`;
+    const c = crossing(src,f);
+    if(c) o += `<circle class="xmark s${f}" cx="${x(c)}" cy="${y(50)}" r="4.5"/>`;
+  }
+  svg.innerHTML = o;
+}
+draw("chart-tenhou","tenhou",470,4);
+draw("chart-mleague","mleague",400,3);
+
+document.getElementById("legend").innerHTML = [1,2,3,4].map(f =>
+  `<span><i class="sw" style="background:var(--c${f})"></i>${NAMES[f]}</span>`).join("")
+  + `<span><i class="sw" style="background:var(--muted);height:2px"></i>50% 基準線 ・ ○ は交差点</span>`;
+
+document.getElementById("cross").innerHTML =
+  `<div class="claims" style="margin-top:1rem">` + [1,2,3].map(f => {
+    const c = crossing("tenhou",f), m = crossing("mleague",f);
+    return `<div class="claim"><div class="rw">${NAMES[f].toUpperCase()}</div>
+      <div><span class="big" style="color:var(--c${f})">${c.toFixed(1)}</span>
+      <span class="vs">巡目で 50% を超える</span></div>
+      <div class="stmt" style="color:var(--muted);font-size:.86rem">Mリーグでは ${m.toFixed(1)} 巡目</div></div>`;
+  }).join("") + `</div>`;
+
+let th = `<thead><tr><th>巡</th>` + [1,2,3,4].map(f=>`<th>${NAMES[f]}</th>`).join("") + `</tr></thead><tbody>`;
+for(let t=1; t<=18; t++){
+  th += `<tr><td>${t}</td>` + [1,2,3,4].map(f => {
+    const d = (CURVES.tenhou[f]||[]).find(z=>z.t===t);
+    if(!d || d.n < MINN) return `<td class="num" style="color:var(--muted)">\u2014</td>`;
+    return `<td class="num">${d.r.toFixed(1)}% <span style="color:var(--muted)">[${d.lo.toFixed(1)}, ${d.hi.toFixed(1)}] ${fmt(d.n)}</span></td>`;
+  }).join("") + `</tr>`;
+}
+document.getElementById("tbl").innerHTML = th + `</tbody>`;
+
+</script>
+<script src="comments.js"></script>
