@@ -1,0 +1,486 @@
+<title>端牌の間隔トイツ落とし</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicons/5m.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@700&family=Zen+Maru+Gothic:wght@400;500;700&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+:root{
+  --paper:#EAECE6; --card:#F7F8F4; --ink:#1C1E1A; --muted:#6B7069;
+  --rule:#D2D6CD; --band:#DFE3DA; --tile:#FCFDFA; --tileline:#C2C8BC;
+  --shu:#C8402C; --ai:#2E4A73; --gold:#A8842C;
+  --shadow:0 1px 2px rgba(28,30,26,.06), 0 10px 26px rgba(28,30,26,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}}
+:root[data-theme="dark"]{
+  --paper:#131511; --card:#1C1F19; --ink:#E7E9E2; --muted:#98A093;
+  --rule:#2E332B; --band:#242820; --tile:#262B23; --tileline:#3C4338;
+  --shu:#E4715C; --ai:#84AEDC; --gold:#D7B45C;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 26px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Zen Maru Gothic",system-ui,sans-serif;font-size:16px;line-height:1.85;-webkit-font-smoothing:antialiased}
+.wrap{max-width:68rem;margin:0 auto;padding:clamp(2rem,5vw,4.5rem) clamp(1.1rem,4vw,2.5rem) 5rem;display:flex;flex-direction:column;gap:3.4rem}
+h1,h2{font-family:"Kaisei Decol",Georgia,serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.4}
+h1{font-size:clamp(2rem,5vw,3.1rem);letter-spacing:.02em}
+h2{font-size:clamp(1.25rem,2.5vw,1.6rem)}
+h3{font-size:.98rem;font-weight:700;margin:0}
+h4{font-size:.88rem;font-weight:700;margin:0}
+p{margin:0}
+.eyebrow{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:.9rem;border-bottom:2px solid var(--ink);padding-bottom:2rem}
+header .sub{font-size:1.05rem;max-width:60ch}
+.lede{max-width:64ch;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:1.25rem}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.4rem 1.5rem;box-shadow:var(--shadow)}
+
+/* tiles */
+.tiles{display:flex;gap:.3rem;flex-wrap:wrap;align-items:flex-end}
+.ti{display:inline-block;width:1.32em;height:auto;vertical-align:-.42em;margin:0 .05em;
+    padding:.1em .1em .16em;box-sizing:border-box;border-radius:.14em;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 2px rgba(28,30,26,.25)}
+.tl{position:relative;display:inline-block;vertical-align:middle;width:2.35rem;aspect-ratio:3/4;
+    border-radius:5px;overflow:hidden;line-height:0;
+    background:url(assets/tiles/Front.svg) 50%/100% 100% no-repeat;
+    box-shadow:0 1px 3px rgba(28,30,26,.22)}
+.tl img{width:100%;height:100%;display:block;object-fit:contain;
+    padding:8% 8% 13%;box-sizing:border-box}
+.tl.drawn{margin-left:.9rem;box-shadow:0 0 0 2px var(--gold),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.cut.honest{box-shadow:0 0 0 2px var(--ai),0 1px 3px rgba(28,30,26,.22)}
+.tl.cut.honest::after{background:color-mix(in srgb,var(--ai) 26%,transparent)}
+.tl.ghost{opacity:.3}
+.tl.bad::after{content:"";position:absolute;inset:0;
+    background:color-mix(in srgb,var(--shu) 26%,transparent)}
+.tl.bad{box-shadow:0 0 0 2px var(--shu),0 1px 3px rgba(28,30,26,.22)}
+.readrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.55rem .95rem;margin:.15rem 0}
+.readrow .cap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--muted);min-width:5.2rem;align-self:center}
+.readrow .arrow{align-self:center;color:var(--muted);font-size:.95rem}
+.readrow .plus{align-self:center;color:var(--muted);font-size:.9rem;margin:0 .1rem}
+.readrow .cap{font-weight:700;color:var(--ink)}
+.readrow + .readrow{margin-top:.5rem}
+.fnote{font-size:.82rem;color:var(--muted);margin-top:.15rem}
+.tcap{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:-.8rem}
+.branch{display:grid;grid-template-columns:repeat(auto-fit,minmax(19rem,1fr));gap:1.1rem}
+.arm{display:flex;flex-direction:column;gap:.6rem;padding:1.1rem 1.2rem;border-radius:5px;border:1px solid var(--rule);background:var(--card);box-shadow:var(--shadow)}
+.arm.honest{border-top:3px solid var(--ai)}
+.arm.trick{border-top:3px solid var(--shu)}
+.arm .who{font-family:"Roboto Mono",monospace;font-size:.74rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.arm .seen{font-size:.9rem}
+.arm .seen b{color:var(--ink)}
+.same{text-align:center;font-family:"Roboto Mono",monospace;font-size:.82rem;color:var(--muted);padding:.2rem}
+
+/* counts */
+.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem}
+.count{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1rem 1.15rem;box-shadow:var(--shadow)}
+.count .lab{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.08em;color:var(--muted)}
+.count .big{font-family:"Roboto Mono",monospace;font-size:1.9rem;font-weight:700;color:var(--shu);line-height:1.25}
+.count .of{font-size:.82rem;color:var(--muted)}
+
+.freq{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.9rem;margin-top:.3rem}
+.fq{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:.9rem 1.1rem;box-shadow:var(--shadow)}
+.fq .lab{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.08em;color:var(--muted)}
+.fq .big{font-family:"Roboto Mono",monospace;font-size:1.8rem;font-weight:700;line-height:1.25}
+.fq .of{font-size:.8rem;color:var(--muted)}
+.fq .of span{display:block;font-size:.72rem;opacity:.85}
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:.6rem .85rem;text-align:left;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-family:"Roboto Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500}
+thead th{text-align:right}
+thead th:first-child{text-align:left}
+table.patterns thead th{text-align:left}
+tbody tr:last-child td{border-bottom:none}
+tr.k{background:color-mix(in srgb,var(--shu) 9%,transparent)}
+td.tag{font-family:"Roboto Mono",monospace;font-size:.72rem;font-weight:700}
+tr.k td.tag{color:var(--shu)} tr:not(.k) td.tag{color:var(--muted)}
+td.mono{font-family:"Roboto Mono",monospace;font-size:.8rem}
+a{color:var(--ai);text-decoration-thickness:1px;text-underline-offset:2px}
+tr.k a{color:var(--shu)}
+
+/* chart */
+figure{margin:0}
+svg{display:block;width:100%;height:auto;min-width:20rem}
+.bar{fill:var(--shu)}
+.barlab,.axlab{font-family:"Roboto Mono",monospace;font-size:11.5px;fill:var(--muted)}
+.barval{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;fill:var(--ink)}
+.grid{stroke:var(--rule);stroke-width:1}
+.err{stroke:var(--ink);stroke-width:1.4;opacity:.45}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(20rem,1fr));gap:1.4rem}
+.chartcard{background:var(--card);border:1px solid var(--rule);border-radius:5px;padding:1.2rem 1.3rem 1rem;box-shadow:var(--shadow)}
+.chartcard h3{margin-bottom:.15rem}
+.chartcard p{font-size:.82rem;color:var(--muted);margin-bottom:.7rem}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(17rem,1fr));gap:1.3rem 2rem}
+.note p{font-size:.86rem;color:var(--muted)}
+.todo{border:1px dashed var(--shu);border-radius:4px;padding:.7rem .9rem;
+  background:color-mix(in srgb,var(--shu) 5%,transparent);color:var(--muted);font-size:.9rem}
+.findings{margin:.2rem 0;padding-left:1.15rem;display:flex;flex-direction:column;
+  gap:.5rem;max-width:66ch;color:var(--muted);font-size:.93rem}
+.findings b{color:var(--ink)}
+code{font-family:"Roboto Mono",monospace;font-size:.82em;background:var(--band);padding:.08em .35em;border-radius:3px}
+sup.fn{font-size:.68em;vertical-align:super;line-height:0}
+sup.fn a{text-decoration:none;padding:0 .1em}
+.footnotes{border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;
+  flex-direction:column;gap:.7rem;font-size:.84rem;color:var(--muted)}
+.footnotes li{margin-left:1.1rem}
+.footnotes ol{margin:0;padding-left:.4rem;display:flex;flex-direction:column;gap:.7rem}
+/* summary card, and the two clips */
+.tldr{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--shu);
+  border-radius:5px;padding:1.25rem 1.4rem;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:.65rem}
+.tldr .k{font-family:"Roboto Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.tldr ul{margin:0;padding-left:1.1rem;display:flex;flex-direction:column;gap:.45rem}
+.tldr li{font-size:.95rem}
+.tldr li b{color:var(--ink)}
+.clip{display:grid;grid-template-columns:minmax(9rem,15rem) 1fr;gap:1rem;align-items:start;
+  text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--rule);
+  border-radius:5px;padding:.8rem;box-shadow:var(--shadow);margin:.2rem 0 .4rem;
+  transition:transform .14s ease,box-shadow .14s ease}
+.clip:hover,.clip:focus-visible{transform:translateY(-2px);
+  box-shadow:0 2px 4px rgba(28,30,26,.09),0 14px 30px rgba(28,30,26,.11)}
+.clip:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+.clip .thumb{position:relative;display:block;border-radius:4px;overflow:hidden;
+  background:var(--band);aspect-ratio:16/9}
+.clip .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .play{position:absolute;inset:0;display:grid;place-items:center}
+.clip .play::before{content:"";width:2.9rem;height:2rem;border-radius:6px;
+  background:rgba(28,30,26,.72)}
+.clip .play::after{content:"";position:absolute;border-style:solid;
+  border-width:.42rem 0 .42rem .72rem;border-color:transparent transparent transparent #fff}
+.clip .cn{display:block;font-weight:700;font-size:.95rem;line-height:1.5;margin-bottom:.25rem}
+.clip .cd{display:block;font-size:.85rem;color:var(--muted);line-height:1.65}
+.clip .cm{display:block;font-family:"Roboto Mono",monospace;font-size:.7rem;
+  letter-spacing:.08em;color:var(--muted);margin-top:.4rem}
+.clip.playing{grid-template-columns:1fr;transform:none}
+.clip.playing .ct{display:none}
+.clip iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:4px;display:block}
+@media (max-width:34rem){.clip{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.clip{transition:none}.clip:hover{transform:none}}
+.postmeta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;
+  font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.06em;
+  color:var(--muted);margin-top:.2rem}
+.postmeta time{text-transform:uppercase}
+.tags{display:flex;flex-wrap:wrap;gap:.35rem}
+.tag{display:inline-block;text-decoration:none;color:var(--muted);
+  border:1px solid var(--rule);border-radius:99px;padding:.12rem .55rem;
+  background:var(--card);transition:color .12s ease,border-color .12s ease}
+.tag:hover,.tag:focus-visible{color:var(--ink);border-color:var(--muted)}
+.tag.lang{border-color:color-mix(in srgb,var(--ai) 45%,transparent);color:var(--ai)}
+#comments{margin-top:1rem}
+.commentbox{border-top:1px solid var(--rule);padding-top:1.6rem;
+  display:flex;flex-direction:column;gap:.6rem}
+.commentbox h2{font-size:1.1rem}
+footer{border-top:1px solid var(--rule);padding-top:1.5rem;font-size:.8rem;color:var(--muted)}
+
+/* author chip */
+header{position:relative}
+.author{position:absolute;bottom:2rem;right:0;display:flex;align-items:center;gap:.7rem;
+  text-decoration:none;max-width:17rem}
+.author img{width:2.7rem;height:2.7rem;border-radius:50%;object-fit:cover;flex:none;
+  box-shadow:0 0 0 1px var(--rule)}
+.author .an{font-family:"Roboto Mono",monospace;font-size:.8rem;font-weight:700;color:var(--ink)}
+.author .ab{display:block;font-family:inherit;font-size:.67rem;font-weight:400;
+  color:var(--muted);line-height:1.45;margin-top:.1rem}
+@media (max-width:52rem){.author .ab{display:none}.author{max-width:none}}
+
+.home{font-family:"Roboto Mono",monospace;font-size:.72rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;align-self:flex-start}
+.home:hover,.home:focus-visible{color:var(--ink)}
+</style>
+
+<style>
+h4{font-size:.92rem;font-weight:700;margin:.3rem 0 0}
+.fig{margin:0;background:var(--card);border:1px solid var(--rule);border-radius:5px;
+  padding:.9rem;box-shadow:var(--shadow)}
+.fig img{max-width:100%;display:block;border-radius:3px}
+.fig figcaption{font-size:.8rem;color:var(--muted);margin-top:.5rem}
+.pat{display:inline-flex;align-items:center;gap:.15rem;border:1px solid var(--rule);
+  border-radius:4px;padding:.18rem .4rem;margin:.14rem .18rem;background:var(--card)}
+.pat .pl{font-family:"Roboto Mono",monospace;font-size:.66rem;color:var(--muted);margin-right:.2rem}
+.pat .pdraw{margin-left:.3rem;padding-left:.3rem;border-left:1px dashed var(--rule)}
+.pat .pdraw .ti{box-shadow:0 0 0 2px var(--gold)}
+td.num{font-family:"Roboto Mono",monospace;font-size:.8rem;text-align:right}
+td.num .ci{font-size:.68rem;color:var(--muted);font-weight:400}
+ul.pt,ol.pt{margin:.2rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.25rem;max-width:64ch;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <a class="home" href="index.html">&larr; 記事一覧</a>
+  <p class="eyebrow">牌譜解析 / 天鳳 鳳凰卓</p>
+  <h1>端牌の間隔トイツ落とし</h1>
+  <p class="sub">ずんだもんの間隔トイツ落とし理論を、鳳南1,800万局で検証した。</p>
+  <p class="postmeta"><time datetime="2026-09-24">24 September 2026</time><span class="tags"><a class="tag lang" href="index.html#tag=lang-ja">日本語</a><a class="tag" href="index.html#tag=logs">牌譜分析</a><a class="tag" href="index.html#tag=reading">読み</a><a class="tag" href="index.html#tag=tenhou">天鳳</a></span></p>
+  <a class="author" href="https://github.com/rcbk2" rel="author">
+    <img src="assets/avatar.jpg" alt="rcbk2">
+    <span class="an">rcbk2<span class="ab">世界の片隅で牌を数えたけもの</span></span>
+  </a>
+</header>
+
+<div class="tldr">
+  <p class="k">TL;DR</p>
+  <ul>
+    <li>同じ端牌が間隔を空けて2回切られ、2枚目が手出しだったケースのうち、1枚目を切った時点ですでにトイツだったものは<b>60.6%</b>だった。間に挟まる打牌が1〜4枚で、途中にブロック落としがなければ80.8%まで上がる。</li>
+    <li>理論の中心的な予測に反して、<b>内側1つ目のスジ</b>（2–5 / 5–8）が待ちに含まれる率は、他のリーチより<b>約20%高かった</b>。</li>
+    <li><b>内側2つ目のスジ</b>（3–6 / 4–7）が待ちに含まれる率は、全体では<b>約5%</b>、短い間隔では約9%低かった。</li>
+    <li>最もよく当たるのは「おまけ」の予測で、<b>5の愚形待ち</b>は<b>約20%少なかった</b>。</li>
+  </ul>
+</div>
+
+<section>
+  <h2>手出し読み</h2>
+
+<p class="lede">「雀ゴロのずんだもん」@<a href="https://www.youtube.com/@mkiruchan">M斬るチャンネル</a>のMリーグ辛口解説の大ファンである<sup class="fn" id="fnref1"><a href="#fn1">1</a></sup>。中の人が誰なのかは知られていないが、動画を数本見れば、麻雀を相当よく分かっている人が作っているということはよく分かる。特に、手牌読みの深さと思考過程を説明する巧みさは群を抜いていて、<a href = "https://note.com/fukuchimakoto/n/n4715f1822226">福地誠先生</a>や有名天鳳プレイヤー達だけでなく、Mリーガーの堀慎吾選手や内川幸太郎選手などの麻雀プロまでが、ずんだもんを評価するコメントを残している。動画を見つつ<a href="https://m-league.konoui.dev/">Mリーグの牌譜</a>を再生して、ずんだもんの手牌読みがどこまで当たっているかを確認したりするのも楽しい。</p>
+
+<p class="lede">だから、ずんだもんが2026年8月に「手出し読み講座」という新しいシリーズを始めてくれたのは嬉しかった。手出し読みをまったく学んだことのない初心者向けの入門講座という触れ込みであるが、かなり高度な内容までカバーしていると思う。ずんだもんの普段のMリーグ解説動画では、詳しい説明抜きで読みの理論が言及されることが多いのだが、この講座はその背後にある論理を順を追って説明してくれる。</p>
+  <a class="clip" href="https://www.youtube.com/watch?v=0OLOEVPbRsM" data-yt="0OLOEVPbRsM"
+     target="_blank" rel="noopener">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/0OLOEVPbRsM/hqdefault.jpg" alt="" loading="lazy"><span class="play"></span></span>
+    <span class="ct"><span class="cn">ずんだもんの手出し読み講座 #1</span>
+      <span class="cd">手出し読みの理論について、ずんだもんが一から解説</span>
+      <span class="cm">YouTube</span></span>
+  </a>
+<p class="lede">ずんだもんがMリーグ解説の時にたびたび言及してきた理論に、「<b>端牌の間隔トイツ落とし</b>」（端牌トイツの間隔切り）がある。たとえば<a href="https://www.youtube.com/watch?v=qYrcIWNUAJs&amp;t=1s">第14回</a>、<a href="https://www.youtube.com/watch?v=t0C8IKVv3Y8">第19回</a>、<a href="https://www.youtube.com/watch?v=gHw2U4JwmOI">第66回</a>、<a href="https://www.youtube.com/watch?v=AQS6aIPkQho">第70回</a>などに登場している。</p>
+<p class="lede">理論の中心的な予測はこうだ。同じ端牌が間隔を空けて2回切られ、少なくとも2枚目が手出しだったとき — たとえば<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を4巡目と6巡目に手の中から切ったとき — その隣の2つのスジ、<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">と<img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou6.svg" alt="6s">は、普段より安全になる。</p>
+<p class="lede">ずんだもん自身が「最強の理論」と呼ぶこの理論は、とても魅力的に思えた。自分は麻雀戦術書を相当数（80冊以上）読んできたつもりだが、この理論が説明されているのを見た記憶はない。理論の導出プロセスは明瞭で、ロジックに隙がないように見えるし、その予測は攻撃・守備両方の状況で幅広く応用が利きそうだ。この理論に魅了された私は、実戦でどれくらい使えるのか — この型の捨て牌がどのくらいの頻度で現れるのか、予測に境界条件はあるのか — をデータで確かめたくなった。</p>
+
+<p class="lede">天鳳の牌譜を分析した結果、残念ながらデータは理論の中心的な予測を支持しなかった。それどころか、安全になるはずのスジの一方は、基準値よりむしろ危険になるように見える。一方で、ずんだもんが「おまけの理論」として言及した予測の一つはデータに強く支持された。</p>
+
+<p class="lede">データ分析の結果を示す前にまず、ずんだもんの理論の機序をスケッチしておく。以下の説明は、ずんだもんの講座 — 主に<a href="https://www.youtube.com/watch?v=0OLOEVPbRsM">第1回</a>と<a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">第2回</a>、一部<a href="https://www.youtube.com/watch?v=MtsJ5TDSzjk">第6回</a> — をまとめて説明しているものなので、動画を見てすでに内容を分かっている読者はこの節を飛ばしてよい。ずんだもんの説明を以下にまとめ直している理由は、「私はずんだもんの理論をこう理解している」ということを明記しておくことで、別の麻雀研究者が私のデータ分析の追試をする時に、私の誤りを見つけやすくするためである。その後、理論の予測を二種類に分けて検証する。第一の検証は、端牌の間隔切りに見える捨て牌は、本物の端牌トイツがあったことを示すのかという分析だ。第二の検証は、端牌の間隔切りは本当に隣のスジを安全にするのかという分析である。</p>
+</section>
+
+<section>
+  <h2>ずんだもんの手出し読み理論</h2>
+  <h3>定義</h3>
+<p class="lede">ずんだもんはまず、全ての手出し・ツモ切りを覚えようとするのではなく、以下の3種類の手出しがあった時だけに注目するのが良いという。それ以外のタイプの手出しはシグナルとして使うにはノイズが多すぎるし、3人の相手の手出しをすべて覚えようとするのは、脳のリソースの無駄遣いだという。</p>
+<h4>1. 逆切り</h4><ul class="pt"><li>3〜7の牌を切ったあとで、いずれかの色の1・2・8・9を手出しする。</li><li>あるいは、2か8を切ったあとで、いずれかの色の1か9を手出しする。</li><li>例：3巡目に<img class="ti" src="assets/tiles/Pin3.svg" alt="3p">を切り、後に<img class="ti" src="assets/tiles/Sou9.svg" alt="9s">を手出しする。</li></ul>
+<h4>2. ターツの間隔切り</h4><ul class="pt"><li><i>t</i> 巡目に数牌を切り、<i>t</i> + 2巡目以降に、その牌とターツを構成する牌を手出しする。</li><li>例：3巡目に<img class="ti" src="assets/tiles/Pin4.svg" alt="4p">を切り、5巡目に<img class="ti" src="assets/tiles/Pin6.svg" alt="6p">を手出しする。</li>
+  <li>注：以下、「間隔」は同じプレイヤーの二つの打牌の間に挟まる打牌枚数を指す。たとえば4巡目と6巡目に切った場合、間隔は1枚と数える。</li></ul>
+<h4>3. トイツの間隔切り</h4><ul class="pt"><li><i>t</i> 巡目に数牌を切り、<i>t</i> + 2巡目以降に、同じ牌をもう1枚手出しする。</li><li>例：3巡目に<img class="ti" src="assets/tiles/Sou8.svg" alt="8s">を切り、5巡目にもう1枚の<img class="ti" src="assets/tiles/Sou8.svg" alt="8s">を手出しする。</li></ul>
+<p class="lede">この3つが重要である理由は、あとから手出しされた牌が孤立牌として手牌に残されていた可能性が低いという共通点があることだ。普通の手 — 国士無双や七対子、染め手を狙っていない手 — において、孤立した<img class="ti" src="assets/tiles/Pin7.svg" alt="7p">より孤立した<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を残したり、<img class="ti" src="assets/tiles/Man2.svg" alt="2m">を切ったあとに孤立した<img class="ti" src="assets/tiles/Man4.svg" alt="4m">を残したりは、普通しない。これらの例で<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">や<img class="ti" src="assets/tiles/Man4.svg" alt="4m">が数巡のあいだ手牌に残されていたのであれば、それは孤立牌ではなく周りの牌とつながっていた可能性が高い。</p>
+<p class="lede">それ以外の手出しの多くは、切られた牌が孤立していることもあれば、つながっていることもあるため、情報の信頼度が落ちる。たとえば<img class="ti" src="assets/tiles/Pin9.svg" alt="9p">が数巡空けてではなく連続した巡目で手出しされた場合、3トイツの手で孤立した<img class="ti" src="assets/tiles/Pin9.svg" alt="9p">トイツだっただけかもしれない<sup class="fn" id="fnref2"><a href="#fn2">2</a></sup>。</p>
+<h3>例外</h3>
+<p class="lede">いくつかの例外を考慮する必要がある。もっとも、ずんだもんによれば、こうした例外ケースは、河に別の手がかりを残すことが多い。</p>
+<p class="lede"><b>A. 2枚目は、安全牌として手牌に残されていた。</b>特に、1枚目を切ったあとで2枚目を引いてきた場合。たとえば<img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">のターツを払っている途中で、以前切った<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">をもう1枚引いたとする。安全そうな<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を残して先に<img class="ti" src="assets/tiles/Pin6.svg" alt="6p">を切り、次の巡に<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を手出しする、ということが起こる。</p>
+<p class="lede"><b>B. 2枚目が七対子の種として残されていた。</b></p>
+<p class="lede"><b>C. 三色や一通などの役を狙う浮き牌として残されていた。</b></p>
+<h3>消去法</h3>
+<p class="lede">これらの手出しのいずれかを見たら、次にやるのは関連牌のパターンをすべて列挙し、可能性が薄いものを消していくことだ。ここが一番大切なプロセスで、これをやらないのならば手出しを見る意味は半減する。たとえば、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">の間隔切りを見つけたとしよう。2枚目の<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">が切られた時点で考えるべき関連牌のパターンは、次のスクリーンショット（ずんだもんの<a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">手出し読み講座第2回</a>より）にまとめられている。</p>
+<figure class="fig"><img src="assets/figures/stagger_patterns.png" alt="Pattern enumeration from the lecture" loading="lazy"></figure>
+<p class="lede">以下に書き出す。</p>
+<p class="tcap">表1. 端牌の間隔切りの関連牌パターン</p>
+<div class="tablebox"><table class="patterns">
+  <thead><tr><th>#</th><th>パターン</th><th>形（金色の枠 = いま引いてきた牌）</th></tr></thead>
+  <tbody><tr><td class="num">1</td><td style="white-space:normal">スライド系・空切り</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">f</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"></span></span></td></tr><tr><td class="num">2</td><td style="white-space:normal">メンツ完成</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span class="pdraw"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></span><span class="pat"><span class="pl">f</span><span style="color:var(--muted)">その他複合型</span></span></td></tr><tr><td class="num">3</td><td style="white-space:normal">愚形固定（トイツ固定）</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span><span class="pat"><span class="pl">f</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">g</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span><span class="pat"><span class="pl">h</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p"></span><span class="pat"><span class="pl">i</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span></td></tr><tr><td class="num">4</td><td style="white-space:normal">良形固定</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"></span></td></tr><tr><td class="num">5</td><td style="white-space:normal">4枚形→3枚形</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">d</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span><span class="pat"><span class="pl">e</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span></td></tr><tr><td class="num">6</td><td style="white-space:normal">強めの浮き牌</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"></span></td></tr><tr><td class="num">7</td><td style="white-space:normal">トイツ・ターツ落とし中</td><td style="white-space:normal"><span class="pat"><span class="pl">a</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"></span><span class="pat"><span class="pl">b</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"></span><span class="pat"><span class="pl">c</span><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"></span></td></tr></tbody></table></div>
+<p class="lede">数巡前に<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">が1枚切られていたという観測から、これらのパターンの多くを消去したり、割り引いたりできる。</p>
+<ul class="pt"><li>2-a、2-b、3-a、3-b、4-a、4-c、5-b、5-e、7-a。いまこの形を持っているなら、数巡前に<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">を切った時点で<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">が暗刻だったことになってしまい、不自然である。</li><li>1-b、1-c、7-b、7-c は（不可能ではないが）ありそうにない。いまこの形なら、数巡前の時点で愚形ターツ固定をしていたことになる。良形ターツ固定やトイツ固定に比べて、愚形ターツ固定はずっと起こりにくい。</li><li>5-c、6-b も可能性は低い（11355 や 11345 を壊したことになるので）。</li></ul>
+<p class="lede">これらを消すと、残る形の多くは<img class="ti" src="assets/tiles/Pin2.svg" alt="2p">か<img class="ti" src="assets/tiles/Pin3.svg" alt="3p">を複数枚含むか、すでに完成したピンズのブロックを含むものになる。残ったパターンのうち<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">のリャンメン待ちを生むのは 4-b だけ、<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">のリャンメン待ちを生むのは 4-d だけである。これらの形を作るのに必要な牌（<img class="ti" src="assets/tiles/Pin3.svg" alt="3p">や<img class="ti" src="assets/tiles/Pin4.svg" alt="4p">）が2枚以上場に見えていれば、その可能性はさらに下がる。</p>
+<p class="lede">2-f（複合型）については、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">（ここから<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">のトイツを間隔切りすれば<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">待ちが残る）や <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">（<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">待ちになる）のような形は、そもそも最初の<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">を切ることがやや不自然なので、可能性は低い。ただし、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">（<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">待ちになる）は、あり得る形だ。</p>
+<h3>「おまけ」の理論</h3>
+<p class="lede">これらのメインの予測に加えて、ずんだもんは「おまけ」の理論として、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">（<img class="ti" src="assets/tiles/Pin9.svg" alt="9p">）トイツの間隔切りは<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">の愚形待ちをやや起こりにくくする、と論じる。消去のプロセスを経ると、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p">を含むパターンが減り、相対的に<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p">や<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">を含むパターンが増える。残ったこれらのパターンは、<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">の（ノベタンではない）純粋タンキ、<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">のシャンポン、<img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">のカンチャンとは両立しにくい。</p>
+<p class="lede">たとえば手に<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p">があり、<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">のシャンポンがあるなら、2枚目の<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">を切った時点の形は <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> だったはずで、その時点で<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">のトイツを固定するのは考えにくい。同様に、<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p">と<img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p">のカンチャンがあるなら、切った時点の形は <img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> だったはずで、その段階でカンチャンを固定するのも考えにくい。</p>
+<p class="lede">手に<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">がある場合も、<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"> や <img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"> のような形は、単独の<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">愚形待ちではなく<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">待ちを生む。<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">の愚形待ちが不可能になるわけではないが、理論はその頻度が下がると予測する。</p>
+<h3>仮説</h3>
+<p class="lede">まとめると、この過程から次の予測が得られる。</p>
+<div class="tldr" style="border-left-color:var(--ai)">
+  <span class="k">予測</span>
+  <ul>
+    <li><b>P1.</b> 端牌の間隔切りがあった時、<b>内側1つ目のスジ</b>（2–5）が待ちになる可能性が下がる。理論はこれを2つのうちでより安全な方と位置づける — 理論上可能な複合型を除けば、基本パターンの中で残るのは4-bだけだからだ。</li>
+    <li><b>P2.</b> <b>内側2つ目のスジ</b>（3–6）も待ちになりにくいはずだが、1つ目ほどではない：1パターン（4-d）に加え、例外的な形（112245）が消去を生き残る。</li>
+    <li><b>P3.</b> <b>5の愚形待ち</b>の可能性が下がる。</li>
+  </ul>
+  <p style="font-size:.9rem;color:var(--muted);margin:0">以上は1の間隔切りについての記述で、9の場合は鏡像になる。対応するスジは5–8（内側1つ目）と4–7（内側2つ目）である。</p>
+</div>
+</section>
+
+<section>
+  <h2>実戦での応用例</h2>
+<p class="lede">ずんだもんは、この理論は攻守両面で役に立つと論じる。最初のスクリーンショット（<a href="https://www.youtube.com/watch?v=yAGZ-Jthbvg">手出し読み講座第2回</a>より）は、1シャンテンでの難しい押し引きの局面だ。下家の<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">の間隔手出しに気づかなければ、現物の<img class="ti" src="assets/tiles/Pin3.svg" alt="3p">を切って完全に降りるか、無筋の危険牌<img class="ti" src="assets/tiles/Man8.svg" alt="8m">か<img class="ti" src="assets/tiles/Sou7.svg" alt="7s">を押して1シャンテンを保つかの難しい二択を迫られる。</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd1.png" alt="Push-fold decision 1" loading="lazy"></figure>
+<p class="lede">しかし、端牌の間隔トイツ理論を知っているプレイヤーは、もう一つの選択肢として<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">を選べる。<img class="ti" src="assets/tiles/Sou8.svg" alt="8s">が現物なので<img class="ti" src="assets/tiles/Sou5.svg" alt="5s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou8.svg" alt="8s">のスジはあり得ない。そして<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">の間隔切りにより<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">のスジが安全になっている。理論はさらに、<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">のシャンポン・タンキ・カンチャンも比較的起こりにくいと予測する。ずんだもんは、この<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">の危険度は、生牌の<img class="ti" src="assets/tiles/Chun.svg" alt="中">程度にまで下がっているとし、<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">を押して1シャンテンを維持することを勧める。</p>
+<p class="lede">2枚目のスクリーンショットでは、<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">の間隔切りによって<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">と<img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou6.svg" alt="6s">の両方の待ちが安全になっている。そこでずんだもんは、<img class="ti" src="assets/tiles/Sou5.svg" alt="5s"> <img class="ti" src="assets/tiles/Sou6.svg" alt="6s">のブロックを払って1シャンテンを維持することを勧める。</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd2.png" alt="Push-fold decision 2" loading="lazy"></figure>
+<p class="lede">最後のスクリーンショットは、ベタオリしたいのに完全な安全牌がないという局面である。ずんだもんの推奨打牌はなんとドラまたぎかつスジで7枚見えている<img class="ti" src="assets/tiles/Sou2.svg" alt="2s">切りだ。<img class="ti" src="assets/tiles/Sou2.svg" alt="2s">は4枚すべて見えていることで、パターン4-b（<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s"><img class="ti" src="assets/tiles/Sou4.svg" alt="4s"><img class="ti" src="assets/tiles/Sou4.svg" alt="4s">）が消え、下家が<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">–</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">で待っている可能性は極めて低くなるのだという。</p>
+<figure class="fig"><img src="assets/figures/stagger_wwyd3.png" alt="Fold decision 3" loading="lazy"></figure>
+</section>
+
+<section>
+  <h2>データによる検証</h2>
+<p class="lede">ずんだもんは、端牌の間隔切りに関する理論は、他の手出し読み理論よりも有用性が高いと論じている。逆切りの手出しや、中張牌の間隔切りの場合、それ単体で消去できる関連牌パターンの数がそれほど多くなく、他の情報と組み合わせないと実用レベルの知見を導けない。それに対し、端牌の間隔切りの情報は単体で多くの関連牌パターンを消去できるためだ。ただし、そのぶん間隔切りは残りの2種類より出現頻度がずっと低いのだという。</p>
+<p class="lede">そこで、この形が実戦でどれほどの頻度で現れるのか、天鳳のデータで確認してみよう。そのついでに、これらの予測がデータに支持されるかどうかも合わせて確かめよう。</p>
+<p class="lede">理論の観察可能な含意を、二つの段階に分ける。第一段階の予測は、端牌の間隔切りは本物のトイツから切られたものだ、というもの。これは「1枚目を切った時点で2枚目を持っていたか」で検証する。なお、ずんだもん自身が後の補足動画（<a href="https://www.youtube.com/watch?v=MtsJ5TDSzjk">手出し読み講座第6回</a>）において、第2回講座の講義内容はこの確率を過大に見積もっていたかもしれないと認めている。特に、1枚目と2枚目の間に数牌が何枚も切られている場合、本物のトイツである可能性は下がり、したがって「2枚目の端牌は、手牌の中で関連牌として残されていた」という推論が成り立たなくなる。</p>
+<p class="lede">第二の段階の予測は、上でボックスにまとめた予測<b>P1〜P3</b>である。</p>
+<p class="lede">どの予測も、適切な基準値との比較で評価しなければならない。間隔を空けたトイツ落としが出てくるには時間がかかるので、この型の捨て牌を持つプレイヤーのリーチは平均的に遅い。そこで、比較はすべてリーチ巡目を揃えて行う<sup class="fn" id="fnref3"><a href="#fn3">3</a></sup>。</p>
+</section>
+
+<section>
+  <h2>検証結果</h2>
+<p class="lede">データは2015〜2023年と2026年1月〜9月中旬の期間に、天鳳の鳳凰卓で行われたすべての東南戦とする。1,692,981半荘、18,034,322局からなる。2024年と2025年のデータがないのは、天鳳公式ページにおける牌譜ログデータの公開が2026年9月現在停止になっているためだ。</p>
+<h3>第一段階 — 本当にトイツを持っていたのか</h3>
+<p class="lede">端牌の間隔切りを観測したとき、1枚目を切った時点で本当に両方を持っていた確率はどの程度か。理論は、プレイヤーが最初に端牌をトイツで持っていたという仮定に依存している。この仮定に基づき、<i>t</i> 巡目に1枚を切り、もう1枚を数巡残したのなら、残した1枚は近くのブロックとつながっていたのだろうと推測できる。その推測が、内側のスジは安全だという予測の土台になる。逆に、最初から2枚持っていなかったのなら、近くのブロックが手牌にあると考える理由も、内側のスジが安全だと考える理由もなくなる。</p>
+<p class="lede">観測された端牌の間隔切りは全体で約327.8万件 — <b>1,803万局に対して、およそ5〜6局に1件、卓の誰かが切っている計算になる</b>。このうち、本物のトイツだったのは60.6%にとどまる — 約327.8万件中198.6万件である。残りのケースでは、プレイヤーは孤立した端牌をまず切り、後で同じ牌を引き、1巡以上抱えてから手出ししていた。</p>
+<p class="lede">前述のとおり、近くのブロックとつながっていない端牌の2枚目を抱える例外的な理由はいくつかある。ただし、典型的な国士無双、染め手、七対子の進行では、単独の端牌を一度切ったあと、引き戻して抱えるケースは比較的少ないと考えられる。より重要なのは、安全牌として抱えた可能性である。こちらは河に手がかりが残りにくく、見分けるのが難しい。</p>
+<p class="lede">幸い、本物のトイツだったケースと相関する、観測可能な特徴がいくつかある。第一は、表2に示す二つの打牌の間隔である。間が1〜4枚なら、およそ4件に3件が本物のトイツだ。間が5〜8枚だと、その割合は3分の1を下回る。もう一つの有用な指標は、間に手出しのブロック落としがあるかどうかである。間が1〜4枚でブロック落としがなければ、本物率は80.8%まで上がる。</p>
+<p class="tcap">表2. 間隔の長さ別の本物率</p>
+<div class="tablebox"><table>
+  <thead><tr><th>間の枚数</th><th>n</th><th>本物のトイツ</th><th>間にブロック落としなし</th><th>間にブロック落としあり</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>1&ndash;4</td><td class="num">2,246,866</td><td class="num"><b>75.5%</b></td><td class="num">80.8% (1,988,995)</td><td class="num">35.2% (257,871)</td></tr>
+  <tr><td>5&ndash;8</td><td class="num">724,778</td><td class="num">32.3%</td><td class="num">42.9% (320,827)</td><td class="num">23.9% (403,951)</td></tr>
+  <tr><td>9+</td><td class="num">306,248</td><td class="num"><b>17.8%</b></td><td class="num">31.1% (49,635)</td><td class="num">15.2% (256,613)</td></tr>
+  </tbody></table></div>
+<p class="lede">間のブロック落としの有無は、間隔が長くなっても有効なシグナルだ。表3のとおり、間隔の長さを問わず全ケースをまとめると、間にブロック落としがない場合の74.6%が本物のトイツだった。一方、ブロック落としがある場合は24〜27%にとどまった。ただし、表2で見たように、ブロック落としがない場合でも、間隔が長くなるほど本物率は下がる。</p>
+<p class="tcap">表3. 間のブロック落とし別の本物率</p>
+<div class="tablebox"><table>
+  <thead><tr><th>二つの打牌の間に</th><th>n</th><th>本物のトイツ</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>ブロック落としなし</td><td class="num">2,359,457</td><td class="num"><b>74.6%</b></td></tr>
+  <tr><td>ブロック落とし、後に字牌・端牌の手出しあり</td><td class="num">150,818</td><td class="num">27.0%</td></tr>
+  <tr><td>ブロック落とし、後に何もなし</td><td class="num">767,617</td><td class="num">24.2%</td></tr>
+  </tbody></table></div>
+<h3>第二段階 — 該当する待ちは減っているのか</h3>
+<p class="lede">次に、端牌の間隔切りが、内側のスジ待ちと5の愚形待ちの起こりにくさと相関しているかを調べる。</p>
+<p class="lede">具体的には、以下の3つの結果を見る。</p>
+<ol class="pt" style="gap:.4rem">
+  <li>内側1つ目のスジの待ち：1の間隔切りなら2–5、9なら5–8。</li>
+  <li>内側2つ目のスジの待ち：1なら3–6、9なら4–7。</li>
+  <li>5の愚形待ち：タンキ・カンチャン・シャンポン。</li>
+</ol>
+<p class="lede">処置群（端牌の間隔切りのあるリーチ手）では、内側1つ目のスジが待ちである確率は4.725%、内側2つ目は4.099%、5の愚形は1.319%である。</p>
+<p class="lede">これらを、いくつかの対照条件での確率と比べる。リスク比を「間隔切り群の確率 ÷ 対照群の確率」と定義すると、理論は3つの結果すべてでリスク比が1を下回ると予測する。結果を表4にまとめた。</p>
+<p class="tcap">表4. 対照群別の待ち率の比</p>
+<div class="tablebox"><table>
+  <thead><tr><th>対照群</th><th>n</th><th>内側1つ目のスジ (2&ndash;5)</th><th>内側2つ目のスジ (3&ndash;6)</th><th>5の愚形待ち</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>他の全てのリーチ</td><td class="num">76,802,181</td><td class="num">1.22 <span class="ci">[1.20, 1.23]</span></td><td class="num">0.95 <span class="ci">[0.93, 0.96]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.81]</span></td></tr>
+  <tr><td>&emsp;その端牌が河にない</td><td class="num">53,502,664</td><td class="num">1.32 <span class="ci">[1.30, 1.34]</span></td><td class="num">1.01 <span class="ci">[0.99, 1.02]</span></td><td class="num">0.81 <span class="ci">[0.78, 0.83]</span></td></tr>
+  <tr><td>&emsp;1枚だけ切られている</td><td class="num">20,803,191</td><td class="num">1.08 <span class="ci">[1.06, 1.09]</span></td><td class="num">0.87 <span class="ci">[0.86, 0.88]</span></td><td class="num">0.77 <span class="ci">[0.75, 0.79]</span></td></tr>
+  <tr><td>&emsp;2枚以上、ただし連続の巡のみ</td><td class="num">895,004</td><td class="num">0.97 <span class="ci">[0.96, 0.99]</span></td><td class="num">0.87 <span class="ci">[0.86, 0.88]</span></td><td class="num">0.75 <span class="ci">[0.73, 0.77]</span></td></tr>
+  <tr class="k"><td>&emsp;間隔あり、2枚目はツモ切り</td><td class="num">1,498,797</td><td class="num">1.11 <span class="ci">[1.09, 1.13]</span></td><td class="num">0.79 <span class="ci">[0.78, 0.80]</span></td><td class="num">0.71 <span class="ci">[0.69, 0.73]</span></td></tr>
+  <tr><td>&emsp;間隔手出し、他家リーチ後</td><td class="num">102,525</td><td class="num">0.99 <span class="ci">[0.94, 1.03]</span></td><td class="num">1.02 <span class="ci">[0.98, 1.06]</span></td><td class="num">0.83 <span class="ci">[0.77, 0.89]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">処置群の待ち率を各対照群の待ち率で割った比。リーチ巡（5区分）× 先行リーチ（2値）で Mantel&ndash;Haenszel 加重。処置群：n = 367,293、実測値 4.725% / 4.099% / 1.319%。小さい数字は半荘単位のクラスターブートストラップによる95%区間。</p>
+<h4>内側1つ目のスジ</h4>
+<p class="lede">理論の中心的な予測に反して、内側1つ目のスジの待ちは間隔切りの後に<b>増える</b>。他の全てのリーチと比べ、1のトイツを間隔切りした手が2&ndash;5で待っている確率は約22%高い。間隔切り群で4.725%、他のリーチで3.873%。絶対値で0.852ポイントの増加である。</p>
+<p class="lede">予測どおりの関係が現れるのは、対照群を「端牌のトイツを連続する巡で切ったリーチ手」に限った場合だけである。その狭い比較でなら、間隔切りは約3%の低下と結びつく。しかしこれは、ずんだもんの理論が想定している比較ではないだろう。</p>
+<p class="lede">したがって、データは理論の最も強い予測を支持しない。主要な比較では、内側1つ目のスジはむしろ危険である。</p>
+<h4>内側2つ目のスジ</h4>
+<p class="lede">内側2つ目のスジの結果は理論と整合的だが、差は小さい。</p>
+<p class="lede">他の全てのリーチと比べ、間隔切りのある手が内側2つ目のスジで待つ確率は約5%低い。間隔切り群で4.099%、他のリーチで4.315%。絶対値で0.216ポイントの減少である。</p>
+<p class="lede">押し引き判断をかなりの高精度で行っているようなプレイヤーにとっては、この程度のわずかな差でも有用な情報なのかもしれない。私の感覚だと、この程度の差が実戦の押し引き判断を左右することはあまり多くなさそうである。</p>
+<h4>5の愚形待ち</h4>
+<p class="lede">最も大きい差は、5の愚形待ちに関する「おまけの理論」の予測に現れる。間隔切りは、これらの待ちの確率の約20%の低下と結びついている。つまり、ずんだもんが話のついでに提唱していた予測の方が、内側のスジに関する2つの主要な予測よりも強く支持される。</p>
+<h4>間隔が短いほどシグナルは強い</h4>
+<p class="lede">第一段階の分析は、二つの打牌の間隔が長くなるほど本物のトイツである確率が下がることを示した。表5はその知見を取り込み、第二段階の結果を間隔の長さ別に示す。</p>
+<p class="tcap">表5. 間隔の長さ別の待ち率の比</p>
+<div class="tablebox"><table>
+  <thead><tr><th>間の枚数</th><th>n</th><th>本物のトイツ</th><th>内側1つ目のスジ</th><th>内側2つ目のスジ</th><th>5の愚形</th></tr></thead>
+  <tbody>
+  <tr class="k"><td>1&ndash;4</td><td class="num">278,246</td><td class="num">75.5%</td><td class="num">1.19 <span class="ci">[1.17, 1.21]</span></td><td class="num">0.91 <span class="ci">[0.90, 0.93]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.82]</span></td></tr>
+  <tr><td>5&ndash;8</td><td class="num">73,678</td><td class="num">32.3%</td><td class="num">1.26 <span class="ci">[1.23, 1.31]</span></td><td class="num">1.02 <span class="ci">[0.99, 1.06]</span></td><td class="num">0.78 <span class="ci">[0.73, 0.83]</span></td></tr>
+  <tr><td>9+</td><td class="num">15,369</td><td class="num">17.8%</td><td class="num">1.41 <span class="ci">[1.31, 1.50]</span></td><td class="num">1.24 <span class="ci">[1.15, 1.32]</span></td><td class="num">0.85 <span class="ci">[0.76, 0.95]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">対照はプール：非該当のリーチ全てに、その行の帯より長い間隔の該当リーチを加えたもの。帯より短い間隔の該当リーチは両群から除く。リーチ巡 × 先行リーチで Mantel&ndash;Haenszel 加重。本物率は第一段階から（母集団が違うため n は一致しない）。小さい数字は半荘単位のブートストラップによる95%区間。</p>
+<p class="lede">結果は予想どおりのパターンに従う。間隔が長くなり本物率が下がるにつれて、結果は理論の予測する方向から外れていく。内側2つ目のスジでは、短い間隔で見られた安全方向の関連が消え、9枚以上では逆に待ちが増えている。内側1つ目のスジも、間隔が長いほど待ちの増加幅が大きい。一方、5の愚形待ちの減少は、5〜8枚まで比較的安定している。</p>
+<p class="lede">実戦で「本物のトイツ落としだった」と読むには、比較的短い間隔に注目すべきだろう。間が4枚を超えると本物率が急激に下がるため、ずんだもんの提示した消去法をそのまま適用する根拠は弱くなる。間隔が長いケースにも待ちとの統計的な関連は残っており、予測シグナルとして完全に無意味というわけではないが、なぜそうなるのかの機序は不明である。</p>
+<p class="lede">間が1〜4枚のケースについて、結果は次のようにまとめられる。</p>
+<ul class="pt" style="gap:.4rem">
+  <li>内側1つ目のスジの待ちは<b>増える</b>：約19%の増加。</li>
+  <li>内側2つ目のスジの待ちは減るが、差は比較的小さい：約9%の減少。</li>
+  <li>5の愚形待ちは減る：約21%の減少。</li>
+</ul>
+<p class="lede">間隔を短く絞ると、本物のトイツである確率が上がり、内側2つ目のスジでは理論と同じ方向の関連が強まる。一方、内側1つ目のスジと5の愚形待ちについては、短い間隔に限定しても結果は大きく変わらない。</p>
+<h3>メカニズムを探る</h3>
+<p class="lede">ずんだもんの理論の中心的な予測が外れるのはなぜか。理由の一つは、第一段階の予測が当てにならないことである。間隔切りに見えるものの多くは、1枚目を切ったあとで2枚目を引いた偽物であり、その場合、この捨て牌パターンは1枚目を切った時点の端牌の周りの形について何も語らない。もう一つの理由は、第二段階の消去法のメカニズムが不完全なことである。つまり、本物のトイツを持っていた場合でも、残された端牌は、理論の消去プロセス（表1）が想定するつながりとは別の役割を果たしていたかもしれない。</p>
+<p class="lede">二つの説明を切り分けるため、本物のトイツがあったケースだけに絞って分析をやり直した。具体的には、処置群を「1枚目を切った時点で2枚目を持っていた」ケースに絞る。守備側は、普通この情報は知り得ない。2枚目の手出しを見ても、1枚目の時点で両方持っていたかどうかは他者からは分からないからだ。したがってこれは、そのまま使える読みの手法ではない。メカニズムを検証するために、もし仮に本物のトイツを完璧に見分けられたなら、理論の予測は成り立つのか。それをテストする。</p>
+<p class="tcap">表6. 理論に最も有利な条件での待ち率の比</p>
+<div class="tablebox"><table>
+  <thead><tr><th>処置群</th><th>n</th><th>内側1つ目のスジ (2&ndash;5)</th><th>内側2つ目のスジ (3&ndash;6)</th><th>5の愚形待ち</th></tr></thead>
+  <tbody>
+  <tr><td>全ての間隔切り（基本の結果）</td><td class="num">367,293</td><td class="num">1.22 <span class="ci">[1.20, 1.23]</span></td><td class="num">0.95 <span class="ci">[0.93, 0.96]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.81]</span></td></tr>
+  <tr><td>間を1〜4枚に限定</td><td class="num">278,246</td><td class="num">1.19 <span class="ci">[1.17, 1.21]</span></td><td class="num">0.91 <span class="ci">[0.90, 0.93]</span></td><td class="num">0.79 <span class="ci">[0.77, 0.82]</span></td></tr>
+  <tr class="k"><td>本物のトイツだった</td><td class="num">239,432</td><td class="num"><b>1.13</b> <span class="ci">[1.11, 1.15]</span></td><td class="num"><b>0.82</b> <span class="ci">[0.80, 0.84]</span></td><td class="num"><b>0.76</b> <span class="ci">[0.73, 0.79]</span></td></tr>
+  <tr><td>偽物だった（後から引き直した）</td><td class="num">127,861</td><td class="num">1.37 <span class="ci">[1.34, 1.40]</span></td><td class="num">1.18 <span class="ci">[1.16, 1.21]</span></td><td class="num">0.85 <span class="ci">[0.81, 0.88]</span></td></tr>
+  </tbody></table></div>
+  <p class="fnote">いずれも対プール、リーチ巡 × 先行リーチで Mantel&ndash;Haenszel 加重。間を絞った行では、間5枚以上の該当リーチを対照に編入。本物/偽物の行の対照は非該当リーチのみで、逆側の群はどちらの側にも入れない。小さい数字は半荘単位のブートストラップによる95%区間。</p>
+<p class="lede">この、実戦では利用できない完全情報を用いた分析でも、内側1つ目のスジは危険なままである。したがって、中心的な予測の失敗を、観測される間隔切りと本物のトイツの対応の不完全さだけに帰することはできない。むしろ結果が示唆するのは、理論の<b>消去プロセスが不完全</b>だということだ。間隔切りが本物のトイツから来ている場合でさえ、内側1つ目のスジを全体として安全にしない程度には、別の手の発展経路が存在する。</p>
+<p class="lede">その別経路を理解するため、本物の端牌トイツから始まり、1枚を切り、もう1枚を数巡残し、最終的に内側1つ目のスジで待ってリーチした天鳳の牌譜を十数件確認してみた。いくつか目についた例を挙げてみよう。</p>
+<ul class="pt" style="gap:.55rem">
+  <li><img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m">の形から<img class="ti" src="assets/tiles/Man9.svg" alt="9m">を1枚切った。6ブロック目の候補として<img class="ti" src="assets/tiles/Pin5.svg" alt="5p">を浮き牌として持つためのスペースを空けたということのようだ。後に<img class="ti" src="assets/tiles/Man6.svg" alt="6m">を引き、残りの<img class="ti" src="assets/tiles/Man9.svg" alt="9m">を切って、最終的に<img class="ti" src="assets/tiles/Man5.svg" alt="5m"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Man8.svg" alt="8m">待ちになった。</li>
+  <li>トイツを他に2つ持った手で、<img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m">から<img class="ti" src="assets/tiles/Man9.svg" alt="9m">を切った。<img class="ti" src="assets/tiles/Man9.svg" alt="9m">切りが受け入れ最大で、牌効率上の正着である。<img class="ti" src="assets/tiles/Man6.svg" alt="6m">を引いて2枚目の<img class="ti" src="assets/tiles/Man9.svg" alt="9m">を切り、最終的に<img class="ti" src="assets/tiles/Man5.svg" alt="5m"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Man8.svg" alt="8m">待ちでリーチした。</li>
+  <li>123の三色の可能性を残すため、<img class="ti" src="assets/tiles/Sou1.svg" alt="1s"><img class="ti" src="assets/tiles/Sou1.svg" alt="1s"><img class="ti" src="assets/tiles/Sou3.svg" alt="3s">から<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を1枚切った。他のターツが三色を支えられなくなったあと、<img class="ti" src="assets/tiles/Sou4.svg" alt="4s">を引いて残りの<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">を切り、<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">待ちになった。</li>
+  <li><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p">から<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">を切り、<img class="ti" src="assets/tiles/Pin1.svg" alt="1p"><img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin8.svg" alt="8p">のリャンカンを残した。その後<img class="ti" src="assets/tiles/Pin4.svg" alt="4p">を引いて残りの<img class="ti" src="assets/tiles/Pin1.svg" alt="1p">を切った。別のブロックが完成したあと、<img class="ti" src="assets/tiles/Pin8.svg" alt="8p">を切ってリーチし、<img class="ti" src="assets/tiles/Pin2.svg" alt="2p"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Pin5.svg" alt="5p">待ちとなった。</li>
+  <li>トイツは3つあるが、ブロック数が足りていない手において、<img class="ti" src="assets/tiles/Pin3.svg" alt="3p"><img class="ti" src="assets/tiles/Pin4.svg" alt="4p"><img class="ti" src="assets/tiles/Pin5.svg" alt="5p"><img class="ti" src="assets/tiles/Pin6.svg" alt="6p"><img class="ti" src="assets/tiles/Pin7.svg" alt="7p"><img class="ti" src="assets/tiles/Pin9.svg" alt="9p"><img class="ti" src="assets/tiles/Pin9.svg" alt="9p">の形から<img class="ti" src="assets/tiles/Pin9.svg" alt="9p">を1枚切り、もう1枚を浮き牌として数巡残した。<img class="ti" src="assets/tiles/Pin9.svg" alt="9p">は特に強い浮き牌ではないが、他の選択肢よりはましだった。</li>
+</ul>
+<p class="lede">これらの例が示唆するのは、消去法の過程でいくつかの可能性を過小評価していたことだ。1シャンテンや2シャンテンの手で<img class="ti" src="assets/tiles/Man7.svg" alt="7m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m"><img class="ti" src="assets/tiles/Man9.svg" alt="9m">のようなブロックから<img class="ti" src="assets/tiles/Man9.svg" alt="9m">を1枚切って愚形ターツを固定する、三色などの手役を追って愚形固定する、あるいは他にましな選択肢がないという理由で端牌を浮き牌として抱える、といった経路である。</p>
+<p class="lede">これらは、集計結果を生み出している可能性のある経路の具体例である。十数件の確認だけでは各経路の頻度までは分からないが、少なくとも、理論の消去プロセスに含まれていない現実的な発展経路が複数存在することは確認できた。</p>
+</section>
+
+<section>
+  <h2>まとめ</h2>
+<p class="lede">この分析は、ずんだもんの理論の妥当性を検証するためというよりは、その実用可能性を確認するために始めたものだった。結果は予想より込み入っていた。ずんだもんが最も信頼できるとする予測 — 内側1つ目のスジの相対的な安全性 — が、最も支持されなかった。逆に、内側1つ目のスジは、隣の端牌トイツの間隔切りの後にはむしろ危険となるようだ。</p>
+<p class="lede">内側2つ目のスジに関する予測は当たっていた。このスジの待ちは実際に減っていて、二つの打牌の間隔が短いときには、差分もより大きい。ただし、主分析における差は約5%であり、絶対値では0.216ポイントにとどまる。</p>
+<p class="lede">最も強い証拠は、5の愚形待ちが減るという「おまけ」の予測に関するものだった。この結果は、5がらみのリャンメン待ちがないと分かっている場面では実戦的な価値を持ちうる。たとえば、<img class="ti" src="assets/tiles/Sou1.svg" alt="1s">のトイツを間隔手出しした相手がリーチし、<img class="ti" src="assets/tiles/Sou2.svg" alt="2s">がその相手への現物だとしよう。<img class="ti" src="assets/tiles/Sou2.svg" alt="2s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou5.svg" alt="5s">のリャンメン待ちがなくなるので、<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">に残る危険は<img class="ti" src="assets/tiles/Sou5.svg" alt="5s"><span style="color:var(--muted);margin:0 .08em">&ndash;</span><img class="ti" src="assets/tiles/Sou8.svg" alt="8s">と愚形待ちだけだが、間隔トイツ理論により<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">の愚形待ちは出にくくなっている。自分の手牌が<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">と<img class="ti" src="assets/tiles/Sou8.svg" alt="8s">のどちらかを切ればテンパイという状況ならば、<img class="ti" src="assets/tiles/Sou5.svg" alt="5s">切りが有力な候補になる。</p>
+<p class="lede">ずんだもんのMリーグ解説や手出し読み講座が教材として非常に価値があるという考えは変わらない。<a href="https://www.youtube.com/watch?v=UeEuI5TJSmc">Mリーグ辛口解説第48回</a>でずんだもん自身が語るように、ありうる手牌のパターンを列挙し、証拠と矛盾するものを消したり、確率の濃淡をつけていったりする作業は、それ自体が貴重なトレーニングになりそうだ。「理論」として単純化した予測のいくつかが統計的に成り立たなくても、その論理をたどることは、手がどう伸びていくかの理解を深めることにつながるだろう。</p>
+<p class="lede">最後に、私の分析は、なんらかの重要な前提条件や境界条件などを見落としているかもしれないし、ずんだもんの理論のどこかを誤解しているかもしれない。ここで使った操作的な定義、対照群、サンプルの絞り方は、予測を検証する一つのやり方にすぎない。他の麻雀研究者の皆さんが追試を行い、同じ結論に達するかどうかを確かめてくれたら嬉しい。私の結論が間違っていてずんだもんの理論が正しいと判明したら、その方がむしろ嬉しいまである。</p>
+</section>
+
+<section>
+  <h2>手法</h2>
+  <div class="notes">
+    <div class="note"><h3>処置の定義</h3><p>同一プレイヤーが同じ端牌（1か9）を、間に1枚以上の打牌を挟んで2回以上切り、<b>2枚目が手出し</b>で、2枚目より前に他家のリーチがないもの。</p></div>
+    <div class="note"><h3>待ちの分類</h3><p>手牌を分解して待ちごとの形を判定する。2&ndash;5待ちには 2345 のノベタン、34567 の三面張、3444 なども含み、2と5のシャンポンは含まない。5のタンキは5の愚形に数える。</p></div>
+    <div class="note"><h3>層別</h3><p>すべての比は、リーチ巡（5区分）× 他家の先行リーチ（2値）の10層で Mantel&ndash;Haenszel 加重。区間は、半荘を単位にリサンプルするクラスターブートストラップの2.5〜97.5パーセンタイル（表4は400回、表5・6は300回）。</p></div>
+    <div class="note"><h3>ブロック落とし</h3><p>二つの端牌打牌の厳密に間にある二つの打牌が<b>どちらも手出し</b>で、同一牌（トイツ）か、同色で1つまたは2つ離れた牌（ターツ）を構成するもの。二つの打牌が連続した巡である必要はない。</p></div>
+    <div class="note"><h3>多重検定</h3><p>探索的な分析なので、調整はしていない。区間は名目上の95%である。</p></div>
+    <div class="note"><h3>限界</h3><p>これは観察データの比較であって、実験ではない。層別しているのはリーチ巡と先行リーチだけで、群間の他の違いは残る。また測っているのは「その手がどの待ちで終わったか」であって、「特定の牌が当たるか」ではない — 実際の放銃率とは関連するが別の量である。</p></div>
+  </div>
+</section>
+<section class="footnotes">
+  <ol>
+    <li id="fn1">ずんだもんを名乗ってMリーグの解説をする、他のチャンネルも後追いで登場してきた。<a href="https://www.youtube.com/@mkiruchan">M斬るチャンネル</a>こそが元祖であり、たとえば「本物の雀ゴロずんだもん」を名乗っている方と混同しないようにしたい。 <a href="#fnref1">&#8617;</a></li>
+    <li id="fn2">間隔トイツのシグナルは、間に挟まれた牌も手出しだったときにより信頼がおける。したがって、できれば間の牌が手出しかどうかも覚えておいた方が良いという。 <a href="#fnref2">&#8617;</a></li>
+    <li id="fn3">リーチ巡だけを揃えても、二つの群が完全に比較可能になるとは限らない。間隔切りは、手のスピード、プレイヤーの強さ、点数状況、見えている牌の枚数、手の出発点の形などとも結びついているかもしれない。目的が因果推論ではなく予測なので、これらの違いは必ずしもバイアスではない。一部は、捨て牌パターンが運ぶ情報そのものでもある。ただし、間隔切りそのものの予測への寄与を切り出したい、という狭い目的にとっては問題になる。 <a href="#fnref3">&#8617;</a></li>
+  </ol>
+</section>
+<footer><p>データ: 天鳳 鳳凰卓 東南戦 2015〜2023年・2026年1月〜9月中旬 — 1,692,981半荘、18,034,322局。スクリーンショットは雀ゴロずんだもんの講座動画より、論評のための引用。</p><p><a href="index.html">記事一覧</a></p><p>牌画像 <a href="https://github.com/FluffyStuff/riichi-mahjong-tiles">riichi-mahjong-tiles</a> by FluffyStuff — <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>。</p></footer>
+
+<section class="commentbox">
+  <h2>Comments</h2>
+  <div id="comments"></div>
+</section>
+</div>
+<script>
+document.querySelectorAll("a.clip").forEach(a => {
+  a.addEventListener("click", ev => {
+    if (ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.button) return;
+    ev.preventDefault();
+    const f = document.createElement("iframe");
+    f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.yt}`
+          + `?start=${a.dataset.t || 0}&autoplay=1&rel=0`;
+    f.title = a.querySelector(".cn").textContent;
+    f.allow = "accelerometer; autoplay; encrypted-media; picture-in-picture";
+    f.allowFullscreen = true;
+    a.classList.add("playing");
+    a.querySelector(".thumb").replaceWith(f);
+  });
+  // a thumbnail that will not load should not leave an empty grey box
+  const img = a.querySelector(".thumb img");
+  img.addEventListener("error", () => {
+    a.querySelector(".thumb").style.background = "var(--band)";
+    img.remove();
+  });
+});
+
+</script>
+<script src="comments.js"></script>
