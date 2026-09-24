@@ -251,7 +251,14 @@ function buildFilter() {
     b.textContent = TAGS[k][0];          // the filter row is English chrome
     b.setAttribute("aria-pressed", "false");
     b.addEventListener("click", () => {
-      active.has(k) ? active.delete(k) : active.add(k);
+      if (active.has(k)) {
+        active.delete(k);
+      } else {
+        // the two language tags are mutually exclusive: picking one drops the other
+        if (k.startsWith("lang-"))
+          for (const other of [...active]) if (other.startsWith("lang-")) active.delete(other);
+        active.add(k);
+      }
       render();
     });
     nav.appendChild(b);
